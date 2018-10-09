@@ -363,7 +363,7 @@ void SetMemory() {
   }
 
   /***** Physical Quantity *****/
-  if(NVMCCalMode==1){
+  if(NVMCCalMode==1 || NVMCCalMode==2){
     PhysCisAjs  = (double complex*)malloc(sizeof(double complex)
                     *(NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC+NCisAjs));
     PhysCisAjsCktAlt   = PhysCisAjs       + NCisAjs;
@@ -401,7 +401,7 @@ void SetMemory() {
 void FreeMemory() {
   FreeWorkSpaceAll();
 
-  if(NVMCCalMode==1){
+  if(NVMCCalMode==1 || NVMCCalMode==2){
     free(PhysCisAjs);
     if(NLanczosMode>0){
       free(QQQQ);

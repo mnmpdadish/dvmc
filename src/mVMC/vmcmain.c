@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
     VMCParaOpt(comm0, comm1, comm2);
     if(rank0==0) fprintf(stdout,"End  : Optimize VMC parameters.\n");
     StopTimer(2);
-  } else if(NVMCCalMode==1) {
+  } else if((NVMCCalMode==1) || (NVMCCalMode==2)) {
     StartTimer(2);
     /*-- VMC Physical Quantity Calculation --*/
     if(rank0==0) fprintf(stdout,"Start: Calculate VMC physical quantities.\n");
@@ -301,7 +301,7 @@ int main(int argc, char* argv[])
     StopTimer(2);
   } else {
     info=1;
-    if(rank0==0) fprintf(stderr,"error: NVMCCalMode must be 0 or 1.\n");
+    if(rank0==0) fprintf(stderr,"error: NVMCCalMode must be 0 1 or 2.\n");
   }
 
   StopTimer(0);
@@ -652,7 +652,7 @@ void outputData() {
     fwrite(Para, sizeof(double), NPara, FileVar);
   }
 
-  if (NVMCCalMode == 1) {
+  if (NVMCCalMode == 1 || NVMCCalMode==2) {
     /* zvo_cisajs.dat */
     if (NCisAjs > 0) {
       if(NLanczosMode <2) {

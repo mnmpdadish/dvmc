@@ -6,6 +6,11 @@
 double complex GreenFunc1(const int ri, const int rj, const int s, const double complex ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
                   int *projCntNew, double complex *buffer);
+
+double complex GreenFunc1_moments(const int ri, const int rj, const int s, const double complex ip,
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
+                  int *projCntNew, double complex *buffer);
+
 double complex GreenFunc2(const int ri, const int rj, const int rk, const int rl,
                   const int s, const int t, const double complex  ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,

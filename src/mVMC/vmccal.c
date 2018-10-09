@@ -279,6 +279,16 @@ void VMCMainCal(MPI_Comm comm) {
           StopTimer(44);
         }
       }
+    } else if(NVMCCalMode==2) {
+      StartTimer(42);
+      /* Calculate Green Function */
+#ifdef _DEBUG_VMCCAL
+      fprintf(stdout, "Debug: Start: CalcGreenFunc\n");
+#endif
+      CalculateGreenFuncMoments(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+      StopTimer(42);
+
+
     }
   } /* end of for(sample) */
 
@@ -572,7 +582,7 @@ void clearPhysQuantity(){
     vec_real = SROptOO_real;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec_real[i] = 0.0;
-  } else if(NVMCCalMode==1) {
+  } else if(NVMCCalMode==1 || NVMCCalMode==2) {
     /* CisAjs, CisAjsCktAlt, CisAjsCktAltDC */
     n = NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
     vec = PhysCisAjs;

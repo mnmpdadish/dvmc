@@ -1,10 +1,12 @@
 *.out
+sample_maxime/
 makefile
 Makefile
 make.sys
 *backup*
 *cisajs*.dat
 *Time*
+*.swp
 *.a
 *.aux
 *.bbl
