@@ -83,7 +83,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip, int *ele
       PhysN2[idx+NCisAjs*2] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+s*Nsite]*myEleNum[rj+(1-s)*Nsite];
       
       //n_sigma (1-n_-sigma) Maxime
-      PhysN2[idx+NCisAjs*3] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+(1-s)*Nsite];
+      PhysN2[idx+NCisAjs*3] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+s*Nsite];
     }
 
     #pragma omp for private(ri,s) schedule(dynamic) nowait
