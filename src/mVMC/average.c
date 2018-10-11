@@ -204,6 +204,18 @@ void WeightAverageSROpt_real(MPI_Comm comm) {
 }
 */
 
+
+void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
+  int n;
+  double complex *vec;
+  double *vec_real;
+  n = NCisAjs*TWO_SITES_QTY;
+  vec = PhysN;
+  weightAverageReduce_fcmp(n,vec,comm);
+  
+  return;
+}
+
 /* calculate average of Green functions */
 /* Only rank=0 process will have the result */
 void WeightAverageGreenFunc(MPI_Comm comm) {

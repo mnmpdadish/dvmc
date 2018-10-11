@@ -607,20 +607,28 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     }
     if(rank==0) fprintf(stdout, "End  : Main calculation.\n");
     StopTimer(4);
-    StartTimer(21);
+    
+    if(NVMCCalMode==1) {
+      StartTimer(21);
+      WeightAverageWE(comm_parent);
+      WeightAverageGreenFunc(comm_parent);
+      ReduceCounter(comm_child2);
 
-    WeightAverageWE(comm_parent);
-    WeightAverageGreenFunc(comm_parent);
-    ReduceCounter(comm_child2);
+      StopTimer(21);
+      StartTimer(22);
+      /* output zvo_out and green functions */
+      if(rank==0) outputData();
+      CloseFilePhysCal(rank);
 
-    StopTimer(21);
-    StartTimer(22);
-    /* output zvo_out and green functions */
-    if(rank==0) outputData();
-    CloseFilePhysCal(rank);
-
-    StopTimer(22);
+      StopTimer(22);
+      //printf("hey5\n");
+    }
+    else if(NVMCCalMode==2) {
+      WeightAverageGreenFuncMoments(comm_parent);
+      if(rank==0) outputData();
+    }
     StopTimer(5);
+
   }
 
   if(rank==0) OutputTime(NDataQtySmp);
@@ -630,7 +638,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
 
 
 void outputData() {
-  int i;
+  int i, j;
 
   /* zvo_out.dat */
 //[s] MERGE BY TM
@@ -652,7 +660,7 @@ void outputData() {
     fwrite(Para, sizeof(double), NPara, FileVar);
   }
 
-  if (NVMCCalMode == 1 || NVMCCalMode==2) {
+  if (NVMCCalMode == 1) {
     /* zvo_cisajs.dat */
     if (NCisAjs > 0) {
       if(NLanczosMode <2) {
@@ -707,6 +715,20 @@ void outputData() {
       }
     }
   }
+  
+  else if (NVMCCalMode==2) {
+    if (NCisAjs > 0) {
+      for (i = 0; i < NCisAjs; i++) {
+        fprintf(FileN, "%d %d %d %d ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+        for (j = 0; j < TWO_SITES_QTY; j++) 
+          fprintf(FileN, "% .8e   ", creal(PhysN[i+NCisAjs*j]) );
+//          fprintf(FileN, "% .8e  % .8e   ", creal(PhysN[i+NCisAjs*j]), cimag(PhysN[i+NCisAjs*j]));
+        fprintf(FileN, "\n");
+      }
+    }
+    fprintf(FileN, "\n");
+  }
+  
   return;
 }
 

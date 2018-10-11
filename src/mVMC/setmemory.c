@@ -166,11 +166,20 @@ void SetMemoryDef() {
     pInt += 8;
   }
 
+
   CisAjsCktAltDCIdx = (int**)malloc(sizeof(int*)*NCisAjsCktAltDC);
   for(i=0;i<NCisAjsCktAltDC;i++) {
     CisAjsCktAltDCIdx[i] = pInt;
     pInt += 8;
   }
+  
+/*  //Maxime
+  CisAjsCktAltCmuAnuIdx = (int**)malloc(sizeof(int*)*NCisAjsCktAltCmuAnu);
+  for(i=0;i<NCisAjsCktAltCmuAnu;i++) {
+    CisAjsCktAltCmuAnuIdx[i] = pInt;
+    pInt += 8;
+  }
+*/
 
   InterAll = (int**)malloc(sizeof(int*)*NInterAll);
   for(i=0;i<NInterAll;i++) {
@@ -366,9 +375,13 @@ void SetMemory() {
   if(NVMCCalMode==1 || NVMCCalMode==2){
     PhysCisAjs  = (double complex*)malloc(sizeof(double complex)
                     *(NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC+NCisAjs));
+//                     +NCisAjsCktAltCmuAnu)); //Maxime
     PhysCisAjsCktAlt   = PhysCisAjs       + NCisAjs;
     PhysCisAjsCktAltDC = PhysCisAjsCktAlt + NCisAjsCktAlt;
     LocalCisAjs = PhysCisAjsCktAltDC + NCisAjsCktAltDC;
+//    PhysCisAjsCktAltCmuAnu = LocalCisAjs + NCisAjs; //Maxime
+    PhysN = (double complex*)malloc(sizeof(double complex)
+                    *(NCisAjs*TWO_SITES_QTY) );
 
     if(NLanczosMode>0){
       QQQQ = (double complex*)malloc(sizeof(double complex)
@@ -403,6 +416,7 @@ void FreeMemory() {
 
   if(NVMCCalMode==1 || NVMCCalMode==2){
     free(PhysCisAjs);
+    free(PhysN);
     if(NLanczosMode>0){
       free(QQQQ);
       free(QQQQ_real);

@@ -37,6 +37,7 @@ doc/en/userguide_en.pdf
 doc/en/userguide_en.synctex
 src/ComplexUHF/UHF
 tool/corplot
+tool/greenr2k
 *.mod
 tool/fourier
 doc/fourier/ja/_build/

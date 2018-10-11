@@ -59,8 +59,8 @@ void CalculateGreenFuncMoments(const double w, const double complex ip, int *ele
 
     #pragma omp master
     {
+      //printf("start:\n");
       StartTimer(50);
-      printf("g1\n");
     }
 
     #pragma omp for private(idx,ri,rj,s,tmp) schedule(dynamic) nowait
@@ -68,53 +68,26 @@ void CalculateGreenFuncMoments(const double w, const double complex ip, int *ele
       ri = CisAjsIdx[idx][0];
       rj = CisAjsIdx[idx][2];
       s  = CisAjsIdx[idx][3];
-      tmp = GreenFunc1(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
-                       myProjCntNew,myBuffer);
-      LocalCisAjs[idx] = tmp;
+
+
+      
+      //Doublon-Holon TJS
+      PhysN[idx+NCisAjs*0] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite]
+	                           *(1.0-myEleNum[rj+s*Nsite])*(1.0-myEleNum[rj+(1-s)*Nsite]);
+	                           
+	   //Doublon-Doublon TJS
+      PhysN[idx+NCisAjs*1] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite]
+	                         *myEleNum[rj+s*Nsite]*myEleNum[rj+(1-s)*Nsite];
+
+      //Charge-Doublon TJS
+      PhysN[idx+NCisAjs*2] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+s*Nsite]*myEleNum[rj+(1-s)*Nsite];
+      
+      //n_sigma (1-n_-sigma) Maxime
+      PhysN[idx+NCisAjs*3] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+(1-s)*Nsite];
     }
-    #pragma omp master
-    {
-      StopTimer(50);//StartTimer(51);
-    }
-
-
-    /*
-    #pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic)
-    for(idx=0;idx<NCisAjsCktAltDC;idx++) {
-      ri = CisAjsCktAltDCIdx[idx][0];
-      rj = CisAjsCktAltDCIdx[idx][2];
-      s  = CisAjsCktAltDCIdx[idx][1];
-      rk = CisAjsCktAltDCIdx[idx][4];
-      rl = CisAjsCktAltDCIdx[idx][6];
-      t  = CisAjsCktAltDCIdx[idx][5];
-
-      tmp = GreenFunc2(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
-                       myProjCntNew,myBuffer);
-      PhysCisAjsCktAltDC[idx] += w*tmp;
-    }*/
     
     #pragma omp master
-    {//StopTimer(51);
-      StartTimer(52);
-    }
-
-    #pragma omp for private(idx) nowait
-    for(idx=0;idx<NCisAjs;idx++) {
-      PhysCisAjs[idx] += w*LocalCisAjs[idx];
-    }
-
-    #pragma omp master
-    {StopTimer(52);StartTimer(53);}
-
-    #pragma omp for private(idx,idx0,idx1) nowait
-    for(idx=0;idx<NCisAjsCktAlt;idx++) {
-      idx0 = CisAjsCktAltIdx[idx][0];
-      idx1 = CisAjsCktAltIdx[idx][1];
-      PhysCisAjsCktAlt[idx] += 1.0;//w*LocalCisAjs[idx0]*conj(LocalCisAjs[idx1]);// TBC conj ok?
-    }
-
-    #pragma omp master
-    {StopTimer(53);}
+    {StopTimer(50);}
 
   }
 

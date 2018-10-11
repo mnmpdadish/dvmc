@@ -143,6 +143,7 @@ double *ParaQPOptTrans;
 int NCisAjs,         **CisAjsIdx;         /* [NCisAjs][3] */
 int NCisAjsCktAlt,   **CisAjsCktAltIdx;   /* [NCisAjsCktAlt][8] */
 int NCisAjsCktAltDC, **CisAjsCktAltDCIdx; /* [NCisAjsCktAltDC][6] */
+//int NCisAjsCktAltCmuAnu, **CisAjsCktAltCmuAnuIdx; /* [NCisAjsCktAltCmuAnu][9] */ //Maxime
 int NCisAjsLz, **CisAjsLzIdx, **iOneBodyGIdx; /* For Lanczos method only for rank 0*/
 int NCisAjsCktAltLz, **CisAjsCktAltLzIdx;
 
@@ -268,14 +269,18 @@ double complex *PhysCisAjs; /* [NCisAjs] */
 double complex *PhysCisAjsCktAlt; /* [NCisAjsCktAlt] */
 double complex *PhysCisAjsCktAltDC; /* [NCisAjsCktAltDC] */
 double complex *LocalCisAjs; /* [NCisAjs] */
+//double complex *PhysCisAjsCktAltCmuAnu; /* [NCisAjsCktAltCmuAnu] */ //Maxime
+
+#define TWO_SITES_QTY 4
+double complex *PhysN; /* [NCisAjs * TWO_SITES_QTY] */  //Maxime
 
 double complex Sztot,Sztot2; /* <Sz>,<Sz^2> */
 
 
-double complex *PhysCisAjs; /* [NCisAjs] */
-double complex *PhysCisAjsCktAlt; /* [NCisAjsCktAlt] */
-double complex *PhysCisAjsCktAltDC; /* [NCisAjsCktAltDC] */
-double complex *LocalCisAjs; /* [NCisAjs] */
+//double complex *PhysCisAjs; /* [NCisAjs] */
+//double complex *PhysCisAjsCktAlt; /* [NCisAjsCktAlt] */
+//double complex *PhysCisAjsCktAltDC; /* [NCisAjsCktAltDC] */
+//double complex *LocalCisAjs; /* [NCisAjs] */
 
 const int NLSHam = 2; /* 0: I, 1: H */
 double complex *QQQQ; /* QQQQ[NLSHam][NLSHam][NLSHam][NLSHam]*/  //TBC
@@ -306,6 +311,8 @@ FILE *FileLSQCisAjsQ;
 FILE *FileLSQCisAjsCktAltQ;
 FILE *FileLSCisAjs;
 FILE *FileLSCisAjsCktAlt;
+
+FILE *FileN;
 
 
 /* FILE *FileTimerList; */

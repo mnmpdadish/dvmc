@@ -692,6 +692,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
                  + 4 * NCisAjs /* CisAjs */
                  + 8 * NCisAjsCktAlt /* CisAjsCktAlt */
                  + 8 * NCisAjsCktAltDC /* CisAjsCktAltDC */
+//                 + 8 * NCisAjsCktAltCmuAnu /* CisAjsCktAltCmuAnu */
                  + 8 * NInterAll /* InterAll */
                  + Nsite * NQPOptTrans /* QPOptTrans */
                  + Nsite * NQPOptTrans /* QPOptTransSgn */

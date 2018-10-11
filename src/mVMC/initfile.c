@@ -89,48 +89,57 @@ void InitFilePhysCal(int i, int rank) {
     fwrite(&one,sizeof(int),1,FileVar);
   }
 
+  if(NVMCCalMode==1){
   /* Green function */
-  if(NCisAjs>0){
-    sprintf(fileName, "%s_cisajs_%03d.dat", CDataFileHead, idx);
-    FileCisAjs = fopen(fileName, "w");
-  }
+    if(NCisAjs>0){
+      sprintf(fileName, "%s_cisajs_%03d.dat", CDataFileHead, idx);
+      FileCisAjs = fopen(fileName, "w");
+    }
+   
 
-  if(NCisAjsCktAlt>0){
-    sprintf(fileName, "%s_cisajscktaltex_%03d.dat", CDataFileHead, idx);
-    FileCisAjsCktAlt = fopen(fileName, "w");
-  }
+    if(NCisAjsCktAlt>0){
+      sprintf(fileName, "%s_cisajscktaltex_%03d.dat", CDataFileHead, idx);
+      FileCisAjsCktAlt = fopen(fileName, "w");
+    }
 
-  if(NCisAjsCktAltDC>0){
-    sprintf(fileName, "%s_cisajscktalt_%03d.dat", CDataFileHead, idx);
-    FileCisAjsCktAltDC = fopen(fileName, "w");
+    if(NCisAjsCktAltDC>0){
+      sprintf(fileName, "%s_cisajscktalt_%03d.dat", CDataFileHead, idx);
+      FileCisAjsCktAltDC = fopen(fileName, "w");
+    }
+    
+    if(NLanczosMode>0){
+      sprintf(fileName, "%s_ls_out_%03d.dat", CDataFileHead, idx);
+      FileLS = fopen(fileName, "w");
+
+      sprintf(fileName, "%s_ls_qqqq_%03d.dat", CDataFileHead, idx);
+      FileLSQQQQ = fopen(fileName, "w");
+      
+      if(NLanczosMode>1){
+  #ifdef _DEBUG
+        sprintf(fileName, "%s_ls_qcisajsq_%03d.dat",
+                CDataFileHead, idx);
+        FileLSQCisAjsQ = fopen(fileName, "w");
+        sprintf(fileName, "%s_ls_qcisajscktaltq_%03d.dat",
+                CDataFileHead, idx);
+        FileLSQCisAjsCktAltQ = fopen(fileName, "w");
+
+   #endif
+        sprintf(fileName, "%s_ls_cisajs_%03d.dat",
+                CDataFileHead, idx);
+        FileLSCisAjs = fopen(fileName, "w");
+
+        sprintf(fileName, "%s_ls_cisajscktalt_%03d.dat",
+                CDataFileHead, idx);
+        FileLSCisAjsCktAlt = fopen(fileName, "w");
+      }
+    }
+  
+  }
+  else if(NVMCCalMode==2){
+    sprintf(fileName, "%s_physN_%03d.dat", CDataFileHead, idx);
+    FileN = fopen(fileName, "w");
   }
   
-  if(NLanczosMode>0){
-    sprintf(fileName, "%s_ls_out_%03d.dat", CDataFileHead, idx);
-    FileLS = fopen(fileName, "w");
-
-    sprintf(fileName, "%s_ls_qqqq_%03d.dat", CDataFileHead, idx);
-    FileLSQQQQ = fopen(fileName, "w");
-    
-    if(NLanczosMode>1){
-#ifdef _DEBUG
-      sprintf(fileName, "%s_ls_qcisajsq_%03d.dat",
-              CDataFileHead, idx);
-      FileLSQCisAjsQ = fopen(fileName, "w");
-      sprintf(fileName, "%s_ls_qcisajscktaltq_%03d.dat",
-              CDataFileHead, idx);
-      FileLSQCisAjsCktAltQ = fopen(fileName, "w");
-
- #endif
-      sprintf(fileName, "%s_ls_cisajs_%03d.dat",
-              CDataFileHead, idx);
-      FileLSCisAjs = fopen(fileName, "w");
-
-      sprintf(fileName, "%s_ls_cisajscktalt_%03d.dat",
-              CDataFileHead, idx);
-      FileLSCisAjsCktAlt = fopen(fileName, "w");
-    }
-  }
 
   return;
 }
