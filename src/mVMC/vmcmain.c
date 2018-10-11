@@ -625,9 +625,11 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     }
     else if(NVMCCalMode==2) {
       WeightAverageGreenFuncMoments(comm_parent);
-      if(rank==0) outputData();
-      fclose(FileN1);
-      fclose(FileN2);
+      if(rank==0) {
+        outputData();
+        fclose(FileN1);
+        fclose(FileN2);
+      }
     }
     StopTimer(5);
 
