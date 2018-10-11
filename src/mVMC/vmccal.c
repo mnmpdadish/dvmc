@@ -582,7 +582,7 @@ void clearPhysQuantity(){
     vec_real = SROptOO_real;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec_real[i] = 0.0;
-  } else if(NVMCCalMode==1 || NVMCCalMode==2) {
+  } else if(NVMCCalMode==1) {
     /* CisAjs, CisAjsCktAlt, CisAjsCktAltDC */
     n = NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
     vec = PhysCisAjs;
@@ -618,6 +618,10 @@ void clearPhysQuantity(){
         for(i=0;i<n;i++) vec_real[i] = 0.0;
       }
     }
+  } else if(NVMCCalMode==2) {
+//#pragma omp parallel for default(shared) private(i)
+    for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0+0.0*I;
+    for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++) PhysN1[i] = 0.0+0.0*I;
   }
   return;
 }
