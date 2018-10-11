@@ -380,8 +380,11 @@ void SetMemory() {
     PhysCisAjsCktAltDC = PhysCisAjsCktAlt + NCisAjsCktAlt;
     LocalCisAjs = PhysCisAjsCktAltDC + NCisAjsCktAltDC;
 //    PhysCisAjsCktAltCmuAnu = LocalCisAjs + NCisAjs; //Maxime
-    PhysN = (double complex*)malloc(sizeof(double complex)
-                    *(NCisAjs*TWO_SITES_QTY) );
+    PhysN2 = (double complex*)malloc(sizeof(double complex)
+                    *(NCisAjs*TWO_SITES_PHYS_QTY) );
+
+    PhysN1 = (double complex*)malloc(sizeof(double complex)
+                    *(Nsite*ONE_SITE_PHYS_QTY) );
 
     if(NLanczosMode>0){
       QQQQ = (double complex*)malloc(sizeof(double complex)
@@ -416,7 +419,8 @@ void FreeMemory() {
 
   if(NVMCCalMode==1 || NVMCCalMode==2){
     free(PhysCisAjs);
-    free(PhysN);
+    free(PhysN1);
+    free(PhysN2);
     if(NLanczosMode>0){
       free(QQQQ);
       free(QQQQ_real);

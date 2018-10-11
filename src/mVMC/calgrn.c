@@ -72,19 +72,37 @@ void CalculateGreenFuncMoments(const double w, const double complex ip, int *ele
 
       
       //Doublon-Holon TJS
-      PhysN[idx+NCisAjs*0] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite]
+      PhysN2[idx+NCisAjs*0] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite]
 	                           *(1.0-myEleNum[rj+s*Nsite])*(1.0-myEleNum[rj+(1-s)*Nsite]);
 	                           
 	   //Doublon-Doublon TJS
-      PhysN[idx+NCisAjs*1] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite]
+      PhysN2[idx+NCisAjs*1] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite]
 	                         *myEleNum[rj+s*Nsite]*myEleNum[rj+(1-s)*Nsite];
 
       //Charge-Doublon TJS
-      PhysN[idx+NCisAjs*2] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+s*Nsite]*myEleNum[rj+(1-s)*Nsite];
+      PhysN2[idx+NCisAjs*2] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+s*Nsite]*myEleNum[rj+(1-s)*Nsite];
       
       //n_sigma (1-n_-sigma) Maxime
-      PhysN[idx+NCisAjs*3] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+(1-s)*Nsite];
+      PhysN2[idx+NCisAjs*3] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+(1-s)*Nsite];
     }
+
+    #pragma omp for private(ri,s) schedule(dynamic) nowait
+    for(ri=0;ri<Nsite;ri++) {
+      s=0;
+      //Doublon Maxime
+      PhysN1[ri+Nsite*0] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite];
+	                           
+	   //Holon Maxime
+      PhysN1[ri+Nsite*1] += w*(1.0-myEleNum[ri+s*Nsite])*(1.0-myEleNum[ri+(1-s)*Nsite]);
+	   
+      //Density_up (s==0) Maxime
+      PhysN1[ri+Nsite*2] += w*myEleNum[ri];
+
+      //Density_down (s==1) Maxime
+      PhysN1[ri+Nsite*3] += w*myEleNum[ri+Nsite];
+	   
+    }
+
     
     #pragma omp master
     {StopTimer(50);}

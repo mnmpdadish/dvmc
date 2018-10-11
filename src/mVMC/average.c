@@ -209,8 +209,12 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   int n;
   double complex *vec;
   double *vec_real;
-  n = NCisAjs*TWO_SITES_QTY;
-  vec = PhysN;
+  n = NCisAjs*TWO_SITES_PHYS_QTY;
+  vec = PhysN2;
+  weightAverageReduce_fcmp(n,vec,comm);
+  
+  n = Nsite*ONE_SITE_PHYS_QTY;
+  vec = PhysN1;
   weightAverageReduce_fcmp(n,vec,comm);
   
   return;

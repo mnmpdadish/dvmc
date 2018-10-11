@@ -136,8 +136,11 @@ void InitFilePhysCal(int i, int rank) {
   
   }
   else if(NVMCCalMode==2){
-    sprintf(fileName, "%s_physN_%03d.dat", CDataFileHead, idx);
-    FileN = fopen(fileName, "w");
+    sprintf(fileName, "%s_physN1_%03d.dat", CDataFileHead, idx);
+    FileN1 = fopen(fileName, "w");
+    
+    sprintf(fileName, "%s_physN2_%03d.dat", CDataFileHead, idx);
+    FileN2 = fopen(fileName, "w");
   }
   
 

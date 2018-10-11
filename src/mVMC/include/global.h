@@ -271,8 +271,12 @@ double complex *PhysCisAjsCktAltDC; /* [NCisAjsCktAltDC] */
 double complex *LocalCisAjs; /* [NCisAjs] */
 //double complex *PhysCisAjsCktAltCmuAnu; /* [NCisAjsCktAltCmuAnu] */ //Maxime
 
-#define TWO_SITES_QTY 4
-double complex *PhysN; /* [NCisAjs * TWO_SITES_QTY] */  //Maxime
+//Maxime
+#define ONE_SITE_PHYS_QTY 4
+double complex *PhysN1; /* [NCisAjs * ONE_SITE_PHYS_QTY] */  
+#define TWO_SITES_PHYS_QTY 4
+double complex *PhysN2; /* [NCisAjs * TWO_SITES_PHYS_QTY] */
+
 
 double complex Sztot,Sztot2; /* <Sz>,<Sz^2> */
 
@@ -312,7 +316,8 @@ FILE *FileLSQCisAjsCktAltQ;
 FILE *FileLSCisAjs;
 FILE *FileLSCisAjsCktAlt;
 
-FILE *FileN;
+FILE *FileN1;
+FILE *FileN2;
 
 
 /* FILE *FileTimerList; */

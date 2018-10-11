@@ -626,6 +626,8 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     else if(NVMCCalMode==2) {
       WeightAverageGreenFuncMoments(comm_parent);
       if(rank==0) outputData();
+      fclose(FileN1);
+      fclose(FileN2);
     }
     StopTimer(5);
 
@@ -719,14 +721,20 @@ void outputData() {
   else if (NVMCCalMode==2) {
     if (NCisAjs > 0) {
       for (i = 0; i < NCisAjs; i++) {
-        fprintf(FileN, "%d %d %d %d ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-        for (j = 0; j < TWO_SITES_QTY; j++) 
-          fprintf(FileN, "% .8e   ", creal(PhysN[i+NCisAjs*j]) );
-//          fprintf(FileN, "% .8e  % .8e   ", creal(PhysN[i+NCisAjs*j]), cimag(PhysN[i+NCisAjs*j]));
-        fprintf(FileN, "\n");
+        fprintf(FileN2, "%d %d %d %d ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+        for (j = 0; j < TWO_SITES_PHYS_QTY; j++) 
+          fprintf(FileN2, "% .8e   ", creal(PhysN2[i+NCisAjs*j]) );
+//          fprintf(FileN, "% .8e  % .8e   ", creal(PhysN2[i+NCisAjs*j]), cimag(PhysN2[i+NCisAjs*j]));
+        fprintf(FileN2, "\n");
       }
     }
-    fprintf(FileN, "\n");
+    for (i = 0; i < Nsite; i++) {
+      fprintf(FileN1, "%d ", i);
+      for (j = 0; j < ONE_SITE_PHYS_QTY; j++) 
+        fprintf(FileN1, "% .8e   ", creal(PhysN1[i+Nsite*j]) );
+      fprintf(FileN1, "\n");
+    }
+    fprintf(FileN1, "\n");
   }
   
   return;
