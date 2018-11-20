@@ -380,11 +380,6 @@ void SetMemory() {
     PhysCisAjsCktAltDC = PhysCisAjsCktAlt + NCisAjsCktAlt;
     LocalCisAjs = PhysCisAjsCktAltDC + NCisAjsCktAltDC;
 //    PhysCisAjsCktAltCmuAnu = LocalCisAjs + NCisAjs; //Maxime
-    PhysN2 = (double complex*)malloc(sizeof(double complex)
-                    *(NCisAjs*TWO_SITES_PHYS_QTY) );
-
-    PhysN1 = (double complex*)malloc(sizeof(double complex)
-                    *(Nsite*ONE_SITE_PHYS_QTY) );
 
     if(NLanczosMode>0){
       QQQQ = (double complex*)malloc(sizeof(double complex)
@@ -408,6 +403,43 @@ void SetMemory() {
 
       }
     }
+    
+    // MC + TJS
+    PhysN1 = (double complex*)malloc(sizeof(double complex)
+                    *(Nsite*ONE_SITE_PHYS_QTY) );
+
+    PhysN2 = (double complex*)malloc(sizeof(double complex)
+                    *(NCisAjs*TWO_SITES_PHYS_QTY) );
+
+    Phys_G_Moments = (double complex*)malloc(sizeof(double complex)
+                    *(NCisAjs*PHYS_MOMENTS_QTY) );
+
+
+
+    ijst_to_idx = (int**)malloc(sizeof(int*)*2*Nsite);
+    for(i=0;i<2*Nsite;i++) {
+      ijst_to_idx[i] = malloc(sizeof(int) * 2*Nsite);
+    }    
+    for(i=0;i<NCisAjs;i++){
+      int ri = CisAjsIdx[i][0];
+      int  s = CisAjsIdx[i][1];
+      int rj = CisAjsIdx[i][2];
+      int  t = CisAjsIdx[i][3];
+      ijst_to_idx[ri+Nsite*s][rj+Nsite*t] = i;
+    }
+    
+    LocalCktAltCmuAnu = (double complex**)malloc(sizeof(double complex*)*NTransfer);
+    for(i=0;i<NTransfer;i++) {
+      LocalCktAltCmuAnu[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
+    }
+    
+    int i;
+    LocalAHTCijsklm = (double complex**)malloc(sizeof(double complex*)*NTransfer);
+    LocalCHTAijsklm = (double complex**)malloc(sizeof(double complex*)*NTransfer);
+    for(i=0;i<NTransfer;i++) {
+      LocalAHTCijsklm[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
+      LocalCHTAijsklm[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
+    }
   }
 
   initializeWorkSpaceAll();
@@ -421,6 +453,26 @@ void FreeMemory() {
     free(PhysCisAjs);
     free(PhysN1);
     free(PhysN2);
+    free(Phys_G_Moments);
+    
+    int i;
+    for(i=0;i<NTransfer;i++) {
+      free(LocalAHTCijsklm[i]);
+      free(LocalCHTAijsklm[i]);
+    }
+    free(LocalAHTCijsklm);
+    free(LocalCHTAijsklm);
+    
+    for(i=0;i<2*Nsite;i++) {
+      free(ijst_to_idx[i]);
+    }
+    free(ijst_to_idx);
+    
+    for(i=0;i<NTransfer;i++) {
+      free(LocalCktAltCmuAnu[i]);
+    }
+    free(LocalCktAltCmuAnu);
+
     if(NLanczosMode>0){
       free(QQQQ);
       free(QQQQ_real);

@@ -631,6 +631,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
         outputData();
         fclose(FileN1);
         fclose(FileN2);
+        fclose(File_G_Moments);
       }
     }
     StopTimer(5);
@@ -730,6 +731,12 @@ void outputData() {
           fprintf(FileN2, "% .8e   ", creal(PhysN2[i+NCisAjs*j]) );
 //          fprintf(FileN, "% .8e  % .8e   ", creal(PhysN2[i+NCisAjs*j]), cimag(PhysN2[i+NCisAjs*j]));
         fprintf(FileN2, "\n");
+      }
+      for (i = 0; i < NCisAjs; i++) {
+        fprintf(File_G_Moments, "%d %d %d %d ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+        for (j = 0; j < PHYS_MOMENTS_QTY; j++) 
+          fprintf(File_G_Moments, "% .8e   ", creal(Phys_G_Moments[i+NCisAjs*j]) );
+        fprintf(File_G_Moments, "\n");
       }
     }
     for (i = 0; i < Nsite; i++) {

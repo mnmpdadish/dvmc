@@ -217,6 +217,10 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   vec = PhysN1;
   weightAverageReduce_fcmp(n,vec,comm);
   
+  n = NCisAjs*PHYS_MOMENTS_QTY;
+  vec = Phys_G_Moments;
+  weightAverageReduce_fcmp(n,vec,comm);
+  
   return;
 }
 

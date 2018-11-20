@@ -141,8 +141,10 @@ void InitFilePhysCal(int i, int rank) {
     
     sprintf(fileName, "%s_physN2_%03d.dat", CDataFileHead, idx);
     FileN2 = fopen(fileName, "w");
+
+    sprintf(fileName, "%s_moments_%03d.dat", CDataFileHead, idx);
+    File_G_Moments = fopen(fileName, "w");
   }
-  
 
   return;
 }

@@ -622,6 +622,7 @@ void clearPhysQuantity(){
 //#pragma omp parallel for default(shared) private(i)
     for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0+0.0*I;
     for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++) PhysN1[i] = 0.0+0.0*I;
+    for(i=0;i<Nsite*PHYS_MOMENTS_QTY;i++) Phys_G_Moments[i] = 0.0+0.0*I;
   }
   return;
 }

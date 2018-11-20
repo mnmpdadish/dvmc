@@ -31,6 +31,77 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 
 
+/*Function to Multiply charge or doublon Factors ("N", "D") from left or right TJS
+double complex MultiplyFactor(double complex original,
+			      int n, int *rsk, int *rsl,
+			      int LeftFactor, int ri, int p,
+			      int RightFactor, int rj, int q, int *eleNum) {
+    
+  int Factor = 1;
+  // Multiply Factor from Right
+  if(RightFactor==1){
+    Factor = Factor * eleNum[rj+q*Nsite];
+  }
+  
+  int i;
+  int rpi = ri+p*Nsite;
+
+  // Multiply Factor from Left
+  if(LeftFactor == 1){
+    int modification = 0;
+    for(i=0;i<n;i++){
+      if(rsk[i]==rpi){modification += 1;}
+      if(rsl[i]==rpi){modification -= 1;}
+    }
+    Factor = Factor * (eleNum[rpi]+modification);
+  }
+      
+  return ((double)Factor *original);//TBC
+  
+}
+
+/* Function to calculate GFs with charge and doublon factors 
+void MultiplyFactor2GFs(int idx, int NumElem, int n, int *rsk, int *rsl,int *eleNum,
+			int flip, int PH,
+			double complex original,
+			double complex ACM,  //M is like N, but for opposite spin of C
+			double complex MAC,  
+			double complex MACM) {
+
+  int rk,rl,s;
+  int ri,p;
+  int rj,q;
+  
+  rk = CisAjsIdx[idx][0];
+  rl = CisAjsIdx[idx][2];
+  s  = CisAjsIdx[idx][3];
+  
+  int idx_ex = ijst_to_idx[rl+s*Nsite][rk+s*Nsite]; 
+
+  if (PH==1){
+    rk = CisAjsIdx[idx][2];
+    rl = CisAjsIdx[idx][0];
+  }
+  
+  double complex tmp;
+
+  tmp = MultiplyFactor(original,n,rsk,rsl,0,0,0,1,rk,1-s,eleNum);
+  if(flip==0){
+    AU[idx] += tmp;
+    UC[idx_ex] += conj(tmp);  
+    //  UC[idx] += MultiplyFactor(original,n,rsk,rsl,1,rl,1-s,0,0,0,eleNum);
+    UU[idx] +=    MultiplyFactor(original,n,rsk,rsl,1,rl,1-s,1,rk,1-s,eleNum);
+  }
+  else{
+    UC[idx_ex] += tmp;
+    AU[idx] += conj(tmp);  
+    UU[idx_ex] += MultiplyFactor(original,n,rsk,rsl,1,rl,1-s,1,rk,1-s,eleNum);
+  }  
+} // end of MultiplyFactor2GFs
+
+/**/
+
+
 void CalculateGreenFuncMoments(const double w, const double complex ip, int *eleIdx, int *eleCfg,
                         int *eleNum, int *eleProjCnt) {
 
@@ -77,12 +148,12 @@ void CalculateGreenFuncMoments(const double w, const double complex ip, int *ele
 	                           
 	   //Doublon-Doublon TJS
       PhysN2[idx+NCisAjs*1] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite]
-	                         *myEleNum[rj+s*Nsite]*myEleNum[rj+(1-s)*Nsite];
+	                              *myEleNum[rj+s*Nsite]*myEleNum[rj+(1-s)*Nsite];
 
       //Charge-Doublon TJS
       PhysN2[idx+NCisAjs*2] += w*myEleNum[ri+s*Nsite] *myEleNum[rj+s*Nsite]*myEleNum[rj+(1-s)*Nsite];
       
-      //n_sigma (1-n_-sigma) Maxime
+      //n_sigma (1-n_sigma) Maxime
       PhysN2[idx+NCisAjs*3] += w*myEleNum[ri+s*Nsite] *(1.0-myEleNum[rj+s*Nsite]);
     }
 
@@ -90,29 +161,110 @@ void CalculateGreenFuncMoments(const double w, const double complex ip, int *ele
     for(ri=0;ri<Nsite;ri++) {
       s=0;
       //Doublon Maxime
-      PhysN1[ri+Nsite*0] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite];
-	                           
-	   //Holon Maxime
-      PhysN1[ri+Nsite*1] += w*(1.0-myEleNum[ri+s*Nsite])*(1.0-myEleNum[ri+(1-s)*Nsite]);
-	   
+      PhysN1[ri+Nsite*0] += w*myEleNum[ri]*myEleNum[ri+Nsite];
+
+	    //Holon Maxime
+      PhysN1[ri+Nsite*1] += w*(1.0-myEleNum[ri])*(1.0-myEleNum[ri+Nsite]);
+	    
       //Density_up (s==0) Maxime
       PhysN1[ri+Nsite*2] += w*myEleNum[ri];
 
       //Density_down (s==1) Maxime
-      PhysN1[ri+Nsite*3] += w*myEleNum[ri+Nsite];
-	   
+      PhysN1[ri+Nsite*3] += w*myEleNum[ri+Nsite];	   
     }
-
     
     #pragma omp master
     {StopTimer(50);}
 
   }
 
+
+  /*Local two-body Green's fuction LocalCktAltCmuAnu TJS*/
+  int idx_int, idx_trans;
+  int rm, rn, u;
+
+/*
+#pragma omp for private(idx,idx_trans,rk,rl,t,rm,rn,u) schedule(dynamic) nowait
+  for(idx=0;idx<NCisAjs;idx++) {
+    rk = CisAjsIdx[idx][0];
+    rl = CisAjsIdx[idx][2];
+    t  = CisAjsIdx[idx][3];
+
+    for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
+    
+      rm = Transfer[idx_trans][0];
+      rn = Transfer[idx_trans][2];
+      u  = Transfer[idx_trans][3];
+	
+      LocalCktAltCmuAnu[idx_trans][idx] = GreenFunc2(rk,rl,rm,rn,t,u,ip,
+             myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
+    }
+  }
+
+  /*Composite Fermion Energies TJS + MC
+  double factor=0.0;
+  double complex tmp_int = 0.0;
+  double complex tmp_trans = 0.0;
+  
+#pragma omp for private(idx,idx_int,idx_trans,s,rk,rl,t,rm,rn,u,tmp,tmp_int,tmp_trans,factor) schedule(dynamic) nowait
+  for(idx=0;idx<NCisAjs;idx++) {
+      
+    rk = CisAjsIdx[idx][0];
+    rl = CisAjsIdx[idx][2];
+    s  = CisAjsIdx[idx][3];
+    
+    //assuming the same spin for Ck and Al
+    t = s;
+
+    // <phi|Al|H_U|Ck|phi>    
+    tmp_int=0.0;
+    for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {	
+
+      rm = CoulombIntra[idx_int];
+      factor = ParaCoulombIntra[idx_int]
+              *(((rk==rm)? 1.:0.) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
+      tmp_int += factor*(((rk==rl)? 1.:0.) - LocalCisAjs[idx]);
+    }
+      
+    // <phi|Al|H_T|Ck|phi>    
+    tmp_trans = 0.0;
+    for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
+    
+      rm = Transfer[idx_trans][0];
+      rn = Transfer[idx_trans][2];
+      u  = Transfer[idx_trans][3];
+
+      factor = ParaTransfer[idx_trans];
+      tmp = factor*LocalCktAltCmuAnu[idx_trans][idx];
+
+      if(rk==rl){
+        tmp += -factor*LocalCisAjs[ijst_to_idx[rm+u*Nsite][rn+u*Nsite]];
+      }
+      if((rk==rn)&&(s==u)){
+        tmp += factor*LocalCisAjs[ijst_to_idx[rm+u*Nsite][rl+s*Nsite]];
+        if((rl==rm)&&(s==u)){
+          tmp += -factor;
+        }
+      }
+      tmp_trans += tmp;
+      LocalAHTCijsklm[idx_trans][idx] = tmp;
+      MultiplyFactor2GFs(idx,NCisAjs,1,rsk,rsl,myEleNum,0,0,w*tmp,PhysACM,PhysMAC,PhysMACM);
+    }
+    Phys_G_Moments[idx] += w*(tmp_trans + tmp_int);
+    
+    
+  }
+
+*/
   ReleaseWorkSpaceThreadInt();
   ReleaseWorkSpaceThreadComplex();
   return;
 }
+
+
+
+
+
 
 
 void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, int *eleCfg,

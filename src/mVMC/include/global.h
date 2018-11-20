@@ -273,18 +273,32 @@ double complex *LocalCisAjs; /* [NCisAjs] */
 
 //Maxime
 #define ONE_SITE_PHYS_QTY 4
-double complex *PhysN1; /* [NCisAjs * ONE_SITE_PHYS_QTY] */  
+double complex *PhysN1; /* [Nsite * ONE_SITE_PHYS_QTY] */  
 #define TWO_SITES_PHYS_QTY 4
 double complex *PhysN2; /* [NCisAjs * TWO_SITES_PHYS_QTY] */
 
 
+#define PHYS_MOMENTS_QTY 2
+double complex *Phys_G_Moments; /* [NCisAjs * PHYS_MOMENTS_QTY] */
+
 double complex Sztot,Sztot2; /* <Sz>,<Sz^2> */
 
+//// MC + TJS /////
 
+/*Why repeated ?  TJS*/
 //double complex *PhysCisAjs; /* [NCisAjs] */
 //double complex *PhysCisAjsCktAlt; /* [NCisAjsCktAlt] */
 //double complex *PhysCisAjsCktAltDC; /* [NCisAjsCktAltDC] */
 //double complex *LocalCisAjs; /* [NCisAjs] */
+
+int **ijst_to_idx; /*[2*Nsite][2*Nsite]*/
+double complex **LocalCktAltCmuAnu; /* [NCisAjs][NTransfer] */
+double complex **LocalAHTCijsklm; /* [NCisAjs][NTransfer] */
+double complex **LocalCHTAijsklm; /* [NCisAjs][NTransfer] */
+
+
+//// MC + TJS end /////
+
 
 const int NLSHam = 2; /* 0: I, 1: H */
 double complex *QQQQ; /* QQQQ[NLSHam][NLSHam][NLSHam][NLSHam]*/  //TBC
@@ -318,6 +332,7 @@ FILE *FileLSCisAjsCktAlt;
 
 FILE *FileN1;
 FILE *FileN2;
+FILE *File_G_Moments;
 
 
 /* FILE *FileTimerList; */
