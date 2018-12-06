@@ -623,6 +623,31 @@ void clearPhysQuantity(){
     for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0+0.0*I;
     for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++) PhysN1[i] = 0.0+0.0*I;
     for(i=0;i<Nsite*PHYS_MOMENTS_QTY;i++) Phys_G_Moments[i] = 0.0+0.0*I;
+    
+    for(i=0;i<4*NCisAjs + 4*6*NCisAjs*NNeighbors + 4*9*NCisAjs*NNeighbors*NNeighbors; i++){
+      Phys_AC_quantities[i] = 0.0+0.0*I;
+    }
+    
+    /*
+    for(i=0;i<NCisAjs;i++){
+      PhysAC[i] = PhysCA[i] = PhysAHC[i] = PhysCHA[i] = 0.0+0.0*I;
+    }
+    
+    for(i=0;i<NCisAjs*NNeighbors;i++){
+      PhysACN[i] = PhysACM[i] = PhysACD[i] = PhysNAC[i] = PhysMAC[i] = PhysDAC[i] = 0.0+0.0*I;
+      PhysCAN[i] = PhysCAM[i] = PhysCAD[i] = PhysNCA[i] = PhysMCA[i] = PhysDCA[i] = 0.0+0.0*I;
+      PhysAHCN[i]= PhysAHCM[i]= PhysAHCD[i]= PhysNAHC[i]= PhysMAHC[i]= PhysDAHC[i]= 0.0+0.0*I;
+      PhysCHAN[i]= PhysCHAM[i]= PhysCHAD[i]= PhysNCHA[i]= PhysMCHA[i]= PhysDCHA[i]= 0.0+0.0*I;
+    }
+    
+    for(i=0;i<NCisAjs*NNeighbors*NNeighbors;i++){
+      PhysNACN[i] = PhysNACM[i] = PhysNACD[i] = PhysMACN[i] = PhysMACM[i] = PhysMACD[i] = PhysDACN[i] = PhysDACM[i] = PhysDACD[i] = 0.0+0.0*I;
+      PhysNCAN[i] = PhysNCAM[i] = PhysNCAD[i] = PhysMCAN[i] = PhysMCAM[i] = PhysMCAD[i] = PhysDCAN[i] = PhysDCAM[i] = PhysDCAD[i] = 0.0+0.0*I;
+      PhysNAHCN[i]= PhysNAHCM[i]= PhysNAHCD[i]= PhysMAHCN[i]= PhysMAHCM[i]= PhysMAHCD[i]= PhysDAHCN[i]= PhysDAHCM[i]= PhysDAHCD[i]= 0.0+0.0*I;
+      PhysNCHAN[i]= PhysNCHAM[i]= PhysNCHAD[i]= PhysMCHAN[i]= PhysMCHAM[i]= PhysMCHAD[i]= PhysDCHAN[i]= PhysDCHAM[i]= PhysDCHAD[i]= 0.0+0.0*I;
+    }
+    */
+    
   }
   return;
 }

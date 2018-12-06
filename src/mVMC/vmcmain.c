@@ -631,7 +631,9 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
         outputData();
         fclose(FileN1);
         fclose(FileN2);
-        fclose(File_G_Moments);
+        fclose(File_AC);
+        fclose(File_ACN);
+        fclose(File_NACN);
       }
     }
     StopTimer(5);
@@ -732,12 +734,45 @@ void outputData() {
 //          fprintf(FileN, "% .8e  % .8e   ", creal(PhysN2[i+NCisAjs*j]), cimag(PhysN2[i+NCisAjs*j]));
         fprintf(FileN2, "\n");
       }
+      
+      int k=0, jj=0;
+      for (i = 0; i < NCisAjs; i++) {
+        fprintf(File_AC, "%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+        for (k = 0; k < 4; k++)  fprintf(File_AC, "% .8e % .8e  ",  creal(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysAC[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
+        // print PhysAC, PhysCA, PhysAHC and PhysCHA : see setmemory.c
+        fprintf(File_AC, "\n");
+      }
+      
+      for (i = 0; i < NCisAjs; i++) {
+        for (j = 0; j < NNeighbors; j++) {
+          fprintf(File_ACN, "%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+          fprintf(File_ACN, "%d %d  ", neighbors_delta_x[j], neighbors_delta_y[j]);
+          for (k = 0; k < 24; k++)  fprintf(File_ACN, "% .8e % .8e  ",  creal(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
+          // print everything from PhysACN ... to ... PhysDCHA : see setmemory.c
+          fprintf(File_ACN, "\n");
+        }
+      }
+      
+      for (i = 0; i < NCisAjs; i++) {
+        for (j = 0; j < NNeighbors; j++) {
+          for (jj = 0; jj < NNeighbors; jj++) {
+            fprintf(File_NACN, "%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+            fprintf(File_NACN, "%d %d  %d %d  ", neighbors_delta_x[j], neighbors_delta_y[j], neighbors_delta_x[jj], neighbors_delta_y[jj]);
+            for (k = 0; k < 36; k++)  fprintf(File_NACN, "% .8e % .8e  ",  creal(PhysNACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysNACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
+            // print everything from PhysNACN ... to ... PhysDCHAD : see setmemory.c
+            fprintf(File_NACN, "\n");
+          }
+        }
+      }
+      
+
+      /*
       for (i = 0; i < NCisAjs; i++) {
         fprintf(File_G_Moments, "%d %d %d %d ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
         for (j = 0; j < PHYS_MOMENTS_QTY; j++) 
           fprintf(File_G_Moments, "% .8e   ", creal(Phys_G_Moments[i+NCisAjs*j]) );
         fprintf(File_G_Moments, "\n");
-      }
+      }*/
     }
     for (i = 0; i < Nsite; i++) {
       fprintf(FileN1, "%d ", i);

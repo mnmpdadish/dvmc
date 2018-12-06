@@ -1,3 +1,5 @@
+src/mVMC/bak/*
+src/make_back1.sys
 *.out
 sample_maxime/
 makefile

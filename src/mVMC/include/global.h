@@ -280,18 +280,40 @@ double complex *PhysN2; /* [NCisAjs * TWO_SITES_PHYS_QTY] */
 
 #define PHYS_MOMENTS_QTY 2
 double complex *Phys_G_Moments; /* [NCisAjs * PHYS_MOMENTS_QTY] */
-
 double complex Sztot,Sztot2; /* <Sz>,<Sz^2> */
 
 //// MC + TJS /////
 
-/*Why repeated ?  TJS*/
-//double complex *PhysCisAjs; /* [NCisAjs] */
-//double complex *PhysCisAjsCktAlt; /* [NCisAjsCktAlt] */
-//double complex *PhysCisAjsCktAltDC; /* [NCisAjsCktAltDC] */
-//double complex *LocalCisAjs; /* [NCisAjs] */
 
+
+// following arrays has size [NCisAjs]:
+double complex *Phys_AC_quantities;
+
+double complex *PhysAC;
+double complex *PhysCA;
+double complex *PhysAHC;
+double complex *PhysCHA;
+
+// following arrays has size [NCisAjs*NNeighbors]:
+double complex *PhysACN, *PhysACM, *PhysACD, *PhysNAC, *PhysMAC, *PhysDAC;
+double complex *PhysCAN, *PhysCAM, *PhysCAD, *PhysNCA, *PhysMCA, *PhysDCA;
+double complex *PhysAHCN, *PhysAHCM, *PhysAHCD, *PhysNAHC, *PhysMAHC, *PhysDAHC;
+double complex *PhysCHAN, *PhysCHAM, *PhysCHAD, *PhysNCHA, *PhysMCHA, *PhysDCHA;
+
+// following arrays has size [NCisAjs*NNeighbors^2]:
+double complex *PhysNACN, *PhysNACM, *PhysNACD, *PhysMACN, *PhysMACM, *PhysMACD, *PhysDACN, *PhysDACM, *PhysDACD;
+double complex *PhysNCAN, *PhysNCAM, *PhysNCAD, *PhysMCAN, *PhysMCAM, *PhysMCAD, *PhysDCAN, *PhysDCAM, *PhysDCAD;
+double complex *PhysNAHCN, *PhysNAHCM, *PhysNAHCD, *PhysMAHCN, *PhysMAHCM, *PhysMAHCD, *PhysDAHCN, *PhysDAHCM, *PhysDAHCD;
+double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *PhysMCHAD, *PhysDCHAN, *PhysDCHAM, *PhysDCHAD;
+
+int NNeighbors = 9; // assuming square lattice TJS + MC
+int neighbors_delta_x[9] = {0,1,2,0,1,2,0,1,2};
+int neighbors_delta_y[9] = {0,0,0,1,1,1,2,2,2};
+  
+//int **Neighbors; /*[Nsite][NNeighbors]*/
+//int **NeighborsSpin; /*[Nsite][2*NNeighbors]*/
 int **ijst_to_idx; /*[2*Nsite][2*Nsite]*/
+int **ijst_to_trans_idx; /*[2*Nsite][2*Nsite]*/
 double complex **LocalCktAltCmuAnu; /* [NCisAjs][NTransfer] */
 double complex **LocalAHTCijsklm; /* [NCisAjs][NTransfer] */
 double complex **LocalCHTAijsklm; /* [NCisAjs][NTransfer] */
@@ -332,7 +354,9 @@ FILE *FileLSCisAjsCktAlt;
 
 FILE *FileN1;
 FILE *FileN2;
-FILE *File_G_Moments;
+FILE *File_AC;
+FILE *File_ACN;
+FILE *File_NACN;
 
 
 /* FILE *FileTimerList; */
