@@ -146,10 +146,10 @@ void InitFilePhysCal(int i, int rank) {
     File_AC = fopen(fileName, "w");
     
     sprintf(fileName, "%s_physACN_%03d.dat", CDataFileHead, idx);
-    File_AC = fopen(fileName, "w");
+    File_ACN = fopen(fileName, "w");
     
     sprintf(fileName, "%s_physNACN_%03d.dat", CDataFileHead, idx);
-    File_AC = fopen(fileName, "w");
+    File_NACN = fopen(fileName, "w");
   }
 
   return;

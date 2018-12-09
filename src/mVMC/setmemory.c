@@ -415,7 +415,7 @@ void SetMemory() {
                     *(NCisAjs*PHYS_MOMENTS_QTY) );
     
     Phys_AC_quantities = (double complex*)malloc(sizeof(double complex)
-                    *(4*NCisAjs + 4*6*NCisAjs*NNeighbors + 4*9*NCisAjs*NNeighbors*NNeighbors));
+                    *(4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors));
     
     PhysAC = Phys_AC_quantities;   
     PhysCA = Phys_AC_quantities +   NCisAjs;   

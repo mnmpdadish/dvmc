@@ -296,6 +296,7 @@ int main(int argc, char* argv[])
     StartTimer(2);
     /*-- VMC Physical Quantity Calculation --*/
     if(rank0==0) fprintf(stdout,"Start: Calculate VMC physical quantities.\n");
+    if(NVMCCalMode==2)   read_StdFace_L_W();
     VMCPhysCal(comm0, comm1, comm2);
     if(rank0==0) fprintf(stdout,"End  : Calculate VMC physical quantities.\n");
     StopTimer(2);
@@ -624,16 +625,19 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       //printf("hey5\n");
     }
     else if(NVMCCalMode==2) {
+      printf("before averaging.\n"); fflush(stdout);
       WeightAverageWE(comm_parent);
       WeightAverageGreenFuncMoments(comm_parent);
       ReduceCounter(comm_child2);
       if(rank==0) {
         outputData();
+        printf("after output.\n"); fflush(stdout);
         fclose(FileN1);
         fclose(FileN2);
         fclose(File_AC);
         fclose(File_ACN);
         fclose(File_NACN);
+        printf("after close.\n"); fflush(stdout);
       }
     }
     StopTimer(5);
@@ -726,39 +730,61 @@ void outputData() {
   }
   
   else if (NVMCCalMode==2) {
+    printf("trying to print files.\n"); fflush(stdout);
     if (NCisAjs > 0) {
       for (i = 0; i < NCisAjs; i++) {
         fprintf(FileN2, "%d %d %d %d ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
         for (j = 0; j < TWO_SITES_PHYS_QTY; j++) 
-          fprintf(FileN2, "% .8e   ", creal(PhysN2[i+NCisAjs*j]) );
+          fprintf(FileN2, "% 0.6e   ", creal(PhysN2[i+NCisAjs*j]) );
 //          fprintf(FileN, "% .8e  % .8e   ", creal(PhysN2[i+NCisAjs*j]), cimag(PhysN2[i+NCisAjs*j]));
         fprintf(FileN2, "\n");
       }
+      //printf("printed files.\n"); fflush(stdout);
       
+      //header:
+      fprintf(File_AC, "# i   s   j   s     ");
+      fprintf(File_AC, "AC         CA         AHC         CHA \n");
       int k=0, jj=0;
       for (i = 0; i < NCisAjs; i++) {
         fprintf(File_AC, "%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-        for (k = 0; k < 4; k++)  fprintf(File_AC, "% .8e % .8e  ",  creal(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysAC[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
+        for (k = 0; k < 4; k++)  fprintf(File_AC, "% 0.2e  ",  creal(PhysACN[i+k*NCisAjs]));
+        //for (k = 0; k < 4; k++)  fprintf(File_AC, "% 0.6e % 0.6e  ",  creal(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysAC[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
         // print PhysAC, PhysCA, PhysAHC and PhysCHA : see setmemory.c
         fprintf(File_AC, "\n");
       }
       
+      //header:
+      fprintf(File_ACN, "# i   s   j   s  dx dy     ");
+      fprintf(File_ACN, "ACN        ACM        ACD        NAC        MAC        DAC        ");
+      fprintf(File_ACN, "CAN        CAM        CAD        NCA        MCA        DCA        ");
+      fprintf(File_ACN, "AHCN       AHCM       AHCD       NAHC       MAHC       DAHC       ");
+      fprintf(File_ACN, "CHAN       CHAM       CHAD       NCHA       MCHA       DCHA     \n");
+      
       for (i = 0; i < NCisAjs; i++) {
         for (j = 0; j < NNeighbors; j++) {
           fprintf(File_ACN, "%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-          fprintf(File_ACN, "%d %d  ", neighbors_delta_x[j], neighbors_delta_y[j]);
-          for (k = 0; k < 24; k++)  fprintf(File_ACN, "% .8e % .8e  ",  creal(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
+          fprintf(File_ACN, "% d % d  ", neighbors_delta_x[j], neighbors_delta_y[j]);
+          for (k = 0; k < 24; k++)  fprintf(File_ACN, "% 0.2e  ",  creal(PhysACN[i+k*NCisAjs*NNeighbors + NCisAjs*j]));
+          //for (k = 0; k < 24; k++)  fprintf(File_ACN, "% 0.6e % 0.6e  ",  creal(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
           // print everything from PhysACN ... to ... PhysDCHA : see setmemory.c
           fprintf(File_ACN, "\n");
         }
       }
       
+      //header:
+      fprintf(File_NACN, "# i   s   j   s  dx dy  dx dy      ");
+      fprintf(File_NACN, "NACN       NACM       NACD       MACN       MACM       MACD       DACN       DACM       DACD       ");
+      fprintf(File_NACN, "NCAN       NCAM       NCAD       MCAN       MCAM       MCAD       DCAN       DCAM       DCAD       ");
+      fprintf(File_NACN, "NAHCN      NAHCM      NAHCD      MAHCN      MAHCM      MAHCD      DAHCN      DAHCM      DAHCD      ");
+      fprintf(File_NACN, "NCHAN      NCHAM      NCHAD      MCHAN      MCHAM      MCHAD      DCHAN      DCHAM      DCHAD    \n");
+       
       for (i = 0; i < NCisAjs; i++) {
         for (j = 0; j < NNeighbors; j++) {
           for (jj = 0; jj < NNeighbors; jj++) {
             fprintf(File_NACN, "%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-            fprintf(File_NACN, "%d %d  %d %d  ", neighbors_delta_x[j], neighbors_delta_y[j], neighbors_delta_x[jj], neighbors_delta_y[jj]);
-            for (k = 0; k < 36; k++)  fprintf(File_NACN, "% .8e % .8e  ",  creal(PhysNACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysNACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
+            fprintf(File_NACN, "% d % d  % d % d  ", neighbors_delta_x[j], neighbors_delta_y[j], neighbors_delta_x[jj], neighbors_delta_y[jj]);
+            for (k = 0; k < 36; k++)  fprintf(File_NACN, "% 0.2e  ",  creal(PhysNACN[i+k*NCisAjs*NNeighbors*NNeighbors + NCisAjs*j*(jj+NNeighbors)]));
+            //for (k = 0; k < 36; k++)  fprintf(File_NACN, "% 0.6e % 0.6e  ",  creal(PhysNACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysNACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
             // print everything from PhysNACN ... to ... PhysDCHAD : see setmemory.c
             fprintf(File_NACN, "\n");
           }
@@ -777,10 +803,12 @@ void outputData() {
     for (i = 0; i < Nsite; i++) {
       fprintf(FileN1, "%d ", i);
       for (j = 0; j < ONE_SITE_PHYS_QTY; j++) 
-        fprintf(FileN1, "% .8e   ", creal(PhysN1[i+Nsite*j]) );
+        fprintf(FileN1, "% 0.2e   ", creal(PhysN1[i+Nsite*j]) );
       fprintf(FileN1, "\n");
     }
     fprintf(FileN1, "\n");
+    printf("ending of print files.\n"); fflush(stdout);
+    
   }
   
   return;

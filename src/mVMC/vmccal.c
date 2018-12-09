@@ -240,6 +240,9 @@ void VMCMainCal(MPI_Comm comm) {
       fprintf(stdout, "Debug: Start: CalcGreenFunc\n");
 #endif
       CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+#ifdef _DEBUG_VMCCAL
+      fprintf(stdout, "Debug: End: CalcGreenFunc\n");
+#endif
       StopTimer(42);
 
       if(NLanczosMode>0){
@@ -283,9 +286,13 @@ void VMCMainCal(MPI_Comm comm) {
       StartTimer(42);
       /* Calculate Green Function */
 #ifdef _DEBUG_VMCCAL
-      fprintf(stdout, "Debug: Start: CalcGreenFunc\n");
+      fprintf(stdout, "Debug: Start: CalculateGreenFuncMoments\n"); fflush(stdout);
 #endif
+      
       CalculateGreenFuncMoments(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+#ifdef _DEBUG_VMCCAL
+      fprintf(stdout, "Debug: End: CalculateGreenFuncMoments\n"); fflush(stdout);
+#endif
       StopTimer(42);
 
 

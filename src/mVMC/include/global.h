@@ -30,6 +30,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #define _INCLUDE_GLOBAL
 #include <complex.h>
 #include "stdio.h"
+#include "assert.h"
 #define D_FileNameMax 256
 
 /***** definition *****/
@@ -306,9 +307,18 @@ double complex *PhysNCAN, *PhysNCAM, *PhysNCAD, *PhysMCAN, *PhysMCAM, *PhysMCAD,
 double complex *PhysNAHCN, *PhysNAHCM, *PhysNAHCD, *PhysMAHCN, *PhysMAHCM, *PhysMAHCD, *PhysDAHCN, *PhysDAHCM, *PhysDAHCD;
 double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *PhysMCHAD, *PhysDCHAN, *PhysDCHAM, *PhysDCHAD;
 
-int NNeighbors = 9; // assuming square lattice TJS + MC
-int neighbors_delta_x[9] = {0,1,2,0,1,2,0,1,2};
-int neighbors_delta_y[9] = {0,0,0,1,1,1,2,2,2};
+int NNeighbors = 4; // assuming square lattice TJS + MC
+//int neighbors_delta_x[9] = {0,1,-1,0,1,-1,0,1,-1};
+//int neighbors_delta_y[9] = {0,0,0,1,1,1,-1,-1,-1};
+int neighbors_delta_y[4] = {0,1,0,1};
+int neighbors_delta_x[4] = {0,0,1,1};
+//int neighbors_delta_y[9] = {0,1,2,0,1,2,0,1,2};
+//int neighbors_delta_x[9] = {0,0,0,1,1,1,2,2,2};
+  
+
+int StdFace_L=0;
+int StdFace_W=0;
+
   
 //int **Neighbors; /*[Nsite][NNeighbors]*/
 //int **NeighborsSpin; /*[Nsite][2*NNeighbors]*/
