@@ -263,9 +263,10 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
   double complex *myBuffer;
   
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
-  /* GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize */
-  
+  //RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
+  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+ 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors);
+  // GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize 
+  // Phys_AC_quantities: 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors
 
   #pragma omp parallel default(shared)                \
   private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx)
