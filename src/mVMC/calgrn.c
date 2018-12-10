@@ -264,7 +264,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
   
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
   //RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
-  RequestWorkSpaceThreadComplex(NQPFull+2*Nsize+ 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors);
+  RequestWorkSpaceThreadComplex(NQPFull + 2*Nsize + 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors);
   // GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize 
   // Phys_AC_quantities: 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors
 
@@ -329,7 +329,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
     #pragma omp master
     {StopTimer(50);}
 
-  }
+  
 
 
    
@@ -407,7 +407,6 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
                          PhysDAC,PhysDACN,PhysDACM,PhysDACD);
     }
     
-
     // <c|H|c>, <a|H|a> 
     // where H = H_U + H_T    
     double complex tmp_int_AHC = 0.0,   tmp_int_CHA = 0.0;
@@ -508,7 +507,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
                            PhysDCHA,PhysDCHAN,PhysDCHAM,PhysDCHAD);               
       }
     }
-    
+  }  
   ReleaseWorkSpaceThreadInt();
   ReleaseWorkSpaceThreadComplex();
   return;
