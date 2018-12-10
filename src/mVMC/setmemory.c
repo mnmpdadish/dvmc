@@ -416,6 +416,8 @@ void SetMemory() {
     
     Phys_AC_quantities = (double complex*)malloc(sizeof(double complex)
                     *(4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors));
+                    
+    printf("memory usage: %d times double complex.", 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors)
     
     PhysAC = Phys_AC_quantities;   
     PhysCA = Phys_AC_quantities +   NCisAjs;   
