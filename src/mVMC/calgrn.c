@@ -371,7 +371,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
 
 
     // <c|c>, <a|a>
-#pragma omp for private(idx,s,rk,rl,t,rsk,rsl,tmp) schedule(dynamic) nowait
+#pragma omp for private(idx,s,rk,rl,t,rsk1,rsl1,tmp) schedule(dynamic) nowait
     for(idx=0;idx<NCisAjs;idx++) {
 
       rk = CisAjsIdx[idx][0];
@@ -411,7 +411,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
     // where H = H_U + H_T    
     double complex tmp_int_AHC = 0.0,   tmp_int_CHA = 0.0;
     double complex tmp_trans_AHC = 0.0, tmp_trans_CHA = 0.0;
-#pragma omp for private(idx,idx_int,idx_trans,rsk,rsl,s,rk,rl,t,rm,rn,u,tmp,tmp_int_AHC,tmp_int_CHA,tmp_trans_AHC,tmp_trans_CHA,factor) schedule(dynamic) nowait
+#pragma omp for private(idx,idx_int,idx_trans,rsk1,rsl1,rsk2,rsl2,s,rk,rl,t,rm,rn,u,tmp,tmp_int_AHC,tmp_int_CHA,tmp_trans_AHC,tmp_trans_CHA,factor) schedule(dynamic) nowait
     for(idx=0;idx<NCisAjs;idx++) {
       
       rk = CisAjsIdx[idx][0];
