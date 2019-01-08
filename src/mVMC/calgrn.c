@@ -56,8 +56,8 @@ int moduloPython(int i,int N){
   return ((i % N) + N) % N;
 }
 
-int find_index_neighbor(int ri,int delta_x,int delta_y){
-  int r_out = moduloPython(ri+StdFace_W*delta_x + delta_y, Nsite);  
+int find_index_neighbor(int ri,int dx,int dy){
+  int r_out = moduloPython(ri+StdFace_W*dx + dy, StdFace_W*StdFace_L);  
   return r_out;
 }
 
@@ -71,47 +71,94 @@ double complex MultiplyFactor(double complex original,
                               int *eleNum, int PH) {
     
   int Factor = 1;
-  /* // Multiply Factor from Right */
+  PH = 0;
+  // Multiply Factor from Right
   if(RightFactor==1){
-    if(!PH) Factor = Factor * eleNum[rj+q*Nsite];
-    else    Factor = Factor * (1.0-eleNum[rj+q*Nsite]);
+    //if(!PH) 
+    Factor = Factor * eleNum[rj+q*Nsite];
+    //else    Factor = Factor * (1.0-eleNum[rj+q*Nsite]);
   }
   
   if(RightFactor==2){
-    if(!PH) Factor = Factor * eleNum[rj]*eleNum[rj+Nsite];
-    else    Factor = Factor * (1.0-eleNum[rj])*(1.0-eleNum[rj+Nsite]);
+    //if(!PH) 
+    Factor = Factor * eleNum[rj]*eleNum[rj+Nsite];
+    //else    Factor = Factor * (1.0-eleNum[rj])*(1.0-eleNum[rj+Nsite]);
   }
   
   int i;
   int rpi = ri+p*Nsite;
+  //int unit = 1;// ((PH==0)? -1:1);
 
   // Multiply Factor from Left
   if(LeftFactor == 1){
     int modification = 0;
     for(i=0;i<n;i++){
-      if(rsk[i]==rpi){modification += 1;}
-      if(rsl[i]==rpi){modification -= 1;}
+      if(rsk[i]==rpi){modification += 1;}//(((PH==0)&&(i==0))? 1:-1);}
+      if(rsl[i]==rpi){modification -= 1;}//(((PH==0)&&(i==0))? 1:-1);}
     }
-    if(!PH) Factor = Factor * (eleNum[rpi]+modification);
-    else    Factor = Factor * (1.0-eleNum[rpi]-modification);
+    //if(!PH) 
+    Factor = Factor * (eleNum[rpi]+modification);
+    //else    Factor = Factor * (1.0-eleNum[rpi]-modification);
   }
-      
+  
   if(LeftFactor == 2){
     int spin;
     for(spin=0;spin<2;spin++){
       int modification = 0;
       for(i=0;i<n;i++){
-        if(rsk[i]==(ri+spin*Nsite)){modification += 1;}
-        if(rsl[i]==(ri+spin*Nsite)){modification -= 1;}
+        if(rsk[i]==(ri+spin*Nsite)){modification += 1;}//(((PH==0)&&(i==0))? 1:-1);}
+        if(rsl[i]==(ri+spin*Nsite)){modification -= 1;}//(((PH==0)&&(i==0))? 1:-1);}
       }
-      if(!PH) Factor = Factor * (eleNum[ri+spin*Nsite]+modification);
-      else    Factor = Factor * (1.0-eleNum[ri+spin*Nsite]-modification);
+      //if(!PH) 
+      Factor = Factor * (eleNum[ri+spin*Nsite]+modification);
+      //else    Factor = Factor * (1.0-eleNum[ri+spin*Nsite]-modification);
     }
   }
 
   return ((double)Factor *original);//TBC
   
 }
+
+
+
+
+//Function to Multiply charge or doublon Factors ("N", "D") from left or right TJS
+/*
+double complex MultiplyFactor(double complex original,
+                              int n, int *rsk, int *rsl,
+                              int LeftFactor, int ri, int p,
+                              int RightFactor, int rj, int q, 
+                              int *eleNum, int PH) {
+    
+  int Factor = 1;
+  // Multiply Factor from Right 
+  if(RightFactor==1){
+    Factor = Factor * eleNum[rj+q*Nsite];
+  }
+  
+  if(RightFactor==2){
+    Factor = Factor * eleNum[rj]*eleNum[rj+Nsite];
+  }
+  
+  int i;
+  int rpi = ri+p*Nsite;
+
+  // Multiply Factor from Left
+  if(LeftFactor==1){
+    Factor = Factor * eleNum[ri+p*Nsite];
+  }
+  
+  if(LeftFactor==2){
+    Factor = Factor * eleNum[ri]*eleNum[ri+Nsite];
+  }
+
+  return ((double)Factor *original);//TBC
+  
+}
+*/
+
+
+
 
 
 /* Function to calculate GFs with charge and doublon factors */
@@ -161,23 +208,26 @@ void MultiplyFactor2GFs(int idx, int NumElem, int n, int *rsk, int *rsl,int *ele
   rl = CisAjsIdx[idx][2];
   s  = CisAjsIdx[idx][3];
   
-  int idx_ex = ijst_to_idx[rl+s*Nsite][rk+s*Nsite]; 
   
   if (PH==1){
     rk = CisAjsIdx[idx][2];
     rl = CisAjsIdx[idx][0];
   }
   
+  int idx_ex = ijst_to_idx[rk+s*Nsite][rl+s*Nsite]; 
+  idx = ijst_to_idx[rl+s*Nsite][rk+s*Nsite]; 
+  
+  
   //PH = 1-PH;
-  PH=0;
+  //PH=0;
   double complex tmp; //, tmp1, tmp2, tmp3;
 
   int idx_i,idx_j,idx_k,idx_l;
-
-  PhysAC[idx] += AC_input; 
+  AC[idx] += AC_input; 
 
   int sign[2] = {1,-1};
   int xx=0, yy=0;
+  
   //for(xx=0;xx<2;xx++){ // for averaging +x and -x
    //for(yy=0;yy<2;yy++){ // for averaging +y and -y
   
@@ -192,18 +242,35 @@ void MultiplyFactor2GFs(int idx, int NumElem, int n, int *rsk, int *rsl,int *ele
 
       // the 0.25 factor comes from averaging +x,-x,+y and -y for rj
       double f_signs = 1.0;//0.25; 
+      //if(PH!=0) f_signs=-1.0;
       tmp = f_signs*MultiplyFactor(AC_input,n,rsk,rsl,0,0,0,1,rj,s,eleNum,  PH);
-      if(PH==0) tmp = conj(tmp);
+      //if(PH==0) tmp = conj(tmp);
       ACN[idx+idx_k*NumElem] += tmp;
       NAC[idx_ex+idx_k*NumElem] += conj(tmp);
+      /*if(PH==0){
+        ACN[idx_ex+idx_k*NumElem] += tmp;
+        NAC[idx+idx_k*NumElem] += conj(tmp);
+      }
+      else{
+        ACN[idx+idx_k*NumElem] += tmp;
+        NAC[idx_ex+idx_k*NumElem] += conj(tmp);
+      }*/
 
       tmp = f_signs*MultiplyFactor(AC_input,n,rsk,rsl,0,0,0,1,rj,1-s,eleNum, PH);
-      if(PH==0) tmp = conj(tmp);
+      //if(PH==0) tmp = conj(tmp);
       ACM[idx+idx_k*NumElem] += tmp;
       MAC[idx_ex+idx_k*NumElem] += conj(tmp);
-
+      /*if(PH==0){
+        ACM[idx_ex+idx_k*NumElem] += tmp;
+        MAC[idx+idx_k*NumElem] += conj(tmp);
+      }
+      else{
+        ACM[idx+idx_k*NumElem] += tmp;
+        MAC[idx_ex+idx_k*NumElem] += conj(tmp);
+      }*/
+      
       tmp = f_signs*MultiplyFactor(AC_input,n,rsk,rsl,0,0,0,2,rj,0,eleNum, PH);
-      if(PH==0) tmp = conj(tmp);
+      //if(PH==0) tmp = conj(tmp);
       ACD[idx+idx_k*NumElem] += tmp;
       DAC[idx_ex+idx_k*NumElem] += conj(tmp);
     }
@@ -211,20 +278,21 @@ void MultiplyFactor2GFs(int idx, int NumElem, int n, int *rsk, int *rsl,int *ele
     // NACN, NACD, DACN ...
     for(idx_l=0;idx_l<NNeighbors;idx_l++){
           
-      ri = find_index_neighbor(rl, sign[xx]*neighbors_delta_x[idx_l], sign[yy]*neighbors_delta_y[idx_l]);
+      ri = find_index_neighbor(rl, neighbors_delta_x[idx_l], neighbors_delta_y[idx_l]);
       
       int xx2=0, yy2=0;
       //for(xx2=0;xx2<2;xx2++){ // for averaging +x and -x
        //for(yy2=0;yy2<2;yy2++){ // for averaging +y and -y
         for(idx_k=0;idx_k<NNeighbors;idx_k++){
                 
-          rj = find_index_neighbor(rk, sign[xx2]*neighbors_delta_x[idx_k], sign[yy2]*neighbors_delta_y[idx_k]);
+          rj = find_index_neighbor(rk, neighbors_delta_x[idx_k], neighbors_delta_y[idx_k]);
           
           // the 0.25*0.25 factor comes from averaging +x,-x,+y and -y for both ri and rj
-          double f_signs = 1.0;//0.25*0.25; 
-          NACN[idx+(idx_l*NNeighbors+idx_k)*NumElem] += f_signs*MultiplyFactor(AC_input,n,rsk,rsl,1,ri,s,1,rj,s,eleNum, PH);
+          double    f_signs = 1.0;//0.25*0.25; 
+          //if(PH!=0) f_signs =-1.0;
+          NACN[idx+(idx_l*NNeighbors+idx_k)*NumElem] += f_signs*MultiplyFactor(AC_input,n,rsk,rsl,1,ri,s,  1,rj,s,eleNum, PH);
           MACM[idx+(idx_l*NNeighbors+idx_k)*NumElem] += f_signs*MultiplyFactor(AC_input,n,rsk,rsl,1,ri,1-s,1,rj,1-s,eleNum, PH);
-          DACD[idx+(idx_l*NNeighbors+idx_k)*NumElem] += f_signs*MultiplyFactor(AC_input,n,rsk,rsl,2,ri,0,2,rj,0,eleNum, PH);
+          DACD[idx+(idx_l*NNeighbors+idx_k)*NumElem] += f_signs*MultiplyFactor(AC_input,n,rsk,rsl,2,ri,0,  2,rj,0,eleNum, PH);
           
           tmp = f_signs*MultiplyFactor(AC_input,n,rsk,rsl,1,ri,s,1,rj,1-s,eleNum, PH);
           NACM[idx+(idx_l*NNeighbors+idx_k)*NumElem] += tmp;
@@ -352,6 +420,10 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
     LocalCisAjs[idx] = tmp;
   }
 
+#pragma omp for private(idx) nowait
+  for(idx=0;idx<NCisAjs;idx++) {
+    PhysCisAjs[idx] += w*LocalCisAjs[idx];
+  }
 
 #pragma omp for private(idx,idx_trans,rk,rl,t,rm,rn,u) schedule(dynamic) nowait
   for(idx=0;idx<NCisAjs;idx++) {
@@ -370,9 +442,8 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
     }
   }
 
-
-    // <c|c>, <a|a>
-#pragma omp for private(idx,s,rk,rl,t,rsk1,rsl1,tmp) schedule(dynamic) nowait
+    // <c|a>, <a|c>
+#pragma omp for private(idx,ri,rj,s,rk,rl,t,rsk1,rsl1,tmp) schedule(dynamic) nowait
     for(idx=0;idx<NCisAjs;idx++) {
 
       rk = CisAjsIdx[idx][0];
@@ -383,12 +454,12 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
       rsl1[0] = rl+s*Nsite;
 
 
-      // <a|a>
+      // <c|a>
       // Composite Hole correlation function TJS + MC
       tmp = 1.*LocalCisAjs[idx];
       //tmp =  1.*kronecker(rk,rl) - LocalCisAjs[idx];
       //printf("%f %f    %f %f\n",creal(tmp),cimag(tmp),creal(1.*kronecker(rk,rl) - LocalCisAjs[idx]),cimag(1.*kronecker(rk,rl) - LocalCisAjs[idx]));
-      //PhysCA[idx] += w*tmp;
+      //PhysCA[idx] += w*LocalCisAjs[idx];
       MultiplyFactor2GFs(idx,NCisAjs,1,&rsk1[0],&rsl1[0],myEleNum,0,1,w*tmp,
                           PhysCA, PhysCAN, PhysCAM, PhysCAD,
                          PhysNCA,PhysNCAN,PhysNCAM,PhysNCAD,
@@ -396,7 +467,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
                          PhysDCA,PhysDCAN,PhysDCAM,PhysDCAD);
 
 
-      // <c|c>
+      // <a|c>
       // Composite Fermion correlation functions TJS + MC
       tmp =  1.*kronecker(rk,rl) - 1.*LocalCisAjs[idx];
       //PhysAC[idx] += w*tmp;
@@ -405,9 +476,15 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
                          PhysNAC,PhysNACN,PhysNACM,PhysNACD,
                          PhysMAC,PhysMACN,PhysMACM,PhysMACD,
                          PhysDAC,PhysDACN,PhysDACM,PhysDACD);
+      
     }
     
-    // <c|H|c>, <a|H|a> 
+    //uncomment to skip <c|H|c>
+    //ReleaseWorkSpaceThreadInt();
+    //ReleaseWorkSpaceThreadComplex();
+    //return;
+    
+    // <c|H|a>, <a|H|c> 
     // where H = H_U + H_T    
     double complex tmp_int_AHC = 0.0,   tmp_int_CHA = 0.0;
     double complex tmp_trans_AHC = 0.0, tmp_trans_CHA = 0.0;
@@ -440,7 +517,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
         tmp_int_CHA += factor*LocalCisAjs[idx];
       }
 
-      // <c|H_U|c>    
+      // <a|H_U|c>    
       MultiplyFactor2GFs(idx,NCisAjs,1,&rsk1[0],&rsl1[0],myEleNum,0,0, w*tmp_int_AHC,
                           PhysAHC, PhysAHCN, PhysAHCM, PhysAHCD,
                          PhysNAHC,PhysNAHCN,PhysNAHCM,PhysNAHCD,
@@ -448,14 +525,14 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
                          PhysDAHC,PhysDAHCN,PhysDAHCM,PhysDAHCD);
 
 
-      // <a|H_U|a>    
+      // <c|H_U|a>    
       MultiplyFactor2GFs(idx,NCisAjs,1,&rsk1[0],&rsl1[0],myEleNum,0,1, w*tmp_int_CHA,
                           PhysCHA, PhysCHAN, PhysCHAM, PhysCHAD,
                          PhysNCHA,PhysNCHAN,PhysNCHAM,PhysNCHAD,
                          PhysMCHA,PhysMCHAN,PhysMCHAM,PhysMCHAD,
                          PhysDCHA,PhysDCHAN,PhysDCHAM,PhysDCHAD);               
       
-      // <c|H_T|c> , <a|H_T|a>  
+      // <c|H_T|a> , <a|H_T|c>  
       rsk2[0] = rk+s*Nsite;
       rsl2[0] = rl+s*Nsite;
 
@@ -470,7 +547,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
         rsk2[1] = rm+u*Nsite;
         rsl2[1] = rn+u*Nsite;
 
-        // <c|H_T|c> 
+        // <a|H_T|c> 
         factor = ParaTransfer[idx_trans];
         tmp = factor*LocalCktAltCmuAnu[idx_trans][idx];
 
@@ -492,11 +569,11 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
                            PhysDAHC,PhysDAHCN,PhysDAHCM,PhysDAHCD);               
         
         
-        // <a|H_T|a>  
+        // <c|H_T|a>  
         factor = ParaTransfer[idx_trans];
         tmp = -1.0*factor*LocalCktAltCmuAnu[idx_trans][idx];        
         if((rl==rm)&&(s==u)){
-          tmp += factor*LocalCisAjs[ijst_to_idx[rk+s*Nsite][rn+u*Nsite]];
+          tmp += +factor*LocalCisAjs[ijst_to_idx[rk+s*Nsite][rn+u*Nsite]];
         }
 
         tmp_trans_CHA += tmp;
@@ -512,6 +589,8 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
   ReleaseWorkSpaceThreadComplex();
   return;
 }
+
+
 
 
 

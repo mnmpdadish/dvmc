@@ -419,13 +419,13 @@ void SetMemory() {
                     
     printf("memory usage: %d times double complex.\n", 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors);
     
-    PhysAC = Phys_AC_quantities;   
-    PhysCA = Phys_AC_quantities +   NCisAjs;   
+    PhysAC = Phys_AC_quantities + 0*NCisAjs;   
+    PhysCA = Phys_AC_quantities + 1*NCisAjs;   
     PhysAHC= Phys_AC_quantities + 2*NCisAjs;   
     PhysCHA= Phys_AC_quantities + 3*NCisAjs;
     
-    PhysACN= Phys_AC_quantities + 4*NCisAjs;
-    PhysACM= Phys_AC_quantities + 4*NCisAjs +   NCisAjs*NNeighbors;
+    PhysACN= Phys_AC_quantities + 4*NCisAjs + 0*NCisAjs*NNeighbors;
+    PhysACM= Phys_AC_quantities + 4*NCisAjs + 1*NCisAjs*NNeighbors;
     PhysACD= Phys_AC_quantities + 4*NCisAjs + 2*NCisAjs*NNeighbors;
     PhysNAC= Phys_AC_quantities + 4*NCisAjs + 3*NCisAjs*NNeighbors;
     PhysMAC= Phys_AC_quantities + 4*NCisAjs + 4*NCisAjs*NNeighbors;

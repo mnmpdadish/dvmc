@@ -98,6 +98,7 @@ void VMCMainCal(MPI_Comm comm) {
   clearPhysQuantity();
   StopTimer(24);
   for(sample=sampleStart;sample<sampleEnd;sample++) {
+    int sample_to_print = 50;
 
     eleIdx = EleIdx + sample*Nsize;
     eleCfg = EleCfg + sample*Nsite2;
@@ -106,7 +107,7 @@ void VMCMainCal(MPI_Comm comm) {
 
     StartTimer(40);
 #ifdef _DEBUG_VMCCAL
-    printf("  Debug: sample=%d: CalculateMAll \n",sample);
+    if(sample%sample_to_print==0) printf("  Debug: sample=%d: CalculateMAll \n",sample);
 #endif
     if(AllComplexFlag==0){
       info = CalculateMAll_real(eleIdx,qpStart,qpEnd); // InvM_real,PfM_real will change
@@ -122,7 +123,7 @@ void VMCMainCal(MPI_Comm comm) {
       continue;
     }
 #ifdef _DEBUG_VMCCAL
-    printf("  Debug: sample=%d: CalculateIP \n",sample);
+    if(sample%sample_to_print==0) printf("  Debug: sample=%d: CalculateIP \n",sample);
 #endif
     if(AllComplexFlag==0){
       ip = CalculateIP_real(PfM_real,qpStart,qpEnd,MPI_COMM_SELF);
@@ -131,13 +132,13 @@ void VMCMainCal(MPI_Comm comm) {
     } 
 
 #ifdef _DEBUG_VMCCAL
-    printf("  Debug: sample=%d: LogProjVal \n",sample);
+    if(sample%sample_to_print==0) printf("  Debug: sample=%d: LogProjVal \n",sample);
 #endif
     /* calculate reweight */
     //w = exp(2.0*(log(fabs(ip))+x) - logSqPfFullSlater[sample]);
     w =1.0;
 #ifdef _DEBUG_VMCCAL
-    printf("  Debug: sample=%d: isfinite \n",sample);
+    if(sample%sample_to_print==0) printf("  Debug: sample=%d: isfinite \n",sample);
 #endif
     if( !isfinite(w) ) {
       fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d w=%e\n",rank,sample,w);
@@ -147,16 +148,16 @@ void VMCMainCal(MPI_Comm comm) {
     StartTimer(41);
     /* calculate energy */
 #ifdef _DEBUG_VMCCAL
-    printf("  Debug: sample=%d: calculateHam \n",sample);
+    if(sample%sample_to_print==0) printf("  Debug: sample=%d: calculateHam \n",sample);
 #endif
     if(AllComplexFlag==0){
 #ifdef _DEBUG_VMCCAL
-      printf("  Debug: sample=%d: calculateHam_real \n",sample);
+      if(sample%sample_to_print==0) printf("  Debug: sample=%d: calculateHam_real \n",sample);
 #endif
       e = CalculateHamiltonian_real(creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt);
     }else{
 #ifdef _DEBUG_VMCCAL
-      printf("  Debug: sample=%d: calculateHam_cmp \n",sample);
+      if(sample%sample_to_print==0) printf("  Debug: sample=%d: calculateHam_cmp \n",sample);
 #endif
       e = CalculateHamiltonian(ip,eleIdx,eleCfg,eleNum,eleProjCnt);
     }
@@ -164,7 +165,7 @@ void VMCMainCal(MPI_Comm comm) {
     StopTimer(41);
 
 #ifdef _DEBUG_VMCCAL
-    printf("  Debug: sample=%d: e = %lf %lf \n",sample, creal(e), cimag(e));
+    if(sample%sample_to_print==0) printf("  Debug: sample=%d: e = %lf %lf \n",sample, creal(e), cimag(e));
 #endif
     if( !isfinite(creal(e) + cimag(e)) ) {
       fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d e=%e\n",rank,sample,creal(e)); //TBC
@@ -175,7 +176,7 @@ void VMCMainCal(MPI_Comm comm) {
     Etot  += w * e;
     Etot2 += w * conj(e) * e;
 #ifdef _DEBUG_VMCCAL
-    printf("  Debug: sample=%d: calculateOpt \n",sample);
+    if(sample%sample_to_print==0) printf("  Debug: sample=%d: calculateOpt \n",sample);
 #endif
     if(NVMCCalMode==0) {
       /* Calculate O for correlation fauctors */
@@ -286,12 +287,12 @@ void VMCMainCal(MPI_Comm comm) {
       StartTimer(42);
       /* Calculate Green Function */
 #ifdef _DEBUG_VMCCAL
-      fprintf(stdout, "Debug: Start: CalculateGreenFuncMoments\n"); fflush(stdout);
+      if(sample%sample_to_print==0) fprintf(stdout, "Debug: Start: CalculateGreenFuncMoments\n"); fflush(stdout);
 #endif
       
       CalculateGreenFuncMoments(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
 #ifdef _DEBUG_VMCCAL
-      fprintf(stdout, "Debug: End: CalculateGreenFuncMoments\n"); fflush(stdout);
+      if(sample%sample_to_print==0) fprintf(stdout, "Debug: End: CalculateGreenFuncMoments\n"); fflush(stdout);
 #endif
       StopTimer(42);
 

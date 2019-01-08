@@ -226,82 +226,10 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   vec = Phys_AC_quantities;
   weightAverageReduce_fcmp(n,vec,comm);
   
-  /*
-  weightAverageReduce_fcmp(NCisAjs, PhysAC, comm);
-  weightAverageReduce_fcmp(NCisAjs, PhysCA, comm);
-  weightAverageReduce_fcmp(NCisAjs, PhysAHC, comm);
-  weightAverageReduce_fcmp(NCisAjs, PhysCHA, comm);
   
-  
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysACN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysACM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysACD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysNAC, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysMAC, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysDAC, comm);
-  
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysCAN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysCAM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysCAD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysNCA, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysMCA, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysDCA, comm);
-
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysAHCN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysAHCM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysAHCD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysNAHC, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysMAHC, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysDAHC, comm);
-
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysCHAN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysCHAM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysCHAD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysNCHA, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysMCHA, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors, PhysDCHA, comm);
-  
-  
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNACN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNACM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNACD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMACN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMACM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMACD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDACN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDACM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDACD, comm);
-  
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNCAN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNCAM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNCAD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMCAN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMCAM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMCAD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDCAN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDCAM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDCAD, comm);
-  
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNAHCN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNAHCM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNAHCD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMAHCN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMAHCM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMAHCD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDAHCN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDAHCM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDAHCD, comm);
-  
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNCHAN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNCHAM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysNCHAD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMCHAN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMCHAM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysMCHAD, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDCHAN, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDCHAM, comm);
-  weightAverageReduce_fcmp(NCisAjs*NNeighbors*NNeighbors, PhysDCHAD, comm);
-  */
+  n = NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
+  vec = PhysCisAjs;
+  weightAverageReduce_fcmp(n,vec,comm);
   
   return;
 }

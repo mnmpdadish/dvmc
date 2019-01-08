@@ -310,8 +310,8 @@ double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *Phys
 int NNeighbors = 4; // assuming square lattice TJS + MC
 //int neighbors_delta_x[9] = {0,1,-1,0,1,-1,0,1,-1};
 //int neighbors_delta_y[9] = {0,0,0,1,1,1,-1,-1,-1};
-int neighbors_delta_y[4] = {0,1,0,1};
-int neighbors_delta_x[4] = {0,0,1,1};
+int neighbors_delta_y[6] = {0,1,0,1,2,0};
+int neighbors_delta_x[6] = {0,0,1,1,0,2};
 //int neighbors_delta_y[9] = {0,1,2,0,1,2,0,1,2};
 //int neighbors_delta_x[9] = {0,0,0,1,1,1,2,2,2};
   
