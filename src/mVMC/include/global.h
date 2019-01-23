@@ -307,17 +307,17 @@ double complex *PhysNCAN, *PhysNCAM, *PhysNCAD, *PhysMCAN, *PhysMCAM, *PhysMCAD,
 double complex *PhysNAHCN, *PhysNAHCM, *PhysNAHCD, *PhysMAHCN, *PhysMAHCM, *PhysMAHCD, *PhysDAHCN, *PhysDAHCM, *PhysDAHCD;
 double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *PhysMCHAD, *PhysDCHAN, *PhysDCHAM, *PhysDCHAD;
 
-int NNeighbors = 4; // assuming square lattice TJS + MC
+int NNeighbors = 6; // assuming square lattice TJS + MC
 //int neighbors_delta_x[9] = {0,1,-1,0,1,-1,0,1,-1};
 //int neighbors_delta_y[9] = {0,0,0,1,1,1,-1,-1,-1};
-int neighbors_delta_y[6] = {0,1,0,1,2,0};
-int neighbors_delta_x[6] = {0,0,1,1,0,2};
+int neighbors_delta_x[6] = {0,0,0,0,0,0};
+int neighbors_delta_y[6] = {-1,0,1,2,3,4};
 //int neighbors_delta_y[9] = {0,1,2,0,1,2,0,1,2};
 //int neighbors_delta_x[9] = {0,0,0,1,1,1,2,2,2};
   
 
-int StdFace_L=0;
-int StdFace_W=0;
+int StdFace_L=1;
+int StdFace_W=1;
 
   
 //int **Neighbors; /*[Nsite][NNeighbors]*/

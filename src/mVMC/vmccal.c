@@ -98,7 +98,7 @@ void VMCMainCal(MPI_Comm comm) {
   clearPhysQuantity();
   StopTimer(24);
   for(sample=sampleStart;sample<sampleEnd;sample++) {
-    int sample_to_print = 50;
+    int sample_to_print = 1;
 
     eleIdx = EleIdx + sample*Nsize;
     eleCfg = EleCfg + sample*Nsite2;
