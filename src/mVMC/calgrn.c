@@ -693,30 +693,39 @@ int Commute_Nat_with_AisCjs(int ra, int t, int ri, int rj, int s, int *eleNum) {
 // A: c     (annihilation operator)
 // C: c^dag (creation operator)
 
-void MultiplyFactor2GFs_commute(commuting_with commuting, int idx, int ri_ref, int *eleNum, double complex input, double complex *output) {
-  
-  int rk = CisAjsIdx[idx][0];
-  int rl = CisAjsIdx[idx][2];
-  int s  = CisAjsIdx[idx][3];
-  
-  int ra, dr, t, idx_exc;
-  //double complex tmp;
-    
-  if(commuting==with_AisCjs){ 
-    rk = CisAjsIdx[idx][2];
-    rl = CisAjsIdx[idx][0];
-  }
-  
+
+void MultiplyFactor2GFs_commute_with_nothing(int ri, int s, int *eleNum, double complex input, double complex *output) {
+  int idx_exc;
   for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
-    dr = ChargeExcitationIdx[idx_exc][0];
-    t  = ChargeExcitationIdx[idx_exc][1];
+    int dr = ChargeExcitationIdx[idx_exc][0];
+    int t  = ChargeExcitationIdx[idx_exc][1];
     
-    ra = (dr+ri_ref)%Nsite;
-  
-    //printf("%d  %d \n", dr, t );
-    //output[idx_exc + idx*NExcitation] += input * ((double) (Commute_Nat_(commuting, dr+rk, t, rk, rl, s, eleNum)));
+    int ra = (dr+ri)%Nsite;
+    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_nothing, ra, t, 0, 0, s, eleNum)));
+  }
+} 
+
+
+void MultiplyFactor2GFs_commute_with_AisCjs(int ri, int rj, int s, int *eleNum, double complex input, double complex *output) {
+  int idx_exc;
+  for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
+    int dr = ChargeExcitationIdx[idx_exc][0];
+    int t  = ChargeExcitationIdx[idx_exc][1];
     
-    output[idx + idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(commuting, ra, t, rk, rl, s, eleNum)));
+    int ra = (dr+ri)%Nsite;
+    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_AisCjs, ra, t, ri, rj, s, eleNum)));
+  }
+} 
+
+
+void MultiplyFactor2GFs_commute_with_CisAjs(int ri, int rj, int s, int *eleNum, double complex input, double complex *output) {
+  int idx_exc;
+  for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
+    int dr = ChargeExcitationIdx[idx_exc][0];
+    int t  = ChargeExcitationIdx[idx_exc][1];
+    
+    int ra = (dr+ri)%Nsite;
+    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_CisAjs, ra, t, ri, rj, s, eleNum)));
   }
 } 
 
@@ -798,26 +807,26 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
       
       // <phi|ac|x> / <phi|x>
       tmp = 1.*kronecker(ri,rj) - 1.*LocalCisAjs[idx];
-      MultiplyFactor2GFs_commute(with_AisCjs, idx, rj, myEleNum, w*tmp, O_AC_vec);
-      MultiplyFactor2GFs_commute(with_nothing, idx, ri, myEleNum, 1.0, O0_AC_vec);
+      //MultiplyFactor2GFs_commute(with_AisCjs, idx, rj, myEleNum, w*tmp, O_AC_vec);
+      //MultiplyFactor2GFs_commute(with_nothing, idx, ri, myEleNum, 1.0, O0_AC_vec);
+      MultiplyFactor2GFs_commute_with_AisCjs(rj, ri, s, myEleNum, w*tmp, &O_AC_vec[idx]);
+      MultiplyFactor2GFs_commute_with_nothing(   ri, s, myEleNum,  1.0, &O0_AC_vec[idx]);
       
       // <phi|ca|x> / <phi|x>
       tmp = 1.*LocalCisAjs[idx];
-      MultiplyFactor2GFs_commute(with_CisAjs, idx, ri, myEleNum, w*tmp, O_CA_vec);
-      MultiplyFactor2GFs_commute(with_nothing, idx, rj, myEleNum, 1.0, O0_CA_vec);
+      //MultiplyFactor2GFs_commute(with_CisAjs, idx, ri, myEleNum, w*tmp, O_CA_vec);
+      //MultiplyFactor2GFs_commute(with_nothing, idx, rj, myEleNum, 1.0, O0_CA_vec);
+      MultiplyFactor2GFs_commute_with_CisAjs(ri, rj, s, myEleNum, w*tmp, &O_CA_vec[idx]);
+      MultiplyFactor2GFs_commute_with_nothing(   rj, s, myEleNum,  1.0, &O0_CA_vec[idx]);
       //printf("%f %f  %f %f \n", w, creal(w*tmp), creal(O_CA_vec[idx]), creal(O_CA_vec[idx+NCisAjs]) );
     }
     //printf("\n");
 
-//#pragma omp master
-//    {printf("%f \n", creal(tmp) );}    
     
     // <phi|x>
-    
     /*
     // <phi|H_U|x> / <phi|x>
     tmp=0.0;
-#pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic) nowait
     for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {
       rm = CoulombIntra[idx_int];
       tmp += ParaCoulombIntra[idx_int]*myEleNum[rm+s*Nsite]*myEleNum[rm+(1-s)*Nsite]; 
@@ -825,7 +834,6 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
     MultiplyFactor2GFs_commute(with_nothing, 0, myEleNum, w*tmp, H_vec);
     
     // <phi|H_T|x> / <phi|x>
-#pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic) nowait
     for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
       
       rm = Transfer[idx_trans][0];
@@ -837,7 +845,6 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
       MultiplyFactor2GFs_commute(with_CisAjs, 0, myEleNum, w*tmp, H_vec);    
     }
     */
-    
     int nn,mm;
     //double complex OO_trans_nm, OO_trans_mn;
     //double complex OO_int_nm, OO_int_mn;
