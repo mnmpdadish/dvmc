@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
     VMCParaOpt(comm0, comm1, comm2);
     if(rank0==0) fprintf(stdout,"End  : Optimize VMC parameters.\n");
     StopTimer(2);
-  } else if((NVMCCalMode==1) || (NVMCCalMode==2)) {
+  } else if((NVMCCalMode==1) || (NVMCCalMode==2) || (NVMCCalMode==3)) {
     StartTimer(2);
     /*-- VMC Physical Quantity Calculation --*/
     if(rank0==0) fprintf(stdout,"Start: Calculate VMC physical quantities.\n");
@@ -302,7 +302,7 @@ int main(int argc, char* argv[])
     StopTimer(2);
   } else {
     info=1;
-    if(rank0==0) fprintf(stderr,"error: NVMCCalMode must be 0 1 or 2.\n");
+    if(rank0==0) fprintf(stderr,"error: NVMCCalMode must be 0 1 2 or 3.\n");
   }
 
   StopTimer(0);
@@ -640,6 +640,21 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
         printf("after close.\n"); fflush(stdout);
       }
     }
+    else if(NVMCCalMode==3) {
+      printf("before averaging.\n"); fflush(stdout);
+      WeightAverageWE(comm_parent);
+      WeightAverageGreenFuncMoments2(comm_parent);
+      ReduceCounter(comm_child2);
+      if(rank==0) {
+        outputData();
+        printf("after output.\n"); fflush(stdout);
+        fclose(File_nACm);
+        fclose(File_nCAm);
+        fclose(File_nAHCm);
+        fclose(File_nCHAm);
+        printf("after close.\n"); fflush(stdout);
+      }
+    }
     StopTimer(5);
 
   }
@@ -819,7 +834,37 @@ void outputData() {
     printf("ending of print files.\n"); fflush(stdout);
     
   }
-  
+  else if (NVMCCalMode==3) {
+    printf("trying to print files.\n"); fflush(stdout);
+    if (NCisAjs > 0) {
+      for (i = 0; i < NCisAjs; i++) {
+          fprintf(FileCisAjs, "%d %d %d %d % .18e  % .18e \n", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2],
+                  CisAjsIdx[i][3], creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
+      }
+    }
+    
+    int nn,mm;
+    fprintf(File_nACm, "# i   s   j   s ");
+    fprintf(File_nCAm, "# i   s   j   s ");
+    fprintf(File_nAHCm, "# i   s   j   s ");
+    fprintf(File_nCHAm, "# i   s   j   s ");
+    for (i = 0; i < NCisAjs; i++) {
+      fprintf(File_nACm, "\n%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+      fprintf(File_nCAm, "\n%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+      fprintf(File_nAHCm, "\n%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+      fprintf(File_nCHAm, "\n%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+      for (nn = 0; nn < NExcitation; nn++) {
+        for (mm = 0; mm < NExcitation; mm++) {
+          fprintf(File_nACm,  "% 0.3e  ",  creal( Phys_nACm[i+NCisAjs*(nn+NExcitation*mm)] ) );
+          fprintf(File_nCAm,  "% 0.3e  ",  creal( Phys_nCAm[i+NCisAjs*(nn+NExcitation*mm)] ) );
+          fprintf(File_nAHCm, "% 0.3e  ",  creal(Phys_nAHCm[i+NCisAjs*(nn+NExcitation*mm)] ) );
+          fprintf(File_nCHAm, "% 0.3e  ",  creal(Phys_nCHAm[i+NCisAjs*(nn+NExcitation*mm)] ) );
+        }
+      }
+    }
+      
+
+  }
   return;
 }
 

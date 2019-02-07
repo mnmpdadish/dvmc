@@ -234,6 +234,32 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   return;
 }
 
+
+
+void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
+  int n = NCisAjs*NExcitation*NExcitation;
+  double complex *vec;
+  
+  vec = Phys_nCHAm;
+  weightAverageReduce_fcmp(n,vec,comm);
+
+  vec = Phys_nAHCm;
+  weightAverageReduce_fcmp(n,vec,comm);
+
+  vec = Phys_nCAm;
+  weightAverageReduce_fcmp(n,vec,comm);
+
+  vec = Phys_nACm;
+  weightAverageReduce_fcmp(n,vec,comm);
+
+  n = NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
+  vec = PhysCisAjs;
+  weightAverageReduce_fcmp(n,vec,comm);
+  
+  return;
+}
+
+
 /* calculate average of Green functions */
 /* Only rank=0 process will have the result */
 void WeightAverageGreenFunc(MPI_Comm comm) {
