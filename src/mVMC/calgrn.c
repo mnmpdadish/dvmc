@@ -617,52 +617,6 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
 
 
 
-int Commute_Nat_(commuting_with commuting, int ra, int t, int ri, int rj, int s, int *eleNum) {
-  int sign;
-  if((commuting==with_CisAjs) || (commuting==with_AisCjs)) {
-  
-    if(commuting==with_CisAjs) {sign = 1;}
-    else if(commuting==with_AisCjs) {sign = -1;}
-    
-    if(t==-1){ //no charge
-      return 1;
-    }
-    else if(t==2){ // charge both spins
-      return (eleNum[ra]*eleNum[ra+Nsite] + sign * eleNum[ra+(1-s)*Nsite] * (kronecker(ra,ri)-kronecker(ra,rj) ));
-    }
-    else if(t==0){ //0 charge same-spin
-      return eleNum[ra+s*Nsite] + sign * (kronecker(ra,ri)-kronecker(ra,rj));
-    }
-    else if(t==1){ //1 charge reverse-spin
-      return eleNum[ra+(1-s)*Nsite];
-    }
-    else{
-      printf("oups, error\n");
-      exit(1);
-      return -1;
-    }
-  }
-  else if(commuting==with_nothing) {
-    if(t==-1){ //no charge
-      return 1;
-    }
-    else if(t==2){ // charge both spins
-      return (eleNum[ra]*eleNum[ra+Nsite]);
-    }
-    else if(t==0){ //0 charge same-spin
-      return eleNum[ra+s*Nsite];
-    }
-    else if(t==1){ //1 charge reverse-spin
-      return eleNum[ra+(1-s)*Nsite];
-    }
-    else{
-      printf("oups, error\n");
-      exit(1);
-      return -1;
-    }
-  }
-  
-}
 
 /*
 int Commute_Nat_with_CisAjs(int ra, int t, int ri, int rj, int s, int *eleNum) {
@@ -693,41 +647,102 @@ int Commute_Nat_with_AisCjs(int ra, int t, int ri, int rj, int s, int *eleNum) {
 // A: c     (annihilation operator)
 // C: c^dag (creation operator)
 
-
-void MultiplyFactor2GFs_commute_with_nothing(int ri, int s, int *eleNum, double complex input, double complex *output) {
+/*
+void MultiplyFactor2GFs_commute_with_nothing( int r_n, int s_n, int *eleNum, double complex input, double complex *output) {
   int idx_exc;
   for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
     int dr = ChargeExcitationIdx[idx_exc][0];
     int t  = ChargeExcitationIdx[idx_exc][1];
     
-    int ra = (dr+ri)%Nsite;
-    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_nothing, ra, t, 0, 0, s, eleNum)));
+    int ra = (dr+r_n)%Nsite;
+    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_nothing, ra, s_n, t, 0, 0, 0, eleNum)));
   }
 } 
 
 
-void MultiplyFactor2GFs_commute_with_AisCjs(int ri, int rj, int s, int *eleNum, double complex input, double complex *output) {
+void MultiplyFactor2GFs_commute_with_AisCjs(int ri, int rj, int s, int r_n, int s_n, int *eleNum, double complex input, double complex *output) {
   int idx_exc;
   for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
     int dr = ChargeExcitationIdx[idx_exc][0];
     int t  = ChargeExcitationIdx[idx_exc][1];
     
-    int ra = (dr+ri)%Nsite;
-    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_AisCjs, ra, t, ri, rj, s, eleNum)));
+    int ra = (dr+r_n)%Nsite;
+    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_AisCjs, ra, s_n, t, ri, rj, s, eleNum)));
   }
 } 
 
 
-void MultiplyFactor2GFs_commute_with_CisAjs(int ri, int rj, int s, int *eleNum, double complex input, double complex *output) {
+void MultiplyFactor2GFs_commute_with_CisAjs(int ri, int rj, int s, int r_n, int s_n, int *eleNum, double complex input, double complex *output) {
   int idx_exc;
   for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
     int dr = ChargeExcitationIdx[idx_exc][0];
     int t  = ChargeExcitationIdx[idx_exc][1];
     
-    int ra = (dr+ri)%Nsite;
-    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_CisAjs, ra, t, ri, rj, s, eleNum)));
+    int ra = (dr+r_n)%Nsite;
+    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_CisAjs, ra, s_n, t, ri, rj, s, eleNum)));
   }
 } 
+*/
+
+
+
+
+
+int Commute_Nat_(commuting_with commuting, int ra, int sa, int t, int ri, int rj, int s, int *eleNum) {
+  int sign;
+  if((commuting==with_CisAjs) || (commuting==with_AisCjs)) {
+  
+    if(commuting==with_CisAjs) {sign = 1;}
+    else if(commuting==with_AisCjs) {sign = -1;}
+    
+    if(t==-1){ //no charge
+      // <phi| c_is a_js |x>  =  <phi| c_is a_js |x>  
+      // <phi| a_is c_js |x>  =  <phi| a_is c_js |x> 
+      return 1;
+    }
+    else if(t==0){ //0 charge same-spin
+      // <phi| n_as c_is a_js |x>  =  <phi| c_is a_js |x> (n_as(x) + (del_a,i - del_a,j)) 
+      // <phi| n_as a_is c_js |x>  =  <phi| a_is c_js |x> (n_as(x) + (del_a,i - del_a,j)) 
+      return eleNum[ra+sa*Nsite]     + sign * kronecker(sa,s)     * (kronecker(ra,ri)-kronecker(ra,rj));
+    }
+    else if(t==1){ //1 charge reverse-spin
+      // <phi| n_a:-s c_is a_js |x>  =  <phi| c_is a_js |x> n_a:-s(x) 
+      // <phi| n_a:-s a_is c_js |x>  =  <phi| a_is c_js |x> n_a:-s(x) 
+      return eleNum[ra+(1-sa)*Nsite] + sign * kronecker((1-sa),s) * (kronecker(ra,ri)-kronecker(ra,rj));
+      //return eleNum[ra+(1-s)*Nsite];
+    }
+    else if(t==2){ // doublon
+      // <phi| n_a:up n_a:dn c_is a_js |x>  =  <phi| c_is a_js |x> (n_a:up(x) n_a:dn(x) + n_a:-s (del_a,i - del_a,j)) 
+      // <phi| n_a:up n_a:dn a_is c_js |x>  =  <phi| a_is c_js |x> (n_a:up(x) n_a:dn(x) - n_a:-s (del_a,i - del_a,j)) 
+      return (eleNum[ra]*eleNum[ra+Nsite] + sign * eleNum[ra+(1-s)*Nsite] * (kronecker(ra,ri)-kronecker(ra,rj) ));
+    }
+    else{
+      printf("oups, error\n");
+      exit(1);
+      return -1;
+    }
+  }
+  else if(commuting==with_nothing) {
+    if(t==-1){ //no charge
+      return 1;
+    }
+    else if(t==0){ //0 charge same-spin
+      return eleNum[ra+sa*Nsite];
+    }
+    else if(t==1){ //1 charge reverse-spin
+      return eleNum[ra+(1-sa)*Nsite];
+    }
+    else if(t==2){ // doublon
+      return (eleNum[ra]*eleNum[ra+Nsite]);
+    }
+    else{
+      printf("oups, error\n");
+      exit(1);
+      return -1;
+    }
+  }
+  
+}
 
 
 
@@ -743,18 +758,21 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
   double complex *myBuffer;
   
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  RequestWorkSpaceThreadComplex(NQPFull + 2*Nsize + 4*NCisAjs*NExcitation + 2*NExcitation);
+  RequestWorkSpaceThreadComplex(NQPFull + 2*Nsize + 4*NCisAjs*NExcitation);
   
   double complex *O_AC_vec, *O_CA_vec;//, *H_vec;//, *O_vec;
-  double complex *O0_AC_vec,*O0_CA_vec;
+  double complex *O0_vec;
+  double complex *H0_vec;
   
   //#pragma omp parallel default(shared)                \
   //private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx, O_AC_vec, O_CA_vec, O0_vec, H_vec)//, O_vec)
   {
     O_AC_vec = GetWorkSpaceThreadComplex(NCisAjs*NExcitation);
     O_CA_vec = GetWorkSpaceThreadComplex(NCisAjs*NExcitation);
-    O0_AC_vec = GetWorkSpaceThreadComplex(NCisAjs*NExcitation);
-    O0_CA_vec = GetWorkSpaceThreadComplex(NCisAjs*NExcitation);
+    //O0_AC_vec = GetWorkSpaceThreadComplex(NCisAjs*NExcitation);
+    O0_vec = GetWorkSpaceThreadComplex(NCisAjs*NExcitation);
+    //H0_AC_vec = GetWorkSpaceThreadComplex(NCisAjs*NExcitation);
+    H0_vec = GetWorkSpaceThreadComplex(NCisAjs*NExcitation);
     //H_vec = GetWorkSpaceThreadComplex(NExcitation);
     //O_vec = GetWorkSpaceThreadComplex(NExcitation);
     
@@ -791,65 +809,104 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //#pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic) nowait
     for(idx=0;idx<NExcitation*NCisAjs;idx++) {
-      O_AC_vec[idx] = 0.0;
-      O_CA_vec[idx] = 0.0;
-      O0_AC_vec[idx] = 0.0;
-      O0_CA_vec[idx] = 0.0;
+      //H0_AC_vec[idx] = 0.0;
+      H0_vec[idx] = 0.0;
     }
     
-
 //#pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic) nowait    
     for(idx=0;idx<NCisAjs;idx++) {
-    
       ri = CisAjsIdx[idx][0];
       rj = CisAjsIdx[idx][2];
       s  = CisAjsIdx[idx][3];
+      double complex tmp_CA =  1.*LocalCisAjs[idx];
+      int idx_exc;
+      for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
+        int idx_vector = idx+idx_exc*NCisAjs;
+        int idx_green = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
+        int dr = ChargeExcitationIdx[idx_exc][0];
+        int t  = ChargeExcitationIdx[idx_exc][1];
+        int ra = (dr+ri)%Nsite;
+        int rb = (dr+rj)%Nsite;
+        
+        // <phi|ac|x> / <phi|x>
+        O_AC_vec[idx_vector]  = w*kronecker(ri,rj)       * ((double) (Commute_Nat_(with_nothing, ra, s, t,  0,  0, 0, myEleNum)));
+        O_AC_vec[idx_vector] -= w*LocalCisAjs[idx_green] * ((double) (Commute_Nat_(with_CisAjs,  ra, s, t, rj, ri, s, myEleNum)));
+        //tmp:
+        //O0_AC_vec[idx_vector] = 1.0                * ((double) (Commute_Nat_(with_nothing, rb, s, t,  0,  0, 0, myEleNum)));
+        
+        // <phi|ca|x> / <phi|x>
+        O_CA_vec[idx_vector]  = w*LocalCisAjs[idx] * ((double) (Commute_Nat_(with_CisAjs,  ra, s, t, ri, rj, s, myEleNum)));
+        
+        O0_vec[idx_vector]  = 1.0                * ((double) (Commute_Nat_(with_nothing, rb, s, t,  0,  0, 0, myEleNum)));
+        
+
       
       // <phi|ac|x> / <phi|x>
-      tmp = 1.*kronecker(ri,rj) - 1.*LocalCisAjs[idx];
-      //MultiplyFactor2GFs_commute(with_AisCjs, idx, rj, myEleNum, w*tmp, O_AC_vec);
-      //MultiplyFactor2GFs_commute(with_nothing, idx, ri, myEleNum, 1.0, O0_AC_vec);
-      MultiplyFactor2GFs_commute_with_AisCjs(rj, ri, s, myEleNum, w*tmp, &O_AC_vec[idx]);
-      MultiplyFactor2GFs_commute_with_nothing(   ri, s, myEleNum,  1.0, &O0_AC_vec[idx]);
+      //tmp = 1.*kronecker(ri,rj) - 1.*LocalCisAjs[idx];
+      //MultiplyFactor2GFs_commute_with_AisCjs(rj, ri, s, rj, s, myEleNum, w*tmp, &O_AC_vec[idx]);
+      //MultiplyFactor2GFs_commute_with_nothing(          ri, s, myEleNum,  1.0, &O0_AC_vec[idx]);
       
       // <phi|ca|x> / <phi|x>
-      tmp = 1.*LocalCisAjs[idx];
-      //MultiplyFactor2GFs_commute(with_CisAjs, idx, ri, myEleNum, w*tmp, O_CA_vec);
-      //MultiplyFactor2GFs_commute(with_nothing, idx, rj, myEleNum, 1.0, O0_CA_vec);
-      MultiplyFactor2GFs_commute_with_CisAjs(ri, rj, s, myEleNum, w*tmp, &O_CA_vec[idx]);
-      MultiplyFactor2GFs_commute_with_nothing(   rj, s, myEleNum,  1.0, &O0_CA_vec[idx]);
+      //tmp = 1.*LocalCisAjs[idx];
+      //MultiplyFactor2GFs_commute_with_CisAjs(ri, rj, s, ri, s, myEleNum, w*tmp, &O_CA_vec[idx]);
+      //MultiplyFactor2GFs_commute_with_nothing(          rj, s, myEleNum,  1.0, &O0_CA_vec[idx]);
       //printf("%f %f  %f %f \n", w, creal(w*tmp), creal(O_CA_vec[idx]), creal(O_CA_vec[idx+NCisAjs]) );
-    }
-    //printf("\n");
+      //printf("\n");
 
-    
-    // <phi|x>
-    /*
-    // <phi|H_U|x> / <phi|x>
-    tmp=0.0;
-    for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {
-      rm = CoulombIntra[idx_int];
-      tmp += ParaCoulombIntra[idx_int]*myEleNum[rm+s*Nsite]*myEleNum[rm+(1-s)*Nsite]; 
-    }
-    MultiplyFactor2GFs_commute(with_nothing, 0, myEleNum, w*tmp, H_vec);
-    
-    // <phi|H_T|x> / <phi|x>
-    for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
       
-      rm = Transfer[idx_trans][0];
-      rn = Transfer[idx_trans][2];
-      u  = Transfer[idx_trans][3];
-      int idx_green = ijst_to_idx[rm+u*Nsite][rn+u*Nsite];
+      // <phi|x>
+      // <phi|H_U|x> / <phi|x>
+      /*
+      tmp=0.0;
       
-      tmp = ParaTransfer[idx_trans]*LocalCisAjs[idx_green];
-      MultiplyFactor2GFs_commute(with_CisAjs, 0, myEleNum, w*tmp, H_vec);    
+      for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {
+        rm = CoulombIntra[idx_int];
+        tmp += ParaCoulombIntra[idx_int]*myEleNum[rm+s*Nsite]*myEleNum[rm+(1-s)*Nsite]; 
+      }
+      MultiplyFactor2GFs_commute_with_nothing(       ri, s, myEleNum, w*tmp, &H0_AC_vec[idx]);
+      MultiplyFactor2GFs_commute_with_nothing(       rj, s, myEleNum, w*tmp, &H0_CA_vec[idx]);
+      //
+      
+      // <phi|H_T|x> 
+      for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
+        
+        rm = Transfer[idx_trans][0];
+        rn = Transfer[idx_trans][2];
+        u  = Transfer[idx_trans][3];
+        int idx_green = ijst_to_idx[rm+u*Nsite][rn+u*Nsite];
+        
+        tmp = ParaTransfer[idx_trans]*LocalCisAjs[idx_green];
+        MultiplyFactor2GFs_commute_with_CisAjs(rm, rn, u, ri, s, myEleNum, tmp, &H0_AC_vec[idx]); //commute with CisAjs for real, not error
+        MultiplyFactor2GFs_commute_with_CisAjs(rm, rn, u, rj, s, myEleNum, tmp, &H0_CA_vec[idx]); 
+      }*/
+      // <phi|H_T|x> 
+        for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
+          
+          rm = Transfer[idx_trans][0];
+          rn = Transfer[idx_trans][2];
+          u  = Transfer[idx_trans][3];
+          idx_green = ijst_to_idx[rm+u*Nsite][rn+u*Nsite];
+          
+          
+          //H0_vec[idx_vector] += ParaTransfer[idx_trans]*LocalCisAjs[idx_green]* ((double) (Commute_Nat_(with_CisAjs, rb, s, t, rm, rn, u, myEleNum)));
+          H0_vec[idx_vector] += ParaTransfer[idx_trans]*LocalCisAjs[idx_green]* ((double) (Commute_Nat_(with_CisAjs, rb, s, t, rm, rn, u, myEleNum)));
+
+          //MultiplyFactor2GFs_commute_with_CisAjs(rm, rn, u, ri, s, myEleNum, tmp, &H0_AC_vec[idx]); //commute with CisAjs for real, not error
+          //MultiplyFactor2GFs_commute_with_CisAjs(rm, rn, u, rj, s, myEleNum, tmp, &H0_CA_vec[idx]); 
+        }
+      }
+      //printf("%d %d %d %d  %f %f  %f %f  \n", ri, s, rj, s, w, creal(w*tmp), creal(H0_AC_vec[idx]), creal(H0_CA_vec[idx]) );
     }
-    */
-    int nn,mm;
+    
+    //printf("%d %d  %d %d \n", myEleNum[0], myEleNum[1], myEleNum[2], myEleNum[3] );
+    //printf("\n");
+    
+    
     //double complex OO_trans_nm, OO_trans_mn;
     //double complex OO_int_nm, OO_int_mn;
           
 //#pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp,nn,mm,H_n,H_m,O_AC_n,O_CA_n,O0_m) schedule(dynamic) nowait    
+/*
     for (idx = 0; idx < NCisAjs; idx++) {
       for (nn = 0; nn < NExcitation; nn++) {
         double complex O_AC_n = O_AC_vec[idx + nn*NCisAjs];
@@ -865,52 +922,68 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
       }
       //printf("\n" );
     }
-    /*
+*/
+
+    int nn,mm, idx2;
     for (idx = 0; idx < NCisAjs; idx++) {
-      rk = CisAjsIdx[idx][0];
-      rl = CisAjsIdx[idx][2];
+      ri = CisAjsIdx[idx][0];
+      rj = CisAjsIdx[idx][2];
       s  = CisAjsIdx[idx][3];
       
       for (nn = 0; nn < NExcitation; nn++) {
-        H_n = H_vec[nn] ;
-        O_n = O_AC_vec[nn + idx*NExcitation] ;
-        O0_n = O_AC_vec[nn] ;
-        
+        //O_n = O_AC_vec[nn + idx*NExcitation] ;
+        //O0_n = O_AC_vec[nn] ;
+        double complex O_AC_n = O_AC_vec[idx + nn*NCisAjs];
+        double complex O_CA_n = O_CA_vec[idx + nn*NCisAjs];
         for (mm = 0; mm < NExcitation; mm++) {
-          H_m = H_vec[mm] ;
-          O_m = O_AC_vec[mm + idx*NExcitation] ;
-          O0_m = O_AC_vec[mm] ;
+          //double complex O0_AC_m = O0_AC_vec[idx + mm*NCisAjs];
+          double complex O0_m = O0_vec[idx + mm*NCisAjs];
+          Phys_nACm[idx+NCisAjs*(nn+NExcitation*mm)] += O_AC_n * conj(O0_m);
+          Phys_nCAm[idx+NCisAjs*(nn+NExcitation*mm)] += O_CA_n * conj(O0_m);
           
-          OO_trans_nm=0.0;
-          OO_trans_mn=0.0;
-          OO_int_nm=0.0;
-          OO_int_mn=0.0;
-          for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
-            
-            ri = Transfer[idx_trans][0];
-            rj = Transfer[idx_trans][2];
-            u  = Transfer[idx_trans][3];
-            
-            int idx_green = ijst_to_idx[ri+u*Nsite][rj+u*Nsite];
-            
-            if((ri==CisAjsIdx[idx][0]) || u==CisAjsIdx[idx][3]) {
-              OO_trans_nm += ParaTransfer[idx_trans] * Phys_nACm[idx_green+NCisAjs*(nn+NExcitation*mm)];
-              OO_trans_mn += ParaTransfer[idx_trans] * Phys_nACm[idx_green+NCisAjs*(mm+NExcitation*nn)];
-            }
-          }
+          //printf("%d %d   %f  %f   %f\n", nn,mm, creal(O_AC_n), creal(O0_m), creal(O_AC_n * conj(O0_m)) );
+          //printf("%d %d   %f  %f   %f\n\n", nn,mm, creal(O_CA_n), creal(O0_m), creal(O_CA_n * conj(O0_m)) );
           
+          //double complex H0_AC_m = H0_AC_vec[idx + mm*NCisAjs];
+          double complex H0_m = H0_vec[idx + mm*NCisAjs];
+          
+          double complex S_AC_trans_nm = 0., S_AC_int_nm = 0.;
+          double complex S_CA_trans_nm = 0., S_CA_int_nm = 0.;
+
           for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {
             rm = CoulombIntra[idx_int];
-            if(rl==rk) {
-              OO_int_nm = ParaCoulombIntra[idx_int]*myEleNum[rm+(1-s)*Nsite] * O_n;
-            }
+            if(rm==ri) S_AC_int_nm += ParaCoulombIntra[idx_int]*myEleNum[rm+(1-s)*Nsite] * O_AC_n * conj(O0_m);
+            if(rm==rj) S_CA_int_nm += ParaCoulombIntra[idx_int]*myEleNum[rm+(1-s)*Nsite] * O_CA_n * conj(O0_m);
           }
           
-          Phys_nAHCm[idx+NCisAjs*(nn+NExcitation*mm)] = 0.5*(     O_n * conj(H_m) + OO_trans_nm - OO_int_nm +
-                                                                      conj(O_m * conj(H_n) + OO_trans_mn - OO_int_mn) ) ;
+          for(rl=0;rl<Nsite;rl++) {
+            idx_trans = ijst_to_trans_idx[rj+Nsite*s][rl+Nsite*s];
+            int idx_green =   ijst_to_idx[ri+s*Nsite][rl+s*Nsite];
+            S_AC_trans_nm += ParaTransfer[idx_trans] * O_AC_vec[idx_green + nn*NCisAjs] * conj(O0_m);
+            S_CA_trans_nm += ParaTransfer[idx_trans] * O_CA_vec[idx_green + nn*NCisAjs] * conj(O0_m);
+          }
+          /*
+          for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
+            
+            rk = Transfer[idx_trans][0];
+            rl = Transfer[idx_trans][2];
+            u  = Transfer[idx_trans][3];
+            
+            int idx_green = ijst_to_idx[ri+s*Nsite][rk+s*Nsite];
+            
+            if((rl==rj) && u==s) 
+            {
+              S_AC_trans_nm += ParaTransfer[idx_trans] * O_AC_vec[idx_green + nn*NCisAjs] * conj(O0_AC_m);
+              S_CA_trans_nm += ParaTransfer[idx_trans] * O_CA_vec[idx_green + nn*NCisAjs] * conj(O0_CA_m);
+            }
+          }*/
+          Phys_nAHCm[idx+NCisAjs*(nn+NExcitation*mm)] -= 1.0*(O_AC_n*conj(H0_m) + S_AC_trans_nm - S_AC_int_nm );
+          Phys_nCHAm[idx+NCisAjs*(nn+NExcitation*mm)] -= 1.0*(O_CA_n*conj(H0_m) - S_CA_trans_nm + S_CA_int_nm );
         }
       }
-    }*/
+      //printf("\n" );
+    }
+    
     
     
     

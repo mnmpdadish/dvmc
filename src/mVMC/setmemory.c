@@ -504,8 +504,10 @@ void SetMemory() {
     
 
     ijst_to_idx = (int**)malloc(sizeof(int*)*2*Nsite);
+    ijst_to_trans_idx = (int**)malloc(sizeof(int*)*2*Nsite);
     for(i=0;i<2*Nsite;i++) {
       ijst_to_idx[i] = malloc(sizeof(int) * 2*Nsite);
+      ijst_to_trans_idx[i] = malloc(sizeof(int) * 2*Nsite);
     }    
     for(i=0;i<NCisAjs;i++){
       int ri = CisAjsIdx[i][0];
@@ -514,6 +516,16 @@ void SetMemory() {
       int  t = CisAjsIdx[i][3];
       ijst_to_idx[ri+Nsite*s][rj+Nsite*t] = i;
     }
+    for(i=0;i<NTransfer;i++){
+      int ri = Transfer[i][0];
+      int  s = Transfer[i][1];
+      int rj = Transfer[i][2];
+      int  t = Transfer[i][3];
+      ijst_to_trans_idx[ri+Nsite*s][rj+Nsite*t] = i;
+    }
+
+
+    
     
     LocalCktAltCmuAnu = (double complex**)malloc(sizeof(double complex*)*NTransfer);
     for(i=0;i<NTransfer;i++) {

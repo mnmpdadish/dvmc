@@ -860,6 +860,7 @@ void outputData() {
           fprintf(File_nAHCm, "% 0.3e  ",  creal(Phys_nAHCm[i+NCisAjs*(nn+NExcitation*mm)] ) );
           fprintf(File_nCHAm, "% 0.3e  ",  creal(Phys_nCHAm[i+NCisAjs*(nn+NExcitation*mm)] ) );
         }
+        fprintf(File_nACm, " "); fprintf(File_nCAm, " "); fprintf(File_nAHCm, " "); fprintf(File_nCHAm, " ");
       }
     }
       

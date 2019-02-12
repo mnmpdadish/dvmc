@@ -313,7 +313,7 @@ int NExcitation =4;
 int ChargeExcitationIdx[4][2] =
 {
 //dri, s
-   0,-1,
+   0, -1,
    0, 0,
    0, 1,
    0, 2
