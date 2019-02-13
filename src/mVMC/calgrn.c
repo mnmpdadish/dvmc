@@ -823,26 +823,26 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
         int rb = (dr+rj)%Nsite;
         
         
-        // <phi|ac|x> / <phi|x> = <phi|x>*delta_{ri,rj} - <phi|ca|x> / <phi|x>           <-- need to reverse indices
-        O_AC_vec[idx_vector]  = w*kronecker(ri,rj)       * ((double) (Commute_Nat_(with_nothing, ra, s, t,  0,  0, 0, myEleNum)));
-        O_AC_vec[idx_vector] -= w*LocalCisAjs[idx_green] * ((double) (Commute_Nat_(with_CisAjs,  ra, s, t, rj, ri, s, myEleNum)));
+        // <phi|ac|x> / <phi|x> = delta_{ri,rj} * <phi|x> / <phi|x> - <phi|ca|x> / <phi|x>           <-- need to reverse indices
+        O_AC_vec[idx_vector]  = kronecker(ri,rj)       * ((double) (Commute_Nat_(with_nothing, ra, s, t,  0,  0, 0, myEleNum)));
+        O_AC_vec[idx_vector] -= LocalCisAjs[idx_green] * ((double) (Commute_Nat_(with_CisAjs,  ra, s, t, rj, ri, s, myEleNum)));
 
         // <phi|ca|x> / <phi|x>
-        O_CA_vec[idx_vector]  = w*LocalCisAjs[idx] * ((double) (Commute_Nat_(with_CisAjs,  ra, s, t, ri, rj, s, myEleNum)));        
+        O_CA_vec[idx_vector]  = LocalCisAjs[idx] * ((double) (Commute_Nat_(with_CisAjs,  ra, s, t, ri, rj, s, myEleNum)));        
         
         // <phi|x>
-        O0_vec[idx_vector]  = 1.0                * ((double) (Commute_Nat_(with_nothing, rb, s, t,  0,  0, 0, myEleNum)));
+        O0_vec[idx_vector]  = 1.0 * ((double) (Commute_Nat_(with_nothing, rb, s, t,  0,  0, 0, myEleNum)));
         
-        // <phi|H_U|x> / <phi|x>
+        // <phi|H_U|x> 
         tmp=0.0;
       
         for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {
           rm = CoulombIntra[idx_int];
-          tmp += ParaCoulombIntra[idx_int]*myEleNum[rm+s*Nsite]*myEleNum[rm+(1-s)*Nsite]; 
+          tmp += ParaCoulombIntra[idx_int]*myEleNum[rm]*myEleNum[rm+Nsite]; 
         }
-        H0_vec[idx_vector] = w * tmp * ((double) (Commute_Nat_(with_nothing, rb, s, t, 0, 0, 0, myEleNum)));
+        H0_vec[idx_vector] =  tmp * ((double) (Commute_Nat_(with_nothing, rb, s, t, 0, 0, 0, myEleNum))) ;
       
-        // <phi|H_T|x> 
+        // <phi|H_T|x> / <phi|x>
         for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
           
           rm = Transfer[idx_trans][0];
@@ -850,7 +850,7 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
           u  = Transfer[idx_trans][3];
           idx_green = ijst_to_idx[rm+u*Nsite][rn+u*Nsite];
           
-          H0_vec[idx_vector] += w*ParaTransfer[idx_trans]*LocalCisAjs[idx_green]* ((double) (Commute_Nat_(with_CisAjs, rb, s, t, rm, rn, u, myEleNum)));
+          H0_vec[idx_vector] -= ParaTransfer[idx_trans]*LocalCisAjs[idx_green]* ((double) (Commute_Nat_(with_CisAjs, rb, s, t, rm, rn, u, myEleNum))) ;
         }
       }
     }
@@ -867,8 +867,8 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
         double complex O_CA_n = O_CA_vec[idx + nn*NCisAjs];
         for (mm = 0; mm < NExcitation; mm++) {
           double complex O0_m = O0_vec[idx + mm*NCisAjs];
-          Phys_nACm[idx+NCisAjs*(nn+NExcitation*mm)] += O_AC_n * conj(O0_m);
-          Phys_nCAm[idx+NCisAjs*(nn+NExcitation*mm)] += O_CA_n * conj(O0_m);
+          Phys_nACm[idx+NCisAjs*(nn+NExcitation*mm)] += w * O_AC_n * conj(O0_m);
+          Phys_nCAm[idx+NCisAjs*(nn+NExcitation*mm)] += w * O_CA_n * conj(O0_m);
           
           double complex H0_m = H0_vec[idx + mm*NCisAjs];
           
@@ -877,21 +877,23 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
 
           for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {
             rm = CoulombIntra[idx_int];
-            if(rm==ri) S_AC_int_nm += ParaCoulombIntra[idx_int]*myEleNum[rm+(1-s)*Nsite] * O_AC_n * conj(O0_m);
-            if(rm==rj) S_CA_int_nm += ParaCoulombIntra[idx_int]*myEleNum[rm+(1-s)*Nsite] * O_CA_n * conj(O0_m);
+            
+            if(rm==rj) {
+              S_AC_int_nm += ParaCoulombIntra[idx_int]*myEleNum[rm+(1-s)*Nsite] * O_AC_n * conj(O0_m);
+              S_CA_int_nm += ParaCoulombIntra[idx_int]*myEleNum[rm+(1-s)*Nsite] * O_CA_n * conj(O0_m);
+            }
           }
           
           for(rl=0;rl<Nsite;rl++) {
             idx_trans = ijst_to_trans_idx[rj+Nsite*s][rl+Nsite*s];
             int idx_green =   ijst_to_idx[ri+s*Nsite][rl+s*Nsite];
-            S_AC_trans_nm += ParaTransfer[idx_trans] * O_AC_vec[idx_green + nn*NCisAjs] * conj(O0_m);
-            S_CA_trans_nm += ParaTransfer[idx_trans] * O_CA_vec[idx_green + nn*NCisAjs] * conj(O0_m);
+            S_AC_trans_nm -= ParaTransfer[idx_trans] * O_AC_vec[idx_green + nn*NCisAjs] * conj(O0_m);
+            S_CA_trans_nm -= ParaTransfer[idx_trans] * O_CA_vec[idx_green + nn*NCisAjs] * conj(O0_m);
           }
-          Phys_nAHCm[idx+NCisAjs*(nn+NExcitation*mm)] -= 1.0*(O_AC_n*conj(H0_m) + S_AC_trans_nm - S_AC_int_nm );
-          Phys_nCHAm[idx+NCisAjs*(nn+NExcitation*mm)] -= 1.0*(O_CA_n*conj(H0_m) - S_CA_trans_nm + S_CA_int_nm );
+          Phys_nAHCm[idx+NCisAjs*(nn+NExcitation*mm)] += w*(O_AC_n*conj(H0_m) + S_AC_trans_nm + S_AC_int_nm );
+          Phys_nCHAm[idx+NCisAjs*(nn+NExcitation*mm)] += w*(O_CA_n*conj(H0_m) - S_CA_trans_nm - S_CA_int_nm );
         }
       }
-      //printf("\n" );
     }
     
     

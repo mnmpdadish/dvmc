@@ -309,8 +309,8 @@ double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *Phys
 
 typedef enum {with_nothing, with_CisAjs, with_AisCjs} commuting_with; 
 
-int NExcitation =16;
-int ChargeExcitationIdx[16][2] =
+int NExcitation =1;
+int ChargeExcitationIdx[256][2] =
 {
 //dri, s
    0, -1,
