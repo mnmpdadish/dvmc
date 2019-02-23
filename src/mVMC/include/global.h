@@ -309,11 +309,14 @@ double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *Phys
 
 typedef enum {with_nothing, with_CisAjs, with_AisCjs} commuting_with; 
 
-int NExcitation =1;
+int NExcitation =4;
 int ChargeExcitationIdx[256][2] =
 {
 //dri, s
    0, -1,
+   1, 0,
+   1, 1,
+   1, 2,
    0, 0,
    0, 1,
    0, 2,
@@ -329,15 +332,6 @@ int ChargeExcitationIdx[256][2] =
    4, 0,
    4, 1,
    4, 2
-  /*,
-  { 0, 1},
-  { 0, 2}
-  { 1, 0},
-  { 1, 1},
-  { 1, 2},
-  { 2, 0},
-  { 2, 1},
-  { 2, 2}*/
 };
 
 // following arrays has size [NCisAjs*NExcitation*NExcitation]
@@ -346,16 +340,13 @@ double complex *O_AC_vec;//[NExcitation*NCisAjs];
 double complex *O_CA_vec;//[NExcitation*NCisAjs];
 double complex *H_vec;//[NExcitation];
 
-
-
-
 int NNeighbors = 1; // assuming square lattice TJS + MC
 //int neighbors_delta_x[9] = {0,1,-1,0,1,-1,0,1,-1};
 //int neighbors_delta_y[9] = {0,0,0,1,1,1,-1,-1,-1};
-//int neighbors_delta_x[6] = {0,0,0,0,0,0};
-//int neighbors_delta_y[6] = {-1,0,1,2,3,4};
-int neighbors_delta_x[1] = {0};
-int neighbors_delta_y[1] = {0};
+int neighbors_delta_x[6] = {0,0,0,0};
+int neighbors_delta_y[6] = {1,2,3,4};
+//int neighbors_delta_x[1] = {0};
+//int neighbors_delta_y[1] = {0};
 //int neighbors_delta_y[9] = {0,1,2,0,1,2,0,1,2};
 //int neighbors_delta_x[9] = {0,0,0,1,1,1,2,2,2};
   
