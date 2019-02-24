@@ -52,15 +52,21 @@ def main():
                 [4, 2]]
   
   #excitations_choice = [3,4,6,7,9,10,12,13]
-  #excitations_choice = [0,4,7,10]
-  excitations_choice = [0,1,2,3]
+  #excitations_choice = [0,4,5,6]
+  #excitations_choice = [0,2,4,5,6,7,8,9,10,11,12,13,14,15]
+  excitations_choice = [0,2,4,5,6,7,8,9]
+  n_exc_file = 16
   
+  #directory = "./1D/16sites_U8/" 
   directory = "./" 
+  
+  
+  #list_to_print = range(5)
   list_to_print = range(9)
 
-  w_min =-7.0
-  w_max = 7.0
-  eta = 0.2
+  w_min =-8.0
+  w_max = 8.0
+  eta = 0.1
   Nw = 1000
   
   name_nACm  = directory+"output/zvo_phys_nACm_001.dat"
@@ -135,11 +141,11 @@ def main():
               
               #tmp = fact*float(vals[4+excitations_choice[nn]+excitations_choice[mm]*n_exc])
               #print tmp
-              #matrix_list[nn+mm*n_exc][drx,dry]=0.0  
+              #matrix_list[nn+mm*n_exc][drx,dry]=0.0
               matrix_list[nn+mm*n_exc][drx,dry]  += \
-                             fact*float(vals[4+excitations_choice[nn]+excitations_choice[mm]*n_exc])
+                             fact*float(vals[4+excitations_choice[nn]+excitations_choice[mm]*n_exc_file])
 #              matrix_list[mm+nn*n_exc][drx,dry]  += \
-#                            0.5*fact*float(vals[4+excitations_choice[nn]+excitations_choice[mm]*n_exc])
+#                            0.5*fact*float(vals[4+excitations_choice[nn]+excitations_choice[mm]*n_exc_file])
                             
     return deepcopy(matrix_list)
 
@@ -147,17 +153,17 @@ def main():
   nCAm_up =ReadData(ReadFile(name_nCAm))
   nAHCm_up=ReadData(ReadFile(name_nAHCm))
   nCHAm_up=ReadData(ReadFile(name_nCHAm))
-  print '\n\ntest\n'
-  for ii in range(len(nACm_up)):
-    print nACm_up[ii]
-    print
-    print nCAm_up[ii]
-    print
-    print nAHCm_up[ii]
-    print
-    print nCHAm_up[ii]
-    print
-    print
+  #print '\n\ntest\n'
+  #for ii in range(len(nACm_up)):
+    #print nACm_up[ii]
+    #print
+    #print nCAm_up[ii]
+    #print
+    #print nAHCm_up[ii]
+    #print
+    #print nCHAm_up[ii]
+    #print
+    #print
   #exit()
 
   nACm_up_k =[None]*n_exc*n_exc
@@ -178,17 +184,17 @@ def main():
     #nCHAm_up_k[ii]= np.fft.fft2(nCHAm_up[ii]-0.8)
     #nCHAm_up_k[ii]= np.fft.fft(nCHAm_up[ii][0])
 
-  print '\n\ntest_k\n'
-  for ii in range(len(nACm_up_k)):
-    print nACm_up_k[ii]
-    print
-    print nCAm_up_k[ii]
-    print
-    print nAHCm_up_k[ii]
-    print
-    print nCHAm_up_k[ii]
-    print
-    print
+  #print '\n\ntest_k\n'
+  #for ii in range(len(nACm_up_k)):
+  #  print nACm_up_k[ii]
+  #  print
+  #  print nCAm_up_k[ii]
+  #  print
+  #  print nAHCm_up_k[ii]
+  #  print
+  #  print nCHAm_up_k[ii]
+  #  print
+  #  print
   #exit()
 
   S_AC = []
@@ -213,8 +219,8 @@ def main():
   for kk in range(0,2*Nsite):
     kx = Xi(kk)
     ky = Yi(kk)
-    print "\n\n##################"
-    print kk, kx, ky
+    #print "\n\n##################"
+    #print kk, kx, ky
     
     for nn in range(0,n_exc):
       for mm in range(0,n_exc): 
@@ -223,11 +229,11 @@ def main():
         S_CA[kk][nn,mm] =  nCAm_up_k[nn+mm*n_exc][kx,ky] 
         H_CA[kk][nn,mm] = nCHAm_up_k[nn+mm*n_exc][kx,ky] 
     
-    print H_CA[kk]
-    print H_AC[kk]
+    #print H_CA[kk]
+    #print H_AC[kk]
     
-    print S_CA[kk]
-    print S_AC[kk]
+    #print S_CA[kk]
+    #print S_AC[kk]
     
     #print2matrices(H_CA[kk], H_AC[kk])
     #print2matrices(S_CA[kk], S_AC[kk])

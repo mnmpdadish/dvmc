@@ -843,6 +843,7 @@ void outputData() {
       }
     }
     
+    int NExcitation2 =NExcitation*NExcitation;
     int nn,mm;
     fprintf(File_nACm, "# i   s   j   s ");
     fprintf(File_nCAm, "# i   s   j   s ");
@@ -855,10 +856,10 @@ void outputData() {
       fprintf(File_nCHAm, "\n%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
       for (nn = 0; nn < NExcitation; nn++) {
         for (mm = 0; mm < NExcitation; mm++) {
-          fprintf(File_nACm,  "% 0.3e  ",  creal( Phys_nACm[i+NCisAjs*(nn+NExcitation*mm)] ) );
-          fprintf(File_nCAm,  "% 0.3e  ",  creal( Phys_nCAm[i+NCisAjs*(nn+NExcitation*mm)] ) );
-          fprintf(File_nAHCm, "% 0.3e  ",  creal(Phys_nAHCm[i+NCisAjs*(nn+NExcitation*mm)] ) );
-          fprintf(File_nCHAm, "% 0.3e  ",  creal(Phys_nCHAm[i+NCisAjs*(nn+NExcitation*mm)] ) );
+          fprintf(File_nACm,  "% 0.3e  ",  creal( Phys_nACm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCAm,  "% 0.3e  ",  creal( Phys_nCAm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nAHCm, "% 0.3e  ",  creal(Phys_nAHCm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCHAm, "% 0.3e  ",  creal(Phys_nCHAm[nn+NExcitation*mm + i*NExcitation2] ) );
         }
         fprintf(File_nACm, " "); fprintf(File_nCAm, " "); fprintf(File_nAHCm, " "); fprintf(File_nCHAm, " ");
       }
