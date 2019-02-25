@@ -700,21 +700,35 @@ int Commute_Nat_(commuting_with commuting, int ra, int sa, int t, int ri, int rj
       // <phi| a_is c_js |x>  =  <phi| a_is c_js |x> 
       return 1;
     }
-    else if(t==0){ //0 charge same-spin
-      // <phi| n_as c_is a_js |x>  =  <phi| c_is a_js |x> (n_as(x) + (del_a,i - del_a,j)) 
-      // <phi| n_as a_is c_js |x>  =  <phi| a_is c_js |x> (n_as(x) + (del_a,i - del_a,j)) 
+    else if(t==0){ // electron same-spin
+      // <phi| n_a:sa c_is a_js |x>  =  <phi| c_is a_js |x> (n_a:sa(x) + del_sa,s*(del_a,i - del_a,j)) 
+      // <phi| n_a:sa a_is c_js |x>  =  <phi| a_is c_js |x> (n_a:sa(x) - del_sa,s*(del_a,i - del_a,j)) 
       return eleNum[ra+sa*Nsite]     + sign * kronecker(sa,s)     * (kronecker(ra,ri)-kronecker(ra,rj));
     }
-    else if(t==1){ //1 charge reverse-spin
-      // <phi| n_a:-s c_is a_js |x>  =  <phi| c_is a_js |x> n_a:-s(x) 
-      // <phi| n_a:-s a_is c_js |x>  =  <phi| a_is c_js |x> n_a:-s(x) 
+    else if(t==1){ // electron reverse-spin
+      // <phi| n_a:sa c_is a_js |x>  =  <phi| c_is a_js |x> (n_a:sa(x) + del_-sa,s*(del_a,i - del_a,j)) 
+      // <phi| n_a:sa a_is c_js |x>  =  <phi| a_is c_js |x> (n_a:sa(x) - del_-sa,s*(del_a,i - del_a,j)) 
       return eleNum[ra+(1-sa)*Nsite] + sign * kronecker((1-sa),s) * (kronecker(ra,ri)-kronecker(ra,rj));
-      //return eleNum[ra+(1-s)*Nsite];
     }
     else if(t==2){ // doublon
       // <phi| n_a:up n_a:dn c_is a_js |x>  =  <phi| c_is a_js |x> (n_a:up(x) n_a:dn(x) + n_a:-s (del_a,i - del_a,j)) 
       // <phi| n_a:up n_a:dn a_is c_js |x>  =  <phi| a_is c_js |x> (n_a:up(x) n_a:dn(x) - n_a:-s (del_a,i - del_a,j)) 
       return (eleNum[ra]*eleNum[ra+Nsite] + sign * eleNum[ra+(1-s)*Nsite] * (kronecker(ra,ri)-kronecker(ra,rj) ));
+    }
+    else if(t==3){ // hole same-spin
+      // <phi| (1-n_a:sa) c_is a_js |x>  =  <phi| c_is a_js |x> (1- (n_a:sa(x) + del_sa,s*(del_a,i - del_a,j)))
+      // <phi| (1-n_a:sa) a_is c_js |x>  =  <phi| a_is c_js |x> (1- (n_a:sa(x) - del_sa,s*(del_a,i - del_a,j))) 
+      return 1 - (eleNum[ra+sa*Nsite] + sign * kronecker(sa,s) * (kronecker(ra,ri)-kronecker(ra,rj)));
+    }
+    else if(t==4){ // hole reverse-spin
+      // <phi| (1-n_a:sa) c_is a_js |x>  =  <phi| c_is a_js |x> (1- (n_a:sa(x) + del_-sa,s*(del_a,i - del_a,j)))
+      // <phi| (1-n_a:sa) a_is c_js |x>  =  <phi| a_is c_js |x> (1- (n_a:sa(x) - del_-sa,s*(del_a,i - del_a,j)))
+      return 1 - (eleNum[ra+(1-sa)*Nsite] + sign * kronecker((1-sa),s) * (kronecker(ra,ri)-kronecker(ra,rj)));
+    }
+    else if(t==5){ // holon
+      // <phi| (1-n_a:sa) (1-n_a:-sa) c_is a_js |x>  =  <phi| c_is a_js |x> (1-n_a:-sa(x)) ((1-n_a:dn(x)) - n_a:-s (del_a,i - del_a,j)))
+      // <phi| (1-n_a:sa) (1-n_a:-sa) a_is c_js |x>  =  <phi| a_is c_js |x> (1-n_a:-sa(x)) ((1-n_a:dn(x)) + n_a:-s (del_a,i - del_a,j))) 
+      return (1 - eleNum[ra+(1-s)*Nsite]) * (1 - eleNum[ra+s*Nsite] - sign * (kronecker(ra,ri)-kronecker(ra,rj) ));
     }
     else{
       printf("oups, error\n");
@@ -726,14 +740,23 @@ int Commute_Nat_(commuting_with commuting, int ra, int sa, int t, int ri, int rj
     if(t==-1){ //no charge
       return 1;
     }
-    else if(t==0){ //0 charge same-spin
+    else if(t==0){ //0 electron same-spin
       return eleNum[ra+sa*Nsite];
     }
-    else if(t==1){ //1 charge reverse-spin
+    else if(t==1){ //1 electron reverse-spin
       return eleNum[ra+(1-sa)*Nsite];
     }
     else if(t==2){ // doublon
       return (eleNum[ra]*eleNum[ra+Nsite]);
+    }
+    else if(t==3){ // hole same-spin
+      return (1-eleNum[ra+sa*Nsite]);
+    }
+    else if(t==4){ // hole opposite-spin
+      return (1-eleNum[ra+(1-sa)*Nsite]);
+    }
+    else if(t==5){ // holon
+      return ((1-eleNum[ra])*(1-eleNum[ra+Nsite]));
     }
     else{
       printf("oups, error\n");
@@ -842,8 +865,8 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
         int idx_green = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
         int dr = ChargeExcitationIdx[idx_exc][0];
         int t  = ChargeExcitationIdx[idx_exc][1];
-        int ra = (dr+ri)%Nsite;
-        int rb = (dr+rj)%Nsite;
+        int ra = (dr+ri+Nsite)%Nsite;
+        int rb = (dr+rj+Nsite)%Nsite;
         
         
         // <phi|ac|x> / <phi|x> = delta_{ri,rj} * <phi|x> / <phi|x> - <phi|ca|x> / <phi|x>           <-- need to reverse indices
