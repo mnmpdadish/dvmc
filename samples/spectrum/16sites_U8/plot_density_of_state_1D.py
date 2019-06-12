@@ -54,8 +54,8 @@ def main():
   #excitations_choice = [3,4,6,7,9,10,12,13]
   #excitations_choice = [0,4,5,6]
   #excitations_choice = [0,2,4,5,6,7,8,9,10,11,12,13,14,15]
-  excitations_choice = [0,2,4,5,6,7,8,9]
-  n_exc_file = 16
+  exc_choice = [0,2,4,5,6,7,8,9]
+  #exc_choice = [0,2]
   
   #directory = "./1D/16sites_U8/" 
   directory = "./" 
@@ -66,13 +66,8 @@ def main():
 
   w_min =-8.0
   w_max = 8.0
-  eta = 0.1
+  eta = 0.2
   Nw = 1000
-  
-  name_nACm  = directory+"output/zvo_phys_nACm_001.dat"
-  name_nCAm  = directory+"output/zvo_phys_nCAm_001.dat"
-  name_nAHCm = directory+"output/zvo_phys_nAHCm_001.dat"
-  name_nCHAm = directory+"output/zvo_phys_nCHAm_001.dat"
   
   zqp_opt_dat = ReadFile(directory+"output/zqp_opt.dat")[0]
   Omega = float((zqp_opt_dat.split())[0])
@@ -109,92 +104,93 @@ def main():
   #print excitations[excitations_choice[0]][0]
   #print excitations[excitations_choice[1]][0]
   
-  n_exc = len (excitations_choice)
+  n_exc = len(excitations)
+  n_exc_choice = len(exc_choice)
   
+  dirOutput = 'output/'
   Nsite=W*L
   sublatt = 1
+  fileName = dirOutput+'zvo_phys_nCHAm_001.dat'
+  
+  
+  
+  def ReadData(fileIn,col):
 
-  
-  
-  
-  def ReadData(fileIn):
-    matrix_list=[]
-    for ii in range(0,n_exc*n_exc):
-      matrix_list.append(np.zeros([W,L], dtype='f'))
-    print len(matrix_list)
-    for line in fileIn:
-      vals = line.split()
-      if vals[0] != '#':
-        #print vals
+    fileExist = os.path.isfile(fileName)
+    if not fileExist:
+      print '\nerror: file '+fileName+' does not exist.'   
+      print 'terminated.'
+      exit()
+     
+    f = open(fileName, 'r')
+
+    matrix_array=np.zeros([n_exc,n_exc,W,L], dtype='f')
+    #for ii in range(0,n_exc*n_exc):
+    #  matrix_list.append(np.zeros([W,L], dtype='f'))
+    print len(matrix_array)
+    
+    NN=0
+    for line in f:
+      if line[0] != '#':
+        vals = line.split()
+
         ri=int(vals[0])
         s= int(vals[1])
         rj=int(vals[2])
         drx = (Xi(rj)-Xi(ri))%W
         dry = (Yi(rj)-Yi(ri))%L
-        fact = 1./Nsite
+        
+        nn = int(vals[4])
+        mm = int(vals[5])
+        
+        fact = 1.0/Nsite
 
-        #if ri!=0: break
         if(s==0):
-          #print drx, dry, vals[4]
-          for nn in range(0,n_exc):
-            for mm in range(0,n_exc):
-              
-              #tmp = fact*float(vals[4+excitations_choice[nn]+excitations_choice[mm]*n_exc])
-              #print tmp
-              #matrix_list[nn+mm*n_exc][drx,dry]=0.0
-              matrix_list[nn+mm*n_exc][drx,dry]  += \
-                             fact*float(vals[4+excitations_choice[nn]+excitations_choice[mm]*n_exc_file])
-#              matrix_list[mm+nn*n_exc][drx,dry]  += \
-#                            0.5*fact*float(vals[4+excitations_choice[nn]+excitations_choice[mm]*n_exc_file])
-                            
-    return deepcopy(matrix_list)
+          #print nn,mm,drx,dry
+          matrix_array[nn,mm,drx,dry] += fact*float(vals[6+col])
+        NN+=1
+        if NN%10000==0:
+          print NN#, '/',len(matrix_list)
+    f.close()
+    return deepcopy(matrix_array)
 
-  nACm_up =ReadData(ReadFile(name_nACm))
-  nCAm_up =ReadData(ReadFile(name_nCAm))
-  nAHCm_up=ReadData(ReadFile(name_nAHCm))
-  nCHAm_up=ReadData(ReadFile(name_nCHAm))
+  #data = ReadData(ReadFile(fileName))
+  
+  nCAm_up =ReadData(fileName,0)
+  nACm_up =ReadData(fileName,1)
+  nCHAm_up=ReadData(fileName,2)
+  nAHCm_up=ReadData(fileName,3)
   #print '\n\ntest\n'
   #for ii in range(len(nACm_up)):
-    #print nACm_up[ii]
-    #print
-    #print nCAm_up[ii]
-    #print
-    #print nAHCm_up[ii]
-    #print
-    #print nCHAm_up[ii]
-    #print
-    #print
+  #  print ii , ' / ', len(nACm_up)
+  #  print
+  #  print nACm_up[ii]
+  #  print
+  #  print nCAm_up[ii]
+  #  print
+  #  print nAHCm_up[ii]
+  #  print
+  #  print nCHAm_up[ii]
+  #  print
+  #  print
   #exit()
 
-  nACm_up_k =[None]*n_exc*n_exc
-  nCAm_up_k =[None]*n_exc*n_exc
-  nAHCm_up_k=[None]*n_exc*n_exc
-  nCHAm_up_k=[None]*n_exc*n_exc
+  nACm_up_k =[None]*n_exc_choice*n_exc_choice
+  nCAm_up_k =[None]*n_exc_choice*n_exc_choice
+  nAHCm_up_k=[None]*n_exc_choice*n_exc_choice
+  nCHAm_up_k=[None]*n_exc_choice*n_exc_choice
   
   np.set_printoptions(precision=9)
   
-  for ii in range(0,n_exc*n_exc):
-    #printmatrix(MACM_up[ii])
-    #print
-    
-    nACm_up_k[ii] = np.fft.fft2(nACm_up[ii])
-    nCAm_up_k[ii] = np.fft.fft2(nCAm_up[ii])
-    nAHCm_up_k[ii]= np.fft.fft2(nAHCm_up[ii])
-    nCHAm_up_k[ii]= np.fft.fft2(nCHAm_up[ii])
-    #nCHAm_up_k[ii]= np.fft.fft2(nCHAm_up[ii]-0.8)
-    #nCHAm_up_k[ii]= np.fft.fft(nCHAm_up[ii][0])
+  print '\nfft_AC'
+  for ii in range(0,n_exc_choice):
+    print ii,' / ',n_exc_choice
+    for jj in range(0,n_exc_choice):
+      nACm_up_k [ii+n_exc_choice*jj] = np.fft.fft2(nACm_up[exc_choice[ii],exc_choice[jj],:,:])
+      nAHCm_up_k[ii+n_exc_choice*jj] = np.fft.fft2(nAHCm_up[exc_choice[ii],exc_choice[jj],:,:])
+      nCAm_up_k [ii+n_exc_choice*jj] = np.fft.fft2(nCAm_up[exc_choice[ii],exc_choice[jj],:,:])
+      nCHAm_up_k[ii+n_exc_choice*jj] = np.fft.fft2(nCHAm_up[exc_choice[ii],exc_choice[jj],:,:])
 
-  #print '\n\ntest_k\n'
-  #for ii in range(len(nACm_up_k)):
-  #  print nACm_up_k[ii]
-  #  print
-  #  print nCAm_up_k[ii]
-  #  print
-  #  print nAHCm_up_k[ii]
-  #  print
-  #  print nCHAm_up_k[ii]
-  #  print
-  #  print
   #exit()
 
   S_AC = []
@@ -207,11 +203,11 @@ def main():
   
   for kk in range(0,2*Nsite):
     print kk
-    S_AC.append(np.zeros([n_exc,n_exc], dtype='cfloat'))
-    S_CA.append(np.zeros([n_exc,n_exc], dtype='cfloat'))
-    H_AC.append(np.zeros([n_exc,n_exc], dtype='cfloat'))
-    H_CA.append(np.zeros([n_exc,n_exc], dtype='cfloat'))
-  #print n_exc
+    S_AC.append(np.zeros([n_exc_choice,n_exc_choice], dtype='cfloat'))
+    S_CA.append(np.zeros([n_exc_choice,n_exc_choice], dtype='cfloat'))
+    H_AC.append(np.zeros([n_exc_choice,n_exc_choice], dtype='cfloat'))
+    H_CA.append(np.zeros([n_exc_choice,n_exc_choice], dtype='cfloat'))
+  #print n_exc_choice
   #exit()
 
   spectrum = np.zeros([len(list_to_print),Nw], dtype='float')
@@ -222,12 +218,13 @@ def main():
     #print "\n\n##################"
     #print kk, kx, ky
     
-    for nn in range(0,n_exc):
-      for mm in range(0,n_exc): 
-        S_AC[kk][nn,mm] =  nACm_up_k[nn+mm*n_exc][kx,ky] 
-        H_AC[kk][nn,mm] = nAHCm_up_k[nn+mm*n_exc][kx,ky] 
-        S_CA[kk][nn,mm] =  nCAm_up_k[nn+mm*n_exc][kx,ky] 
-        H_CA[kk][nn,mm] = nCHAm_up_k[nn+mm*n_exc][kx,ky] 
+    for nn in range(0,n_exc_choice):
+      for mm in range(0,n_exc_choice): 
+        print kk,nn,mm
+        S_AC[kk][nn,mm] =  nACm_up_k[nn+mm*n_exc_choice][kx,ky] 
+        H_AC[kk][nn,mm] = nAHCm_up_k[nn+mm*n_exc_choice][kx,ky] 
+        S_CA[kk][nn,mm] =  nCAm_up_k[nn+mm*n_exc_choice][kx,ky] 
+        H_CA[kk][nn,mm] = nCHAm_up_k[nn+mm*n_exc_choice][kx,ky] 
     
     #print H_CA[kk]
     #print H_AC[kk]
@@ -238,10 +235,10 @@ def main():
     #print2matrices(H_CA[kk], H_AC[kk])
     #print2matrices(S_CA[kk], S_AC[kk])
       
-    hermitizeMatrix(S_AC[kk])
-    hermitizeMatrix(H_AC[kk])
-    hermitizeMatrix(S_CA[kk])
-    hermitizeMatrix(H_CA[kk])
+    #hermitizeMatrix(S_AC[kk])
+    #hermitizeMatrix(H_AC[kk])
+    #hermitizeMatrix(S_CA[kk])
+    #hermitizeMatrix(H_CA[kk])
 
   #exit()    
   
@@ -267,9 +264,9 @@ def main():
       
       e_ca1= eigvals(H_CA[kk], S_CA[kk])
       e_ac1= eigvals(H_AC[kk], S_AC[kk])
-      for nn in range(n_exc):
+      for nn in range(n_exc_choice):
         print pretty_c(e_ac1[nn]-Omega),
-      for nn in range(n_exc):
+      for nn in range(n_exc_choice):
         print pretty_c(e_ca1[nn]-Omega),
       print 
       print

@@ -836,4 +836,110 @@ void saveEleConfigBF(const int sample, const double logIp,
   */
   return;
 }
+
+void MakeExactSample(MPI_Comm comm) {
+  int mi,mj,ri,rj,t,i,j;
+  int sample;
+  int icount=0,jcount=0;
+  int isample=0;
+  int iel,jel;
+  int NAllCfg = pow(2,Nsite);
+  int NExactSample = pow(2,Nsite2);
+  int EleExactCfg[2*Nsite * NExactSample]; /* the number of samples */
+  int EleExactIdx[2*Ne    * NExactSample]; /* the number of samples */
+  int EleExactNum[2*Nsite * NExactSample]; /* the number of samples */
+
+  double complex logIpOld=0.0; /* logarithm of inner product <phi|L|x> */
+  int TempNumUp[Nsite],TempNumDn[Nsite];
+  //int TempEleCfg[Nsite],TempEleIdx[Ne],TempEleNum[Nsite],TempEleProjCnt[Nsite];
+  double x,w;
+  char filename[20];
+
+  int icfg,jcfg,sampleStart,sampleEnd;
+  int rank,size,tmp;
+
+  int *moto = TmpEleIdx;
+
+  //FILE *cfp;
+  //int accepttime;
+
+  MPI_Comm_size(comm,&size);
+  MPI_Comm_rank(comm,&rank);
+
+  SplitLoop(&sampleStart,&sampleEnd,NExactSample,rank,size);
+  for(icfg=0;icfg<NAllCfg;icfg++){
+     icount = 0;
+     tmp = icfg;
+     for(i=0; i<Nsite; i++){
+        TempNumUp[i] = tmp % 2; 
+        if(TempNumUp[i] == 1){
+           icount += 1;
+        }
+        tmp = tmp / 2;
+     }
+     for(jcfg=0;jcfg<NAllCfg;jcfg++){
+        jcount = 0;
+        tmp = jcfg;
+        for(j=0; j<Nsite; j++){
+           TempNumDn[j] = tmp % 2; 
+           if(TempNumDn[j] == 1){
+              jcount += 1;
+           }
+           tmp = tmp / 2;
+        }
+    // printf("icfg=%d,icount=%d\n",icfg,icount);
+        if(icount == Ne && jcount == Ne){
+          iel = 0;
+          jel = 0;
+      // printf("isample=%d,AllSample=%d\n",isample,sampleEnd-sampleStart);
+          for(i=0; i<Nsite; i++){
+            EleExactNum[isample*2*Nsite + i] = TempNumUp[i];
+            EleExactCfg[isample*2*Nsite + i] = -1;
+            EleExactNum[isample*2*Nsite + i+Nsite] = TempNumDn[i];
+            EleExactCfg[isample*2*Nsite + i+Nsite] = -1;
+            if(TempNumUp[i]==1){
+              EleExactIdx[isample*2*Ne + iel ] = i;
+              EleExactCfg[isample*2*Nsite + i] = iel;
+              iel ++;
+            }
+            if(TempNumDn[i]==1){
+              EleExactIdx[isample*2*Ne + jel+Ne]    = i;
+              EleExactCfg[isample*2*Nsite + i+Nsite] = jel;
+              jel ++;
+            }
+         }
+         isample +=1;
+       }
+     }
+  }
+ 
+  NVMCSample = NExactSample = isample;
+  SplitLoop(&sampleStart,&sampleEnd,NExactSample,rank,size);
+  for(sample=sampleStart;sample<sampleEnd;sample++) {
+    //printf("sample=%d\n",sample);
+    /* save Electron Configuration */
+    TmpEleIdx = EleExactIdx + sample*2*Ne;
+    //printf("Tmp=%d,moto=%d\n",TmpEleIdx[0],EleExactIdx[sample*Ne]);
+    TmpEleCfg = EleExactCfg + sample*2*Nsite;
+    //printf("Tmp=%d,moto=%d\n",TmpEleCfg[0],EleExactCfg[sample*Nsite]);
+    TmpEleNum = EleExactNum + sample*2*Nsite;
+    //printf("Tmp=%d,moto=%d\n",TmpEleNum[0],EleExactNum[sample*Nsite]);
+    MakeProjCnt(TmpEleProjCnt,TmpEleNum);
+    //printf("Tmp=%d\n",TmpEleProjCnt[0]);
+    //saveEleConfig(sample,logIpOld,0.0,TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt);
+    saveEleConfig(sample,0.0,TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt);
+    
+    printf("%d  ",sample);
+    for(i=0;i<Nsite;i++){
+      printf("%d",TmpEleNum[i]);
+      printf("%d",TmpEleNum[i+Nsite]);
+    }
+    printf("\n");
+  } /* end of outstep */
+  TmpEleIdx = moto;
+
+  return;
+}
+
+
 #endif

@@ -307,16 +307,14 @@ double complex *PhysNCAN, *PhysNCAM, *PhysNCAD, *PhysMCAN, *PhysMCAM, *PhysMCAD,
 double complex *PhysNAHCN, *PhysNAHCM, *PhysNAHCD, *PhysMAHCN, *PhysMAHCM, *PhysMAHCD, *PhysDAHCN, *PhysDAHCM, *PhysDAHCD;
 double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *PhysMCHAD, *PhysDCHAN, *PhysDCHAM, *PhysDCHAD;
 
-typedef enum {with_nothing, with_CisAjs, with_AisCjs} commuting_with; 
+typedef enum {with_nothing, with_CisAjs, with_AisCjs,with_CisCmuAnuAjs,with_AisCmuAnuCjs} commuting_with; 
 
-int NExcitation =16;
+int NExcitation = 10;
 int ChargeExcitationIdx[256][2] =
 {
 //dri, s
    0, -1,
-   0, 0,
    0, 1,
-   0, 2,
    1, 0,
    1, 1,
    1, 2,
@@ -337,11 +335,11 @@ double complex *O_AC_vec;//[NExcitation*NCisAjs];
 double complex *O_CA_vec;//[NExcitation*NCisAjs];
 double complex *H_vec;//[NExcitation];
 
-int NNeighbors = 1; // assuming square lattice TJS + MC
+int NNeighbors = 3; // assuming square lattice TJS + MC
 //int neighbors_delta_x[9] = {0,1,-1,0,1,-1,0,1,-1};
 //int neighbors_delta_y[9] = {0,0,0,1,1,1,-1,-1,-1};
-int neighbors_delta_x[6] = {0,0,0,0};
-int neighbors_delta_y[6] = {1,2,3,4};
+int neighbors_delta_x[5] = {0,0,0,0,0};
+int neighbors_delta_y[5] = {0,1,2,3,4};
 //int neighbors_delta_x[1] = {0};
 //int neighbors_delta_y[1] = {0};
 //int neighbors_delta_y[9] = {0,1,2,0,1,2,0,1,2};

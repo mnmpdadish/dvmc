@@ -552,6 +552,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
         for(tmp_i=0;tmp_i<NQPFull*(Nsize*Nsize+1);tmp_i++)     InvM_real[tmp_i]= creal(InvM[tmp_i]);
         StopTimer(69);
         // SlaterElm_real will be used in CalculateMAll, note that SlaterElm will not change before SR
+        //MakeExactSample(comm_child1);
         VMCMakeSample_real(comm_child1);
         // only for real TBC
         StartTimer(69);
@@ -561,6 +562,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
         // only for real TBC
       }else{
         if(iFlgOrbitalGeneral==0){
+          //MakeExactSample(comm_child1);
           VMCMakeSample(comm_child1);
         }else{
           //[s]MDEBUG
@@ -831,6 +833,24 @@ void outputData() {
       fprintf(FileN1, "\n");
     }
     fprintf(FileN1, "\n");
+    
+    int NExcitation2 = NExcitation*NExcitation;
+    int nn,mm;
+    fprintf(File_nCHAm, "#i s j s   n m");
+    for (i = 0; i < NCisAjs; i++) {
+      for (nn = 0; nn < NExcitation; nn++) {
+        for (mm = 0; mm < NExcitation; mm++) {
+          fprintf(File_nCHAm, "\n %d %d %d %d   ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+          fprintf(File_nCHAm, "%d %d  ", nn,mm);
+          fprintf(File_nCHAm, "% 0.4f   ",  creal( Phys_nCAm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCHAm, "% 0.4f   ",  creal( Phys_nACm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCHAm, "% 0.4f   ",  creal(Phys_nCHAm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCHAm, "% 0.4f   ",  creal(Phys_nAHCm[nn+NExcitation*mm + i*NExcitation2] ) );
+        }
+        fprintf(File_nCHAm, " "); 
+      }
+    }
+    
     printf("ending of print files.\n"); fflush(stdout);
     
   }
@@ -843,25 +863,20 @@ void outputData() {
       }
     }
     
-    int NExcitation2 =NExcitation*NExcitation;
+    int NExcitation2 = NExcitation*NExcitation;
     int nn,mm;
-    fprintf(File_nACm, "# i   s   j   s ");
-    fprintf(File_nCAm, "# i   s   j   s ");
-    fprintf(File_nAHCm, "# i   s   j   s ");
-    fprintf(File_nCHAm, "# i   s   j   s ");
+    fprintf(File_nCHAm, "#i s j s   n m");
     for (i = 0; i < NCisAjs; i++) {
-      fprintf(File_nACm, "\n%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-      fprintf(File_nCAm, "\n%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-      fprintf(File_nAHCm, "\n%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-      fprintf(File_nCHAm, "\n%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
       for (nn = 0; nn < NExcitation; nn++) {
         for (mm = 0; mm < NExcitation; mm++) {
-          fprintf(File_nACm,  "% 0.3e  ",  creal( Phys_nACm[nn+NExcitation*mm + i*NExcitation2] ) );
-          fprintf(File_nCAm,  "% 0.3e  ",  creal( Phys_nCAm[nn+NExcitation*mm + i*NExcitation2] ) );
-          fprintf(File_nAHCm, "% 0.3e  ",  creal(Phys_nAHCm[nn+NExcitation*mm + i*NExcitation2] ) );
-          fprintf(File_nCHAm, "% 0.3e  ",  creal(Phys_nCHAm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCHAm, "\n %d %d %d %d   ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+          fprintf(File_nCHAm, "%d %d  ", nn,mm);
+          fprintf(File_nCHAm, "% 0.4e   ",  creal( Phys_nCAm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCHAm, "% 0.4e   ",  creal( Phys_nACm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCHAm, "% 0.4e   ",  creal(Phys_nCHAm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCHAm, "% 0.4e   ",  creal(Phys_nAHCm[nn+NExcitation*mm + i*NExcitation2] ) );
         }
-        fprintf(File_nACm, " "); fprintf(File_nCAm, " "); fprintf(File_nAHCm, " "); fprintf(File_nCHAm, " ");
+        fprintf(File_nCHAm, " "); 
       }
     }
       

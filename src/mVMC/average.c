@@ -231,6 +231,25 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   vec = PhysCisAjs;
   weightAverageReduce_fcmp(n,vec,comm);
   
+  
+  
+  
+  n = NCisAjs*NExcitation*NExcitation;
+  
+  vec = Phys_nCHAm;
+  weightAverageReduce_fcmp(n,vec,comm);
+
+  vec = Phys_nAHCm;
+  weightAverageReduce_fcmp(n,vec,comm);
+
+  vec = Phys_nCAm;
+  weightAverageReduce_fcmp(n,vec,comm);
+
+  vec = Phys_nACm;
+  weightAverageReduce_fcmp(n,vec,comm);
+
+  
+  
   return;
 }
 
@@ -252,7 +271,7 @@ void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
   vec = Phys_nACm;
   weightAverageReduce_fcmp(n,vec,comm);
 
-  n = NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
+  n = NCisAjs;//+NCisAjsCktAlt+NCisAjsCktAltDC;
   vec = PhysCisAjs;
   weightAverageReduce_fcmp(n,vec,comm);
   

@@ -404,7 +404,7 @@ void SetMemory() {
       }
     }
     
-    if(NVMCCalMode==3){
+    if((NVMCCalMode==3)||(NVMCCalMode==2)){
       printf("memory usage: %d times double complex.\n", NCisAjs*NExcitation*NExcitation);
       Phys_nCHAm = (double complex*)malloc(sizeof(double complex)*(NCisAjs*NExcitation*NExcitation));
       Phys_nAHCm = (double complex*)malloc(sizeof(double complex)*(NCisAjs*NExcitation*NExcitation));
@@ -412,20 +412,23 @@ void SetMemory() {
       Phys_nACm  = (double complex*)malloc(sizeof(double complex)*(NCisAjs*NExcitation*NExcitation));
     }
     
-    else if(NVMCCalMode==2){
-      // MC + TJS
+    if(NVMCCalMode==2){
       PhysN1 = (double complex*)malloc(sizeof(double complex)
                       *(Nsite*ONE_SITE_PHYS_QTY) );
 
       PhysN2 = (double complex*)malloc(sizeof(double complex)
                       *(NCisAjs*TWO_SITES_PHYS_QTY) );
+                      
+      //*
 
       Phys_G_Moments = (double complex*)malloc(sizeof(double complex)
                       *(NCisAjs*PHYS_MOMENTS_QTY) );
       
+      
       Phys_AC_quantities = (double complex*)malloc(sizeof(double complex)
                       *(4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors));
-                      
+                 
+           
       printf("memory usage: %d times double complex.\n", 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors);
       
       PhysAC = Phys_AC_quantities + 0*NCisAjs;   
@@ -500,6 +503,7 @@ void SetMemory() {
       PhysDCHAN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +33*NCisAjs*NNeighbors*NNeighbors;
       PhysDCHAM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +34*NCisAjs*NNeighbors*NNeighbors;
       PhysDCHAD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +35*NCisAjs*NNeighbors*NNeighbors;
+      //*/
     }
     
 
@@ -525,12 +529,11 @@ void SetMemory() {
     }
 
 
-    
-    
     LocalCktAltCmuAnu = (double complex**)malloc(sizeof(double complex*)*NTransfer);
     for(i=0;i<NTransfer;i++) {
       LocalCktAltCmuAnu[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
     }
+    
     
     int i;
     LocalAHTCijsklm = (double complex**)malloc(sizeof(double complex*)*NTransfer);
@@ -539,6 +542,7 @@ void SetMemory() {
       LocalAHTCijsklm[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
       LocalCHTAijsklm[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
     }
+    
   }
 
   initializeWorkSpaceAll();

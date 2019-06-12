@@ -643,12 +643,18 @@ void clearPhysQuantity(){
   } else if(NVMCCalMode==2) {
 //#pragma omp parallel for default(shared) private(i)
     for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0+0.0*I;
-    for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++) PhysN1[i] = 0.0+0.0*I;
+    for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++)  PhysN1[i] = 0.0+0.0*I;
     for(i=0;i<Nsite*PHYS_MOMENTS_QTY;i++) Phys_G_Moments[i] = 0.0+0.0*I;
     
     for(i=0;i<4*NCisAjs + 4*6*NCisAjs*NNeighbors + 4*9*NCisAjs*NNeighbors*NNeighbors; i++){
       Phys_AC_quantities[i] = 0.0+0.0*I;
     } 
+    for(i=0;i<NCisAjs*NExcitation*NExcitation; i++){
+      Phys_nCHAm[i] = 0.0+0.0*I;
+      Phys_nAHCm[i] = 0.0+0.0*I;
+      Phys_nCAm[i]  = 0.0+0.0*I;
+      Phys_nACm[i]  = 0.0+0.0*I;
+    }
   } else if(NVMCCalMode==3) {
     for(i=0;i<NCisAjs*NExcitation*NExcitation; i++){
       Phys_nCHAm[i] = 0.0+0.0*I;
