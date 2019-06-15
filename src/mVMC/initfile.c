@@ -157,7 +157,7 @@ void InitFilePhysCal(int i, int rank) {
     File_NACN = fopen(fileName, "w");
     
     
-    ///*
+    /*
     
     sprintf(fileName, "%s_phys_nACm_%03d.dat", CDataFileHead, idx);
     File_nACm = fopen(fileName, "w");
@@ -176,7 +176,7 @@ void InitFilePhysCal(int i, int rank) {
       sprintf(fileName, "%s_cisajs_%03d.dat", CDataFileHead, idx);
       FileCisAjs = fopen(fileName, "w");
     }
-    //*
+    /*
     sprintf(fileName, "%s_phys_nACm_%03d.dat", CDataFileHead, idx);
     File_nACm = fopen(fileName, "w");
 

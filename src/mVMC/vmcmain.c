@@ -650,9 +650,9 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       if(rank==0) {
         outputData();
         printf("after output.\n"); fflush(stdout);
-        fclose(File_nACm);
-        fclose(File_nCAm);
-        fclose(File_nAHCm);
+        //fclose(File_nACm);
+        //fclose(File_nCAm);
+        //fclose(File_nAHCm);
         fclose(File_nCHAm);
         printf("after close.\n"); fflush(stdout);
       }
