@@ -309,31 +309,63 @@ double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *Phys
 
 typedef enum {with_nothing, with_CisAjs, with_AisCjs,with_CisCmuAnuAjs,with_AisCmuAnuCjs} commuting_with; 
 
-int NExcitation = 10;
-int ChargeExcitationIdx[256][2] =
+int NExcitation = 46;
+int ChargeExcitationIdx[256][3] =
 {
 //dri, s
-   0, -1,
-   0, 1,
-   1, 0,
-   1, 1,
-   1, 2,
-   2, 0,
-   2, 1,
-   2, 2,
-   3, 0,
-   3, 1,
-   3, 2,
-   4, 0,
-   4, 1,
-   4, 2
+  -1, 0, 0,
+   1, 0, 0,
+   0, 1, 0,
+   1, 1, 0,
+   2, 1, 0,
+   3, 1,-1,
+   3, 1, 0,
+   3, 1, 2,
+   3, 1, 3,
+   4, 1, 2,
+   4, 1, 3,
+   4, 1, 4,
+   0, 2, 0,
+   1, 2, 0,
+   2, 2, 0,
+   3, 2, 0,
+   3, 2, 1,
+   3, 2, 3,
+   3, 2, 4,
+   4, 2, 1,
+   4, 2, 3,
+   4, 2, 4,
+   0, 3, 0,
+   1, 3, 0,
+   2, 3, 0,
+   3, 3, 1,
+   3, 3, 2,
+   3, 3, 4,
+   3, 3, 5,
+   4, 3, 1,
+   4, 3, 2,
+   4, 3, 4,
+   4, 3, 5,
+   0, 4, 0,
+   1, 4, 0,
+   2, 4, 0,
+   3, 4, 1,
+   3, 4, 2,
+   3, 4, 3,
+   3, 4, 5,
+   3, 4, 6,
+   3, 4, 7,
+   4, 4, 2,
+   4, 4, 3,
+   4, 4, 5,
+   4, 4, 6,
 };
 
 // following arrays has size [NCisAjs*NExcitation*NExcitation]
 double complex *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;
-double complex *O_AC_vec;//[NExcitation*NCisAjs];
-double complex *O_CA_vec;//[NExcitation*NCisAjs];
-double complex *H_vec;//[NExcitation];
+double complex *O_AC_vec; //[NExcitation*NCisAjs];
+double complex *O_CA_vec; //[NExcitation*NCisAjs];
+double complex *H_vec;    //[NExcitation];
 
 int NNeighbors = 3; // assuming square lattice TJS + MC
 //int neighbors_delta_x[9] = {0,1,-1,0,1,-1,0,1,-1};

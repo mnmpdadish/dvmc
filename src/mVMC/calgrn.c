@@ -227,15 +227,15 @@ void MultiplyFactorGFs(int idx, int n, int *rsk, int *rsl,int *eleNum,
   int N2 = NExcitation*NExcitation;
   int idx_exc_right,idx_exc_left;
   for(idx_exc_left=0;idx_exc_left<NExcitation;idx_exc_left++){
-    int dr = ChargeExcitationIdx[idx_exc_left][0];
-    int ta = ChargeExcitationIdx[idx_exc_left][1];
+    int dr = ChargeExcitationIdx[idx_exc_left][1];
+    int ta = ChargeExcitationIdx[idx_exc_left][0];
     int ra = (dr+rj+Nsite)%Nsite;
     int sa = s;
     double factor_left = FactorLeft(n,rsk,rsl,ta,ra,sa,eleNum);
     
     for(idx_exc_right=0;idx_exc_right<NExcitation;idx_exc_right++){
-      int dr = ChargeExcitationIdx[idx_exc_right][0];
-      int tb = ChargeExcitationIdx[idx_exc_right][1];
+      int dr = ChargeExcitationIdx[idx_exc_right][1];
+      int tb = ChargeExcitationIdx[idx_exc_right][0];
       int rb = (dr+ri+Nsite)%Nsite;
       int sb = s;
       double tmp = AC_input * factor_left * FactorRight(tb,rb,sb,eleNum);
@@ -372,7 +372,7 @@ void MultiplyFactor2GFs(int idx, int NumElem, int n, int *rsk, int *rsl,int *ele
 
 
 
-int kronecker(int i,int j){
+int del(int i,int j){
   return ((i==j)? 1:0);
 }
 
@@ -537,7 +537,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
 
       // <a|c>
       // Composite Fermion correlation functions TJS + MC
-      tmp =  1.*kronecker(rk,rl) - 1.*LocalCisAjs[idx];
+      tmp =  1.*del(rk,rl) - 1.*LocalCisAjs[idx];
 //      MultiplyFactorGFs(idx,1,&rsk1[0],&rsl1[0],myEleNum,0,0,w*tmp,Phys_nACm);
       MultiplyFactor2GFs(idx,NCisAjs,1,&rsk1[0],&rsl1[0],myEleNum,0,0,w*tmp,
                           PhysAC, PhysACN, PhysACM, PhysACD,
@@ -571,12 +571,12 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
 
         rm = CoulombIntra[idx_int];
         factor = ParaCoulombIntra[idx_int]*
-                 ( 1.*kronecker(rk,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
+                 ( 1.*del(rk,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
 
-        tmp_int_AHC += factor*( 1.*kronecker(rk,rl) - LocalCisAjs[idx]);        
+        tmp_int_AHC += factor*( 1.*del(rk,rl) - LocalCisAjs[idx]);        
 
         factor = ParaCoulombIntra[idx_int]*
-                 (-1.*kronecker(rl,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
+                 (-1.*del(rl,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
     
         tmp_int_CHA += factor*LocalCisAjs[idx];
       }
@@ -667,95 +667,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-int Commute_Nat_with_CisAjs(int ra, int t, int ri, int rj, int s, int *eleNum) {
-  Commute_Nat_(with_CA, ra, t, ri, rj, s, eleNum);
-}
-
-int Commute_Nat_with_AisCjs(int ra, int t, int ri, int rj, int s, int *eleNum) {
-  Commute_Nat_(with_AC, ra, t, ri, rj, s, eleNum);
-}
-
-
-/*
-int Commute_Nat_with_AisCjs(int ra, int t, int ri, int rj, int s, int *eleNum) {
-  if(t==2){ // both spins
-    return (eleNum[ra]*eleNum[ra+Nsite] + eleNum[ra+(1-s)*Nsite] * (kronecker(ra,rj)-kronecker(ra,ri) ));
-  }
-  else if(t==-1){ // both spins
-    return (eleNum[ra]*eleNum[ra+Nsite] + eleNum[ra+(1-s)*Nsite] * (kronecker(ra,rj)-kronecker(ra,ri) ));
-  }
-  else{
-    return eleNum[ra+t*Nsite]+kronecker(t,s)*(kronecker(ra,rj)-kronecker(ra,ri));
-  }
-}
-*/
-
-
-
-// A: c     (annihilation operator)
-// C: c^dag (creation operator)
-
-/*
-void MultiplyFactor2GFs_commute_with_nothing( int r_n, int s_n, int *eleNum, double complex input, double complex *output) {
-  int idx_exc;
-  for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
-    int dr = ChargeExcitationIdx[idx_exc][0];
-    int t  = ChargeExcitationIdx[idx_exc][1];
-    
-    int ra = (dr+r_n)%Nsite;
-    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_nothing, ra, s_n, t, 0, 0, 0, eleNum)));
-  }
-} 
-
-
-void MultiplyFactor2GFs_commute_with_AisCjs(int ri, int rj, int s, int r_n, int s_n, int *eleNum, double complex input, double complex *output) {
-  int idx_exc;
-  for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
-    int dr = ChargeExcitationIdx[idx_exc][0];
-    int t  = ChargeExcitationIdx[idx_exc][1];
-    
-    int ra = (dr+r_n)%Nsite;
-    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_AisCjs, ra, s_n, t, ri, rj, s, eleNum)));
-  }
-} 
-
-
-void MultiplyFactor2GFs_commute_with_CisAjs(int ri, int rj, int s, int r_n, int s_n, int *eleNum, double complex input, double complex *output) {
-  int idx_exc;
-  for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
-    int dr = ChargeExcitationIdx[idx_exc][0];
-    int t  = ChargeExcitationIdx[idx_exc][1];
-    
-    int ra = (dr+r_n)%Nsite;
-    output[idx_exc*NCisAjs] += input * ((double) (Commute_Nat_(with_CisAjs, ra, s_n, t, ri, rj, s, eleNum)));
-  }
-} 
-*/
-
-
-
-
-
-int Commute_Nat_(commuting_with commuting, int ra, int sa, int t, int ri, int rj, int s, int rm, int rn, int u, int *eleNum) {
+int Commute_Nat_(commuting_with commuting, int ra, int rb, int sa, int t, int ri, int rj, int s, int rm, int rn, int u, int *eleNum) {
   int sign;
   if((commuting==with_CisCmuAnuAjs) || (commuting==with_AisCmuAnuCjs)) {
     if(commuting==with_CisCmuAnuAjs) {sign = 1;}
@@ -765,16 +677,24 @@ int Commute_Nat_(commuting_with commuting, int ra, int sa, int t, int ri, int rj
       return 1;
     }
     else if(t==0){ // electron same-spin
-      return eleNum[ra+sa*Nsite]     + sign * kronecker(sa,s) * (kronecker(ra,ri)-kronecker(ra,rj))     
-                                            + kronecker(sa,u) * (kronecker(ra,rm)-kronecker(ra,rn));
+      return eleNum[ra+sa*Nsite]     + sign * del(sa,s) * (del(ra,ri)-del(ra,rj))     
+                                            + del(sa,u) * (del(ra,rm)-del(ra,rn));
     }
     else if(t==1){ // electron reverse-spin
-      return eleNum[ra+(1-sa)*Nsite] + sign * kronecker((1-sa),s) * (kronecker(ra,ri)-kronecker(ra,rj)) 
-                                            + kronecker((1-sa),u) * (kronecker(ra,rm)-kronecker(ra,rn));
+      return eleNum[ra+(1-sa)*Nsite] + sign * del((1-sa),s) * (del(ra,ri)-del(ra,rj)) 
+                                            + del((1-sa),u) * (del(ra,rm)-del(ra,rn));
     }
     else if(t==2){ // doublon
-      return (eleNum[ra]       + sign * (kronecker(ra,ri)-kronecker(ra,rj) ) * kronecker(s,0) + (kronecker(ra,rm)-kronecker(ra,rn) ) * kronecker(u,0) )
-            *(eleNum[ra+Nsite] + sign * (kronecker(ra,ri)-kronecker(ra,rj) ) * kronecker(s,1) + (kronecker(ra,rm)-kronecker(ra,rn) ) * kronecker(u,1) );
+      return (eleNum[ra]       + sign * (del(ra,ri)-del(ra,rj) ) * del(s,0) + (del(ra,rm)-del(ra,rn) ) * del(u,0) )
+            *(eleNum[ra+Nsite] + sign * (del(ra,ri)-del(ra,rj) ) * del(s,1) + (del(ra,rm)-del(ra,rn) ) * del(u,1) );
+    }
+    else if(t==3){
+      return (eleNum[ra+(1-sa)*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) * del(s,1-sa) + (del(ra,rm)-del(ra,rn) ) * del(u,1-sa) )
+            *(eleNum[rb+(1-sa)*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) * del(s,1-sa) + (del(rb,rm)-del(rb,rn) ) * del(u,1-sa) );
+    }
+    else if(t==4){
+      return (eleNum[ra+(1-sa)*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) * del(s,1-sa) + (del(ra,rm)-del(ra,rn) ) * del(u,1-sa) )
+            *(eleNum[rb+   sa *Nsite] + sign * (del(rb,ri)-del(rb,rj) ) * del(s,sa)   + (del(rb,rm)-del(rb,rn) ) * del(u,sa) );
     }
     else{
       printf("oups, error\n");
@@ -796,33 +716,43 @@ int Commute_Nat_(commuting_with commuting, int ra, int sa, int t, int ri, int rj
     else if(t==0){ // electron same-spin
       // <phi| n_a:sa c_is a_js |x>  =  <phi| c_is a_js |x> (n_a:sa(x) + del_sa,s*(del_a,i - del_a,j)) 
       // <phi| n_a:sa a_is c_js |x>  =  <phi| a_is c_js |x> (n_a:sa(x) - del_sa,s*(del_a,i - del_a,j)) 
-      return eleNum[ra+sa*Nsite]     + sign * kronecker(sa,s)     * (kronecker(ra,ri)-kronecker(ra,rj));
+      return eleNum[ra+sa*Nsite]     + sign * del(sa,s)     * (del(ra,ri)-del(ra,rj));
     }
     else if(t==1){ // electron reverse-spin
       // <phi| n_a:sa c_is a_js |x>  =  <phi| c_is a_js |x> (n_a:sa(x) + del_-sa,s*(del_a,i - del_a,j)) 
       // <phi| n_a:sa a_is c_js |x>  =  <phi| a_is c_js |x> (n_a:sa(x) - del_-sa,s*(del_a,i - del_a,j)) 
-      return eleNum[ra+(1-sa)*Nsite] + sign * kronecker((1-sa),s) * (kronecker(ra,ri)-kronecker(ra,rj));
+      return eleNum[ra+(1-sa)*Nsite] + sign * del((1-sa),s) * (del(ra,ri)-del(ra,rj));
     }
     else if(t==2){ // doublon
       // <phi| n_a:up n_a:dn c_is a_js |x>  =  <phi| c_is a_js |x> (n_a:up(x) n_a:dn(x) + n_a:-s (del_a,i - del_a,j)) 
       // <phi| n_a:up n_a:dn a_is c_js |x>  =  <phi| a_is c_js |x> (n_a:up(x) n_a:dn(x) - n_a:-s (del_a,i - del_a,j)) 
-      return (eleNum[ra]*eleNum[ra+Nsite] + sign * eleNum[ra+(1-s)*Nsite] * (kronecker(ra,ri)-kronecker(ra,rj) ));
+      return (eleNum[ra]       + sign * (del(ra,ri)-del(ra,rj) ) * del(s,0) )
+            *(eleNum[ra+Nsite] + sign * (del(ra,ri)-del(ra,rj) ) * del(s,1) );
+            //eleNum[ra]*eleNum[ra+Nsite] + sign * eleNum[ra+(1-s)*Nsite] * (del(ra,ri)-del(ra,rj));
+    }
+    else if(t==3){ 
+      return (eleNum[ra+(1-sa)*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) * del(s,1-sa) )
+            *(eleNum[rb+(1-sa)*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) * del(s,1-sa) );
+    }
+    else if(t==4){ 
+      return (eleNum[ra+(1-sa)*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) * del(s,1-sa) )
+            *(eleNum[rb+    sa*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) * del(s,sa) );
     }
     /*
     else if(t==3){ // hole same-spin
       // <phi| (1-n_a:sa) c_is a_js |x>  =  <phi| c_is a_js |x> (1- (n_a:sa(x) + del_sa,s*(del_a,i - del_a,j)))
       // <phi| (1-n_a:sa) a_is c_js |x>  =  <phi| a_is c_js |x> (1- (n_a:sa(x) - del_sa,s*(del_a,i - del_a,j))) 
-      return 1 - (eleNum[ra+sa*Nsite] + sign * kronecker(sa,s) * (kronecker(ra,ri)-kronecker(ra,rj)));
+      return 1 - (eleNum[ra+sa*Nsite] + sign * del(sa,s) * (del(ra,ri)-del(ra,rj)));
     }
     else if(t==4){ // hole reverse-spin
       // <phi| (1-n_a:sa) c_is a_js |x>  =  <phi| c_is a_js |x> (1- (n_a:sa(x) + del_-sa,s*(del_a,i - del_a,j)))
       // <phi| (1-n_a:sa) a_is c_js |x>  =  <phi| a_is c_js |x> (1- (n_a:sa(x) - del_-sa,s*(del_a,i - del_a,j)))
-      return 1 - (eleNum[ra+(1-sa)*Nsite] + sign * kronecker((1-sa),s) * (kronecker(ra,ri)-kronecker(ra,rj)));
+      return 1 - (eleNum[ra+(1-sa)*Nsite] + sign * del((1-sa),s) * (del(ra,ri)-del(ra,rj)));
     }
     else if(t==5){ // holon
       // <phi| (1-n_a:sa) (1-n_a:-sa) c_is a_js |x>  =  <phi| c_is a_js |x> (1-n_a:-sa(x)) ((1-n_a:dn(x)) - n_a:-s (del_a,i - del_a,j)))
       // <phi| (1-n_a:sa) (1-n_a:-sa) a_is c_js |x>  =  <phi| a_is c_js |x> (1-n_a:-sa(x)) ((1-n_a:dn(x)) + n_a:-s (del_a,i - del_a,j))) 
-      return (1 - eleNum[ra+(1-s)*Nsite]) * (1 - eleNum[ra+s*Nsite] - sign * (kronecker(ra,ri)-kronecker(ra,rj) ));
+      return (1 - eleNum[ra+(1-s)*Nsite]) * (1 - eleNum[ra+s*Nsite] - sign * (del(ra,ri)-del(ra,rj) ));
     }*/
     else{
       printf("oups, error\n");
@@ -842,6 +772,20 @@ int Commute_Nat_(commuting_with commuting, int ra, int sa, int t, int ri, int rj
     }
     else if(t==2){ // doublon
       return (eleNum[ra]*eleNum[ra+Nsite]);
+    }
+    else if(t==3){ 
+      if(ra==rb) {
+        printf("oups, ra==rb\n");
+        exit(1);
+      }
+      return (eleNum[ra+(1-sa)*Nsite]*eleNum[rb+(1-sa)*Nsite]);
+    }
+    else if(t==4){ 
+      if(rb==ra) {
+        printf("oups, rb==ra\n");
+        exit(1);
+      }
+      return (eleNum[ra+(1-sa)*Nsite]*eleNum[rb+sa*Nsite]);
     }
     /*
     else if(t==3){ // hole same-spin
@@ -1002,27 +946,30 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
         //int idx_vector = idx+idx_exc*NCisAjs;
         int idx_vector = idx_exc + idx*NExcitation;
         int idx_green = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
-        int dr = ChargeExcitationIdx[idx_exc][0];
-        int t  = ChargeExcitationIdx[idx_exc][1];
-        int ra = (dr+ri+Nsite)%Nsite;
-        int rb = (dr+rj+Nsite)%Nsite;
+        int dr1 = ChargeExcitationIdx[idx_exc][1];
+        int dr2 = ChargeExcitationIdx[idx_exc][2];
+        int t   = ChargeExcitationIdx[idx_exc][0];
+        int ra1 = (dr1+ri+Nsite)%Nsite;
+        int ra2 = (dr2+ri+Nsite)%Nsite;
+        int rb1 = (dr1+rj+Nsite)%Nsite;
+        int rb2 = (dr2+rj+Nsite)%Nsite;
         int idx_vectorEx = idx_exc + idx_green*NExcitation;
         
         // <phi|ac|x> / <phi|x> = delta_{ri,rj} * <phi|x> / <phi|x> - <phi|ca|x> / <phi|x>           <-- need to reverse indices
-        AC_tmp  = kronecker(ri,rj);
+        AC_tmp  = del(ri,rj);
         AC_tmp -= LocalCisAjs[idx_green];
-        AC_tmp *= ((double) (Commute_Nat_(with_AisCjs, ra, s, t, ri, rj, s, 0,0,0, myEleNum)));
+        AC_tmp *= ((double) (Commute_Nat_(with_AisCjs, ra1, ra2, s, t, ri, rj, s, 0,0,0, myEleNum)));
         O_AC_vec1[idx_vector]   = AC_tmp;
         O_AC_vec2[idx_vectorEx] = conj(AC_tmp);
         
         // <phi|ca|x> / <phi|x>
-        CA_tmp = LocalCisAjs[idx] * ((double) (Commute_Nat_(with_CisAjs,  ra, s, t, ri, rj, s, 0,0,0, myEleNum)));        
+        CA_tmp = LocalCisAjs[idx] * ((double) (Commute_Nat_(with_CisAjs,  ra1, ra2, s, t, ri, rj, s, 0,0,0, myEleNum)));        
         O_CA_vec1[idx_vector]   = CA_tmp;        
         O_CA_vec2[idx_vectorEx] = conj(CA_tmp);        
         
         // <phi|x>
-        O0_vec1[idx_vector]   = ((double) (Commute_Nat_(with_nothing, rb, s, t,  0,  0, 0, 0,0,0, myEleNum)));
-        O0_vec2[idx_vectorEx] = ((double) (Commute_Nat_(with_nothing, rb, s, t,  0,  0, 0, 0,0,0, myEleNum)));
+        O0_vec1[idx_vector]   = ((double) (Commute_Nat_(with_nothing, rb1, rb2, s, t,  0,  0, 0, 0,0,0, myEleNum)));
+        O0_vec2[idx_vectorEx] = ((double) (Commute_Nat_(with_nothing, rb1, rb2, s, t,  0,  0, 0, 0,0,0, myEleNum)));
         //*
         // <phi|H_U|x> 
         double tmp_int_AHC=0.0;
@@ -1032,11 +979,11 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
         for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {
           rm = CoulombIntra[idx_int];
           factor = ParaCoulombIntra[idx_int] *
-                   ( 1.*kronecker(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
+                   ( 1.*del(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
           tmp_int_AHC += factor;        
 
           factor = ParaCoulombIntra[idx_int] *
-                   ( -1.*kronecker(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
+                   ( -1.*del(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
           tmp_int_CHA += factor;
         }
         /*
@@ -1062,8 +1009,8 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
           int idx_green0 = ijst_to_idx[ri+s*Nsite][rn+s*Nsite];
           tmp = -1.0 * ParaTransfer[idx_trans] 
                      * (LocalCktAltCmuAnu[idx_trans][idx] 
-                        - kronecker(rm,rj) * kronecker(s,u) * LocalCisAjs[idx_green0]) 
-                     * ((double) (Commute_Nat_(with_CisCmuAnuAjs, ra, s, t, ri, rj, s, rm, rn, u, myEleNum))) ;
+                        - del(rm,rj) * del(s,u) * LocalCisAjs[idx_green0]) 
+                     * ((double) (Commute_Nat_(with_CisCmuAnuAjs, ra1, ra2, s, t, ri, rj, s, rm, rn, u, myEleNum))) ;
           H_CA_vec1[idx_vector]   += tmp;
           H_CA_vec2[idx_vectorEx] += conj(tmp);
           
@@ -1072,9 +1019,9 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
           int idx_green3 = ijst_to_idx[rm+u*Nsite][ri+u*Nsite];
           tmp = -1.0 * ParaTransfer[idx_trans] 
                      * ( - LocalCktAltCmuAnu[idx_trans][idx_green1] 
-                         + kronecker(ri,rj) * LocalCisAjs[idx_green2] 
-                         + kronecker(rn,rj) * kronecker(s,u) * ( kronecker(rm,ri) - LocalCisAjs[idx_green3] ))
-                     * ((double) (Commute_Nat_(with_AisCmuAnuCjs, ra, s, t, ri, rj, s, rm, rn, u, myEleNum))) ;
+                         + del(ri,rj) * LocalCisAjs[idx_green2] 
+                         + del(rn,rj) * del(s,u) * ( del(rm,ri) - LocalCisAjs[idx_green3] ))
+                     * ((double) (Commute_Nat_(with_AisCmuAnuCjs, ra1, ra2, s, t, ri, rj, s, rm, rn, u, myEleNum))) ;
           H_AC_vec1[idx_vector]   += tmp;
           H_AC_vec2[idx_vectorEx] += conj(tmp);
           
@@ -1105,7 +1052,7 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
     }
     //*/
     
-    
+    /*
     for (ii = 0; ii < Nsite; ii++) {
       printf("%d", myEleNum[ii]);
     }
@@ -1150,7 +1097,7 @@ void CalculateGreenFuncMoments2(const double w, const double complex ip,
 
 
 /*
-void CalculateGreenFuncMoments2_old(const double w, const double complex ip, 
+void CalculateGreenFuncMoments3(const double w, const double complex ip, 
                                 int *eleIdx, int *eleCfg,
                                 int *eleNum, int *eleProjCnt) {
 
@@ -1230,14 +1177,14 @@ void CalculateGreenFuncMoments2_old(const double w, const double complex ip,
         //int idx_vector = idx+idx_exc*NCisAjs;
         int idx_vector = idx_exc + idx*NExcitation;
         int idx_green = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
-        int dr = ChargeExcitationIdx[idx_exc][0];
-        int t  = ChargeExcitationIdx[idx_exc][1];
+        int dr = ChargeExcitationIdx[idx_exc][1];
+        int t  = ChargeExcitationIdx[idx_exc][0];
         int ra = (dr+ri+Nsite)%Nsite;
         int rb = (dr+rj+Nsite)%Nsite;
         
         
         // <phi|ac|x> / <phi|x> = delta_{ri,rj} * <phi|x> / <phi|x> - <phi|ca|x> / <phi|x>           <-- need to reverse indices
-        O_AC_vec[idx_vector]  = kronecker(ri,rj)      * ((double) (Commute_Nat_(with_nothing, ra, s, t,  0,  0, 0, myEleNum)));
+        O_AC_vec[idx_vector]  = del(ri,rj)      * ((double) (Commute_Nat_(with_nothing, ra, s, t,  0,  0, 0, myEleNum)));
         O_AC_vec[idx_vector] -= LocalCisAjs[idx_green]* ((double) (Commute_Nat_(with_CisAjs,  ra, s, t, rj, ri, s, myEleNum)));
 
         // <phi|ca|x> / <phi|x>
