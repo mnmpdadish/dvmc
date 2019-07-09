@@ -58,6 +58,8 @@ int ReadPairHopValue(FILE *fp, int **ArrayIdx, double *ArrayValue, int Nsite, in
 
 int ReadPairDValue(FILE *fp, int **ArrayIdx, double *ArrayValue, int Nsite, int NArray, char *defname);
 
+int GetInfoExcitation(FILE *fp, int (*ArrayIdx)[3], int Nsite, int NArray, char *defname);
+
 int GetInfoGutzwiller(FILE *fp, int *ArrayIdx, int *ArrayOpt, int iComplxFlag, int *iOptCount, int Nsite, int NArray,
                       char *defname);
 
@@ -383,6 +385,10 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
             cerr = ReadBuffInt(fp, &bufInt[IdxNExchange]);
             break;
 
+          case KWExcitation:
+            cerr = ReadBuffInt(fp, &bufInt[IdxNExcitation]);
+            break;
+
           case KWGutzwiller:
             cerr = ReadBuffIntCmpFlg(fp, &bufInt[IdxNGutz], &iComplexFlgGutzwiller);
             break;
@@ -632,6 +638,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   DSROptStepDt = bufDouble[IdxSROptStepDt];
   DSROptCGTol = bufDouble[IdxSROptCGTol];
   TwoSz = bufInt[Idx2Sz];
+  NExcitation = bufInt[IdxNExcitation];
 
   if (NMPTrans < 0) {
     APFlag = 1; /* anti-periodic boundary */
@@ -785,6 +792,10 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm) {
           if (ReadPairHopValue(fp, PairHopping, ParaPairHopping, Nsite, NPairHopping, defname) != 0) info = 1;
           break;
 
+        case KWExcitation:
+          if (GetInfoExcitation(fp, ChargeExcitationIdx, Nsite, NExcitation, defname) != 0) info = 1;
+          break;
+          
         case KWGutzwiller: /*gutzwilleridx.def---------------------------------*/
           if (GetInfoGutzwiller(fp, GutzwillerIdx, OptFlag, iComplexFlgGutzwiller, &count_idx, Nsite, NGutzwillerIdx,
                                 defname) != 0)
@@ -953,6 +964,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm) {
   }
   if (info != 0) {
     if (rank == 0) {
+      //fprintf(stderr, "info %d   NExcitation %d.\n",info,NExcitation);
       fprintf(stderr, "error: Indices and Parameters of Definition files(*.def) are incomplete.\n");
     }
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -1476,6 +1488,7 @@ void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufInt[IdxNNz] = 0;
   bufInt[Idx2Sz] = -1;// -1: sz is not fixed :fsz
   bufInt[IdxNCond] = -1;
+  bufInt[IdxNExcitation] = 0;
 
   bufDouble[IdxSROptRedCut] = 0.001;
   bufDouble[IdxSROptStaDel] = 0.02;
@@ -1912,6 +1925,33 @@ int GetInfoTransSym(FILE *fp, int **Array, int **ArraySgn, int **ArrayInv, doubl
     }
     if (idx != Nsite * NArray) info = ReadDefFileError(defname);
   }
+  return info;
+}
+
+
+int
+GetInfoExcitation(FILE *fp, int (*ArrayIdx)[3], int Nsite, int NArray, char *defname) {
+  char ctmp2[256];
+  int idx = 0, info = 0;
+  int x0 = 0, x1 = 0, x2 = 0;//, x3 = 0;
+  if (NArray == 0) return 0;
+  while (fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp) != NULL) {
+    sscanf(ctmp2, "%d %d %d\n", &x0, &x1, &x2);
+    ArrayIdx[idx][0] = x0;
+    ArrayIdx[idx][1] = x1;
+    ArrayIdx[idx][2] = x2;
+    //if (CheckPairSite(x1, x2, Nsite) != 0) {
+    //  fprintf(stderr, "Error: Site index is incorrect. \n");
+    //  info = 1;
+    //  break;
+    //}
+    idx++;
+  }
+  if (NArray >1024){
+    fprintf(stderr, "no more the 1024 excitations. fast implementation, please do a proper malloc instead of this fast implementation. \n");
+  }
+
+  if (idx != NArray) info = ReadDefFileError(defname);
   return info;
 }
 

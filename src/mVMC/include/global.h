@@ -309,10 +309,10 @@ double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *Phys
 
 typedef enum {with_nothing, with_CisAjs, with_AisCjs,with_CisCmuAnuAjs,with_AisCmuAnuCjs} commuting_with; 
 
-int NExcitation = 46;
-int ChargeExcitationIdx[256][3] =
+
+int NExcitation = 46;//46;
+int ChargeExcitationIdx[1024][3];/* =
 {
-//dri, s
   -1, 0, 0,
    1, 0, 0,
    0, 1, 0,
@@ -360,12 +360,15 @@ int ChargeExcitationIdx[256][3] =
    4, 4, 5,
    4, 4, 6,
 };
+*/
 
 // following arrays has size [NCisAjs*NExcitation*NExcitation]
-double complex *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;
-double complex *O_AC_vec; //[NExcitation*NCisAjs];
-double complex *O_CA_vec; //[NExcitation*NCisAjs];
-double complex *H_vec;    //[NExcitation];
+double *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;
+/*
+double *O_AC_vec; //[NExcitation*NCisAjs];
+double *O_CA_vec; //[NExcitation*NCisAjs];
+double *H_vec;    //[NExcitation];
+*/
 
 int NNeighbors = 3; // assuming square lattice TJS + MC
 //int neighbors_delta_x[9] = {0,1,-1,0,1,-1,0,1,-1};

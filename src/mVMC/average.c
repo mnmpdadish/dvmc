@@ -236,17 +236,17 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   
   n = NCisAjs*NExcitation*NExcitation;
   
-  vec = Phys_nCHAm;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = Phys_nCHAm;
+  weightAverageReduce_real(n,vec_real,comm);
 
-  vec = Phys_nAHCm;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = Phys_nAHCm;
+  weightAverageReduce_real(n,vec_real,comm);
 
-  vec = Phys_nCAm;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = Phys_nCAm;
+  weightAverageReduce_real(n,vec_real,comm);
 
-  vec = Phys_nACm;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = Phys_nACm;
+  weightAverageReduce_real(n,vec_real,comm);
 
   
   
@@ -257,21 +257,22 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
 
 void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
   int n = NCisAjs*NExcitation*NExcitation;
+  double *vec_real;
   double complex *vec;
   
-  vec = Phys_nCHAm;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = Phys_nCHAm;
+  weightAverageReduce_real(n,vec_real,comm);
 
-  vec = Phys_nAHCm;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = Phys_nAHCm;
+  weightAverageReduce_real(n,vec_real,comm);
 
-  vec = Phys_nCAm;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = Phys_nCAm;
+  weightAverageReduce_real(n,vec_real,comm);
 
-  vec = Phys_nACm;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = Phys_nACm;
+  weightAverageReduce_real(n,vec_real,comm);
 
-  n = NCisAjs;//+NCisAjsCktAlt+NCisAjsCktAltDC;
+  n = NCisAjs+NCisAjsCktAlt;//+NCisAjsCktAltDC;
   vec = PhysCisAjs;
   weightAverageReduce_fcmp(n,vec,comm);
   

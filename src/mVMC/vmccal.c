@@ -98,7 +98,7 @@ void VMCMainCal(MPI_Comm comm) {
   clearPhysQuantity();
   StopTimer(24);
   for(sample=sampleStart;sample<sampleEnd;sample++) {
-    int sample_to_print = 10000;
+    int sample_to_print = 5;
 
     eleIdx = EleIdx + sample*Nsize;
     eleCfg = EleCfg + sample*Nsite2;
@@ -301,12 +301,15 @@ void VMCMainCal(MPI_Comm comm) {
       StartTimer(42);
       /* Calculate Green Function */
 #ifdef _DEBUG_VMCCAL
-      if(sample%sample_to_print==0) fprintf(stdout, "Debug: Start: CalculateGreenFuncMoments2\n"); fflush(stdout);
+      if(sample%sample_to_print==0) fprintf(stdout, "Debug: Start: CalculateGreenFuncMoments2_real\n"); fflush(stdout);
 #endif
-      
-      CalculateGreenFuncMoments2(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+      if(AllComplexFlag!=0){
+        fprintf(stderr, "CalculateGreenFuncMoments2_real requires AllComplexFlag==0\n"); fflush(stdout);
+        exit(0);
+      }
+      CalculateGreenFuncMoments2_real(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
 #ifdef _DEBUG_VMCCAL
-      if(sample%sample_to_print==0) fprintf(stdout, "Debug: End: CalculateGreenFuncMoments2\n"); fflush(stdout);
+      if(sample%sample_to_print==0) fprintf(stdout, "Debug: End: CalculateGreenFuncMoments2_real\n"); fflush(stdout);
 #endif
       StopTimer(42);
 
