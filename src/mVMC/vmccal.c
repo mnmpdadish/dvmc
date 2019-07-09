@@ -307,7 +307,7 @@ void VMCMainCal(MPI_Comm comm) {
         fprintf(stderr, "CalculateGreenFuncMoments2_real requires AllComplexFlag==0\n"); fflush(stdout);
         exit(0);
       }
-      CalculateGreenFuncMoments2_real(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+      CalculateGreenFuncMoments2_real(creal(w),creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt);
 #ifdef _DEBUG_VMCCAL
       if(sample%sample_to_print==0) fprintf(stdout, "Debug: End: CalculateGreenFuncMoments2_real\n"); fflush(stdout);
 #endif
@@ -316,7 +316,7 @@ void VMCMainCal(MPI_Comm comm) {
 
     }
   } /* end of for(sample) */
-
+  exit(0);
 // calculate OO and HO at NVMCCalMode==0
   if(NVMCCalMode==0){
     if(NSRCG!=0 || NStoreO!=0){

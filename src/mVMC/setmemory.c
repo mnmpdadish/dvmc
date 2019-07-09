@@ -269,7 +269,6 @@ void SetMemory() {
 
   /***** Variational Parameters *****/
   //printf("DEBUG:opt=%d %d %d %d %d Ne=%d\n", AllComplexFlag,NPara,NProj,NSlater,NOrbitalIdx,Ne);
-  //exit(0);
   Para     = (double complex*)malloc(sizeof(double complex)*(NPara));
 
   Proj     = Para;
@@ -407,10 +406,10 @@ void SetMemory() {
     
     if((NVMCCalMode==3)||(NVMCCalMode==2)){
       printf("memory usage: %d times double.\n", NCisAjs*NExcitation*NExcitation);
-      Phys_nCHAm = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*NExcitation));
-      Phys_nAHCm = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*NExcitation));
-      Phys_nCAm  = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*NExcitation));
-      Phys_nACm  = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*NExcitation));
+      Phys_nCHAm = (double *)malloc(sizeof(double )*(NCisAjs*NExcitation*NExcitation));
+      Phys_nAHCm = (double *)malloc(sizeof(double )*(NCisAjs*NExcitation*NExcitation));
+      Phys_nCAm  = (double *)malloc(sizeof(double )*(NCisAjs*NExcitation*NExcitation));
+      Phys_nACm  = (double *)malloc(sizeof(double )*(NCisAjs*NExcitation*NExcitation));
     }
     
     if(NVMCCalMode==2){
@@ -530,12 +529,12 @@ void SetMemory() {
     }
 
 
-    LocalCktAltCmuAnu = (double complex **)malloc(sizeof(double complex*)*NTransfer);
+    LocalCktAltCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
     for(i=0;i<NTransfer;i++) {
-      LocalCktAltCmuAnu[i] = (double complex *)malloc(sizeof(double complex ) * NCisAjs);
+      LocalCktAltCmuAnu[i] = (double *)malloc(sizeof(double) * NCisAjs);
     }
     
-    
+    /*
     int i;
     LocalAHTCijsklm = (double complex**)malloc(sizeof(double complex*)*NTransfer);
     LocalCHTAijsklm = (double complex**)malloc(sizeof(double complex*)*NTransfer);
@@ -543,6 +542,7 @@ void SetMemory() {
       LocalAHTCijsklm[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
       LocalCHTAijsklm[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
     }
+    */
     
   }
 
@@ -561,12 +561,13 @@ void FreeMemory() {
     free(Phys_AC_quantities);
     
     int i;
-    for(i=0;i<NTransfer;i++) {
+    /*for(i=0;i<NTransfer;i++) {
       free(LocalAHTCijsklm[i]);
       free(LocalCHTAijsklm[i]);
     }
     free(LocalAHTCijsklm);
     free(LocalCHTAijsklm);
+    */
     
     for(i=0;i<2*Nsite;i++) {
       free(ijst_to_idx[i]);
