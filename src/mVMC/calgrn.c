@@ -459,12 +459,12 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
   
 
 
-   
+  /*
   double factor;
   int rsk1[1], rsl1[1];
   int rsk2[2], rsl2[2];
 
-  /*Local two-body Green's fuction LocalCktAltCmuAnu TJS*/
+  //Local two-body Green's fuction LocalCktAltCmuAnu TJS
   int idx_int, idx_trans;
   int rm, rn, u;
 
@@ -581,7 +581,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
         tmp_int_CHA += factor*LocalCisAjs[idx];
       }
 
-      // <a|H_U|c>    
+      // <a|H_U|c>
 //      MultiplyFactorGFs(idx,1,&rsk1[0],&rsl1[0],myEleNum,0,0,w*tmp_int_AHC,Phys_nAHCm);
       MultiplyFactor2GFs(idx,NCisAjs,1,&rsk1[0],&rsl1[0],myEleNum,0,0, w*tmp_int_AHC,
                           PhysAHC, PhysAHCN, PhysAHCM, PhysAHCD,
@@ -589,7 +589,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
                          PhysMAHC,PhysMAHCN,PhysMAHCM,PhysMAHCD,
                          PhysDAHC,PhysDAHCN,PhysDAHCM,PhysDAHCD);
 
-      // <c|H_U|a>    
+      // <c|H_U|a>
 //      MultiplyFactorGFs(idx,1,&rsk1[0],&rsl1[0],myEleNum,0,1,w*tmp_int_CHA,Phys_nCHAm);
       MultiplyFactor2GFs(idx,NCisAjs,1,&rsk1[0],&rsl1[0],myEleNum,0,1, w*tmp_int_CHA,
                           PhysCHA, PhysCHAN, PhysCHAM, PhysCHAD,
@@ -651,7 +651,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
       }
       
     }//*/
-  }  
+  }
   ReleaseWorkSpaceThreadInt();
   ReleaseWorkSpaceThreadComplex();
   return;
@@ -662,8 +662,7 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
 
 
 
-
-
+#define DEL(i,j)         ((i==j) ?  (1) : (0))
 
 
 
@@ -673,23 +672,23 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
     if(commuting==with_CisCmuAnuAjs) {sign = 1;}
     else if(commuting==with_AisCmuAnuCjs) {sign = -1;}
     
-    if(t==0){ //no charge
+    if(t==0){ 
       return 1;
     }
-    else if(t==1){ // electron reverse-spin
-      return eleNum[ra+(1-s)*Nsite]  + del((1-s),u) * (del(ra,rm)-del(ra,rn));
+    else if(t==1){ 
+      return eleNum[ra+(1-s)*Nsite]  + DEL((1-s),u) * (DEL(ra,rm)-DEL(ra,rn));
     }
     else if(t==2){
-      return (eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn) ) * del(u,1-s) )
-            *(eleNum[rb+(1-s)*Nsite] + (del(rb,rm)-del(rb,rn) ) * del(u,1-s) );
+      return (eleNum[ra+   s *Nsite] + (DEL(ra,rm)-DEL(ra,rn)) * DEL(u,s)    + sign * (DEL(ra,ri)-DEL(ra,rj)) )
+            *(eleNum[rb+   s *Nsite] + (DEL(rb,rm)-DEL(rb,rn)) * DEL(u,s)    + sign * (DEL(rb,ri)-DEL(rb,rj)) );
     }
     else if(t==3){
-      return (eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn) ) * del(u,1-s) )
-            *(eleNum[rb+   s *Nsite] + sign * (del(rb,ri)-del(rb,rj) )   + (del(rb,rm)-del(rb,rn) ) * del(u,s) );
+      return (eleNum[ra+(1-s)*Nsite] + (DEL(ra,rm)-DEL(ra,rn)) * DEL(u,1-s))
+            *(eleNum[rb+(1-s)*Nsite] + (DEL(rb,rm)-DEL(rb,rn)) * DEL(u,1-s));
     }
     else if(t==4){
-      return (eleNum[ra+   s *Nsite] + sign * (del(ra,ri)-del(ra,rj) )   + (del(ra,rm)-del(ra,rn) ) * del(u,s) )
-            *(eleNum[rb+   s *Nsite] + sign * (del(rb,ri)-del(rb,rj) )   + (del(rb,rm)-del(rb,rn) ) * del(u,s) );
+      return (eleNum[ra+(1-s)*Nsite] + (DEL(ra,rm)-DEL(ra,rn)) * DEL(u,1-s))
+            *(eleNum[rb+   s *Nsite] + (DEL(rb,rm)-DEL(rb,rn)) * DEL(u,s)    + sign * (DEL(rb,ri)-DEL(rb,rj)) )   ;
     }
     else{
       printf("oups, error %d\n", t);
@@ -704,26 +703,22 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
     else if(commuting==with_AisCjs) {sign = -1;}
     
     if(t==0){ //no charge
-      // <phi| c_is a_js |x>  =  <phi| c_is a_js |x>  
-      // <phi| a_is c_js |x>  =  <phi| a_is c_js |x> 
       return 1;
     }
     else if(t==1){ // electron reverse-spin
-      // <phi| n_a:sa c_is a_js |x>  =  <phi| c_is a_js |x> (n_a:sa(x) + del_-sa,s*(del_a,i - del_a,j)) 
-      // <phi| n_a:sa a_is c_js |x>  =  <phi| a_is c_js |x> (n_a:sa(x) - del_-sa,s*(del_a,i - del_a,j)) 
       return eleNum[ra+(1-s)*Nsite] ;
     }
     else if(t==2){ 
-      return (eleNum[ra+(1-s)*Nsite] )
-            *(eleNum[rb+(1-s)*Nsite] );
+      return (eleNum[ra+    s*Nsite] + sign * (DEL(ra,ri)-DEL(ra,rj) ) )
+            *(eleNum[rb+    s*Nsite] + sign * (DEL(rb,ri)-DEL(rb,rj) ) );
     }
     else if(t==3){ 
       return (eleNum[ra+(1-s)*Nsite] )
-            *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );
+            *(eleNum[rb+(1-s)*Nsite] );
     }
     else if(t==4){ 
-      return (eleNum[ra+    s*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) )
-            *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );
+      return (eleNum[ra+(1-s)*Nsite] )
+            *(eleNum[rb+    s*Nsite] + sign * (DEL(rb,ri)-DEL(rb,rj) ) );
     }
     else{
       printf("oups, error %d\n", t);
@@ -739,13 +734,13 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return eleNum[ra+(1-s)*Nsite];
     }
     else if(t==2){ 
-      return (eleNum[ra+(1-s)*Nsite]*eleNum[rb+(1-s)*Nsite]);
+      return (eleNum[ra+s*Nsite]*eleNum[rb+s*Nsite]);
     }
     else if(t==3){ 
-      return (eleNum[ra+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
+      return (eleNum[ra+(1-s)*Nsite]*eleNum[rb+(1-s)*Nsite]);
     }
     else if(t==4){ 
-      return (eleNum[ra+s*Nsite]*eleNum[rb+s*Nsite]);
+      return (eleNum[ra+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
     }
     else{
       printf("oups, error %d\n", t);
@@ -762,65 +757,34 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
 
 
 //C=C+weight*A*B
-unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, double weight) {
+unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, double weight, int sampleSize) {
   char transA= 'N', transB= 'C';
   double beta=1.0;
-  int ONE = 1;
-  M_DGEMM(&transA,&transB,&N,&N,&ONE, &weight, &A[0], &N, &B[0], &N, &beta, &C[0], &N); 
+  //int ONE = 1;
+  M_DGEMM(&transA,&transB,&N,&N,&sampleSize, &weight, &A[0], &N, &B[0], &N, &beta, &C[0], &N); 
   return 0;
 }
 
 
 void CalculateGreenFuncMoments2_real(const double w, const double ip, 
                                       int *eleIdx, int *eleCfg,
-                                      int *eleNum, int *eleProjCnt) {
-
+                                      int *eleNum, int *eleProjCnt, int sample) {
   int idx,idx0,idx1;
   int ri,rj,s,rk,rl,t;
   double tmp;
   int *myEleIdx, *myEleNum, *myProjCntNew;
   double *myBuffer_real;
   
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  //RequestWorkSpaceThreadComplex(NQPFull + 2*Nsize);
-  RequestWorkSpaceThreadDouble(NQPFull + 2*Nsize + 10*NCisAjs*NExcitation + 2*NCisAjs);
+  double AC_tmp, CA_tmp;
   
-  double *O_AC_vec1, *O_CA_vec1, AC_tmp, CA_tmp;
-  double *O_AC_vec2, *O_CA_vec2;
-  double *O0_vec1, *O0_vec2;
-  double *H_AC_vec1, *H_CA_vec1;
-  double *H_AC_vec2, *H_CA_vec2;
-
-
   //#pragma omp parallel default(shared)                \
   //private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx, O_AC_vec, O_CA_vec, O0_vec, H_vec)//, O_vec)
   { 
-    /*
-    printf("salut\n");
-    for(idx=0;idx<NExcitation;idx++){
-      int t   = ChargeExcitationIdx[idx][0];
-      int dr1 = ChargeExcitationIdx[idx][1];
-      int dr2 = ChargeExcitationIdx[idx][2];
-      printf("t=% d, dr1=% d, dr2=% d \n",t, dr1, dr2); fflush(stdout);
-    }
-    exit(0);  
-    //*/
-    
-    O_AC_vec1 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    O_AC_vec2 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    O_CA_vec1 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    O_CA_vec2 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    O0_vec1 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    O0_vec2 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    H_AC_vec1 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    H_AC_vec2 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    H_CA_vec1 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    H_CA_vec2 = GetWorkSpaceThreadDouble(NCisAjs*NExcitation);
-    
-    myEleIdx = GetWorkSpaceThreadInt(Nsize);
-    myEleNum = GetWorkSpaceThreadInt(Nsite2);
-    myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    myBuffer_real = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
+    myEleIdx = (int*)malloc(sizeof(int) * Nsize );
+    myEleNum = (int*)malloc(sizeof(int) * Nsite2 );
+    //myEleCfg = (int*)malloc(sizeof(int) * Nsite2 );
+    myProjCntNew = (int*)malloc(sizeof(int) * NProj );
+    myBuffer_real = (double *)malloc(sizeof(double) * (NQPFull+2*Nsize) );
 
     //#pragma loop noalias
     for(idx=0;idx<Nsize;idx++) myEleIdx[idx] = eleIdx[idx];
@@ -876,20 +840,21 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
       double tmp_CA =  ((double) LocalCisAjs[idx]);
       int idx_exc;
       for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
-        //int idx_vector = idx+idx_exc*NCisAjs;
-        int idx_vector = idx_exc + idx*NExcitation;
+        //int idx_vector = idx_exc + idx*NExcitation;
+        //int idx_vectorEx = idx_exc + idx_green*NExcitation;
         int idx_green = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
-        int dr1 = ChargeExcitationIdx[idx_exc][1];
-        int dr2 = ChargeExcitationIdx[idx_exc][2];
-        int t   = ChargeExcitationIdx[idx_exc][0];
+        int t   = ChargeExcitationIdx[idx_exc][0];  // type
+        int dr1 = ChargeExcitationIdx[idx_exc][1];  // position 1
+        int dr2 = ChargeExcitationIdx[idx_exc][2];  // position 2
         int ra1 = (dr1+ri+Nsite)%Nsite;
         int ra2 = (dr2+ri+Nsite)%Nsite;
         int rb1 = (dr1+rj+Nsite)%Nsite;
         int rb2 = (dr2+rj+Nsite)%Nsite;
-        int idx_vectorEx = idx_exc + idx_green*NExcitation;
+        int idx_vector   = idx_exc + (sample + sampleChunk*idx)      *NExcitation;
+        int idx_vectorEx = idx_exc + (sample + sampleChunk*idx_green)*NExcitation;
         
         // <phi|ac|x> / <phi|x> = delta_{ri,rj} * <phi|x> / <phi|x> - <phi|ca|x> / <phi|x>           <-- need to reverse indices
-        AC_tmp  = del(ri,rj);
+        AC_tmp  = DEL(ri,rj);
         AC_tmp -= ((double) LocalCisAjs[idx_green]);
         AC_tmp *= ((double) (Commute_Nat_(with_AisCjs, ra1, ra2, t, ri, rj, s, 0,0,0, myEleNum)));
         O_AC_vec1[idx_vector]   = AC_tmp;
@@ -901,8 +866,8 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         O_CA_vec2[idx_vectorEx] = CA_tmp;//conj(CA_tmp);        
         
         // <phi|x>
-        O0_vec1[idx_vector]   = ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  0,  0, s, 0,0,0, myEleNum)));
-        O0_vec2[idx_vectorEx] = ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  0,  0, s, 0,0,0, myEleNum)));
+        O0_vec1[idx_vector]   = w* ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  0,  0, s, 0,0,0, myEleNum)));
+        O0_vec2[idx_vectorEx] = w* ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  0,  0, s, 0,0,0, myEleNum)));
         //*
         // <phi|H_U|x> 
         double tmp_int_AHC=0.0;
@@ -912,31 +877,22 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {
           rm = CoulombIntra[idx_int];
           factor = ParaCoulombIntra[idx_int] *
-                   ( 1.*del(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
+                   ( 1.*DEL(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
           tmp_int_AHC += factor;        
 
           factor = ParaCoulombIntra[idx_int] *
-                   ( -1.*del(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
+                   ( -1.*DEL(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
           tmp_int_CHA += factor;
         }
-        /*
-        H_CA_vec1[idx_vector] = 0.0;
-        H_AC_vec1[idx_vector] = 0.0;
-        H_CA_vec2[idx_vectorEx] = 0.0;
-        H_AC_vec2[idx_vectorEx] = 0.0;
-        */
         
         H_AC_vec1[idx_vector] =  tmp_int_AHC * AC_tmp ;
         H_CA_vec1[idx_vector] =  tmp_int_CHA * CA_tmp ;
-        
-        //H_AC_vec2[idx_vectorEx] = conj(tmp_int_AHC * AC_tmp) ;
-        //H_CA_vec2[idx_vectorEx] = conj(tmp_int_CHA * CA_tmp) ;
         H_AC_vec2[idx_vectorEx] = tmp_int_AHC * AC_tmp ;
         H_CA_vec2[idx_vectorEx] = tmp_int_CHA * CA_tmp ;
-        //*
+        
         // <phi|H_T|x> / <phi|x>
         for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
-          /*
+          //*
           
           rm = Transfer[idx_trans][0];
           rn = Transfer[idx_trans][2];
@@ -945,8 +901,8 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
           int idx_green0 = ijst_to_idx[ri+s*Nsite][rn+s*Nsite];
           tmp = -1.0 * ParaTransfer[idx_trans] 
                      * (((double)LocalCktAltCmuAnu[idx_trans][idx]) 
-                        - del(rm,rj) * del(s,u) * ((double)LocalCisAjs[idx_green0]) ) 
-                     * ((double) (Commute_Nat_(with_CisCmuAnuAjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum))) ;
+                        - DEL(rm,rj) * DEL(s,u) * ((double)LocalCisAjs[idx_green0]) ) 
+                     * (Commute_Nat_(with_CisCmuAnuAjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum)) ;
           H_CA_vec1[idx_vector]   += tmp;
           H_CA_vec2[idx_vectorEx] += tmp;//conj(tmp);
           
@@ -955,47 +911,23 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
           int idx_green3 = ijst_to_idx[rm+u*Nsite][ri+u*Nsite];
           tmp = -1.0 * ParaTransfer[idx_trans] 
                      * ( - ((double) LocalCktAltCmuAnu[idx_trans][idx_green1]) 
-                         + del(ri,rj) * ((double) LocalCisAjs[idx_green2]) 
-                         + del(rn,rj) * del(s,u) * ( del(rm,ri) - ((double) LocalCisAjs[idx_green3])) )
-                     * ((double) (Commute_Nat_(with_AisCmuAnuCjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum))) ;
+                         + DEL(ri,rj) * ((double) LocalCisAjs[idx_green2]) 
+                         + DEL(rn,rj) * DEL(s,u) * ( DEL(rm,ri) - ((double) LocalCisAjs[idx_green3])) )
+                     * Commute_Nat_(with_AisCmuAnuCjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum) ;
           H_AC_vec1[idx_vector]   += tmp;
           H_AC_vec2[idx_vectorEx] += tmp;//conj(tmp);
           //*/
         }
         ///
       }
-    }
-    
-    
-    int ii, jj,nn,mm;
-    //*
-    int N  = NExcitation;
-    int N2 = NExcitation*NExcitation;
-    double alpha = 0.5*w;
-    for (ii = 0; ii < NCisAjs; ii++) {
-
-      C_ADD_AxB(&Phys_nACm[ii*N2], &O_AC_vec1[ii*N], &O0_vec1[ii*N], N, alpha);
-      C_ADD_AxB(&Phys_nCAm[ii*N2], &O_CA_vec1[ii*N], &O0_vec1[ii*N], N, alpha);
-      
-      C_ADD_AxB(&Phys_nACm[ii*N2], &O0_vec2[ii*N], &O_AC_vec2[ii*N], N, alpha);
-      C_ADD_AxB(&Phys_nCAm[ii*N2], &O0_vec2[ii*N], &O_CA_vec2[ii*N], N, alpha);
-      
-      C_ADD_AxB(&Phys_nAHCm[ii*N2], &H_AC_vec1[ii*N], &O0_vec1[ii*N], N, alpha);
-      C_ADD_AxB(&Phys_nCHAm[ii*N2], &H_CA_vec1[ii*N], &O0_vec1[ii*N], N, alpha);
-      
-      C_ADD_AxB(&Phys_nAHCm[ii*N2], &O0_vec2[ii*N], &H_AC_vec2[ii*N], N, alpha);
-      C_ADD_AxB(&Phys_nCHAm[ii*N2], &O0_vec2[ii*N], &H_CA_vec2[ii*N], N, alpha);
-    }
-    //*/
-    
-    
+    } 
   } //
   
   
-
-  ReleaseWorkSpaceThreadInt();
-  ReleaseWorkSpaceThreadDouble();
-  //ReleaseWorkSpaceThreadComplex();
+  free(myEleIdx);
+  free(myEleNum);
+  free(myProjCntNew);
+  free(myBuffer_real);
   return;
 }
 

@@ -217,10 +217,10 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   vec = PhysN1;
   weightAverageReduce_fcmp(n,vec,comm);
   
-  n = NCisAjs*PHYS_MOMENTS_QTY;
-  vec = Phys_G_Moments;
-  weightAverageReduce_fcmp(n,vec,comm);
-  
+  //n = NCisAjs*PHYS_MOMENTS_QTY;
+  //vec = Phys_G_Moments;
+  //weightAverageReduce_fcmp(n,vec,comm);
+  /*
   //Phys_AC_quantities
   n = 4*NCisAjs + 4*6*NCisAjs*NNeighbors + 4*9*NCisAjs*NNeighbors*NNeighbors;
   vec = Phys_AC_quantities;
@@ -231,7 +231,7 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   vec = PhysCisAjs;
   weightAverageReduce_fcmp(n,vec,comm);
   
-  
+  */
   
   
   n = NCisAjs*NExcitation*NExcitation;
@@ -248,7 +248,7 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   vec_real = Phys_nACm;
   weightAverageReduce_real(n,vec_real,comm);
 
-  
+  //*/
   
   return;
 }
@@ -272,9 +272,9 @@ void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
   vec_real = Phys_nACm;
   weightAverageReduce_real(n,vec_real,comm);
 
-  n = NCisAjs+NCisAjsCktAlt;//+NCisAjsCktAltDC;
-  vec = PhysCisAjs;
-  weightAverageReduce_fcmp(n,vec,comm);
+  //n = NCisAjs;//+NCisAjsCktAlt;//+NCisAjsCktAltDC;
+  //vec = PhysCisAjs;
+  //weightAverageReduce_fcmp(n,vec,comm);
   
   return;
 }

@@ -362,8 +362,17 @@ int ChargeExcitationIdx[1024][3];/* =
 };
 */
 
+int sampleChunk = 50;
+      
 // following arrays has size [NCisAjs*NExcitation*NExcitation]
 double *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;
+
+double *O_AC_vec1, *O_CA_vec1, AC_tmp, CA_tmp;
+double *O_AC_vec2, *O_CA_vec2;
+double *O0_vec1, *O0_vec2;
+double *H_AC_vec1, *H_CA_vec1;
+double *H_AC_vec2, *H_CA_vec2;
+
 
 int NNeighbors = 3; // assuming square lattice TJS + MC
 //int neighbors_delta_x[9] = {0,1,-1,0,1,-1,0,1,-1};

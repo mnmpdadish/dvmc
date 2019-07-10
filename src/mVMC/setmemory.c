@@ -419,7 +419,7 @@ void SetMemory() {
       PhysN2 = (double complex*)malloc(sizeof(double complex)
                       *(NCisAjs*TWO_SITES_PHYS_QTY) );
                       
-      //*
+      /*
 
       Phys_G_Moments = (double complex*)malloc(sizeof(double complex)
                       *(NCisAjs*PHYS_MOMENTS_QTY) );
@@ -428,7 +428,6 @@ void SetMemory() {
       Phys_AC_quantities = (double complex*)malloc(sizeof(double complex)
                       *(4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors));
                  
-           
       printf("memory usage: %d times double complex.\n", 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors);
       
       PhysAC = Phys_AC_quantities + 0*NCisAjs;   
@@ -506,7 +505,6 @@ void SetMemory() {
       //*/
     }
     
-
     ijst_to_idx = (int**)malloc(sizeof(int*)*2*Nsite);
     ijst_to_trans_idx = (int**)malloc(sizeof(int*)*2*Nsite);
     for(i=0;i<2*Nsite;i++) {
@@ -527,22 +525,27 @@ void SetMemory() {
       int  t = Transfer[i][3];
       ijst_to_trans_idx[ri+Nsite*s][rj+Nsite*t] = i;
     }
-
-
+    
     LocalCktAltCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
     for(i=0;i<NTransfer;i++) {
       LocalCktAltCmuAnu[i] = (double *)malloc(sizeof(double) * NCisAjs);
     }
     
-    /*
-    int i;
-    LocalAHTCijsklm = (double complex**)malloc(sizeof(double complex*)*NTransfer);
-    LocalCHTAijsklm = (double complex**)malloc(sizeof(double complex*)*NTransfer);
-    for(i=0;i<NTransfer;i++) {
-      LocalAHTCijsklm[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
-      LocalCHTAijsklm[i] = (double complex*)malloc(sizeof(double complex) * NCisAjs);
+
+    if(NVMCCalMode==3){
+      O_AC_vec1 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      O_AC_vec2 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      O_CA_vec1 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      O_CA_vec2 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      H_AC_vec1 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      H_AC_vec2 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      H_CA_vec1 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      H_CA_vec2 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      O0_vec1   = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      O0_vec2   = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
     }
-    */
+
+    
     
   }
 
@@ -557,18 +560,8 @@ void FreeMemory() {
     free(PhysCisAjs);
     free(PhysN1);
     free(PhysN2);
-    free(Phys_G_Moments);
-    free(Phys_AC_quantities);
     
     int i;
-    /*for(i=0;i<NTransfer;i++) {
-      free(LocalAHTCijsklm[i]);
-      free(LocalCHTAijsklm[i]);
-    }
-    free(LocalAHTCijsklm);
-    free(LocalCHTAijsklm);
-    */
-    
     for(i=0;i<2*Nsite;i++) {
       free(ijst_to_idx[i]);
     }
@@ -593,7 +586,26 @@ void FreeMemory() {
     free(SROptData);
     free(SROptOO);
   }
-
+  
+  if(NVMCCalMode==3){
+    free(O_AC_vec1);
+    free(O_AC_vec2);
+    free(O_CA_vec1);
+    free(O_CA_vec2);
+    free(H_AC_vec1);
+    free(H_AC_vec2);
+    free(H_CA_vec1);
+    free(H_CA_vec2);
+    free(O0_vec1);
+    free(O0_vec2);
+  }
+  if((NVMCCalMode==3)||(NVMCCalMode==2)){
+    free(Phys_nCHAm);
+    free(Phys_nAHCm);
+    free(Phys_nCAm);
+    free(Phys_nACm);
+  }
+  
   free(QPFullWeight);
 
   free(InvM);

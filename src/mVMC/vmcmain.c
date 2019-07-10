@@ -765,7 +765,7 @@ void outputData() {
         fprintf(FileN2, "\n");
       }
       //printf("printed files.\n"); fflush(stdout);
-      
+      /*
       //header:
       fprintf(File_AC, "# i   s   j   s     ");
       fprintf(File_AC, "AC          CA          AHC          CHA \n");
@@ -818,13 +818,15 @@ void outputData() {
       }
       
 
-      /*
+      ////
       for (i = 0; i < NCisAjs; i++) {
         fprintf(File_G_Moments, "%d %d %d %d ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
         for (j = 0; j < PHYS_MOMENTS_QTY; j++) 
           fprintf(File_G_Moments, "% .8e   ", creal(Phys_G_Moments[i+NCisAjs*j]) );
         fprintf(File_G_Moments, "\n");
-      }*/
+      }///
+      */
+      
     }
     for (i = 0; i < Nsite; i++) {
       fprintf(FileN1, "%d ", i);
@@ -833,7 +835,7 @@ void outputData() {
       fprintf(FileN1, "\n");
     }
     fprintf(FileN1, "\n");
-    
+    /*
     int NExcitation2 = NExcitation*NExcitation;
     int nn,mm;
     fprintf(File_nCHAm, "#i s j s   n m");
@@ -850,7 +852,7 @@ void outputData() {
         fprintf(File_nCHAm, " "); 
       }
     }
-    
+    */
     printf("ending of print files.\n"); fflush(stdout);
     
   }

@@ -307,16 +307,39 @@ void VMCMainCal(MPI_Comm comm) {
         fprintf(stderr, "CalculateGreenFuncMoments2_real requires AllComplexFlag==0\n"); fflush(stdout);
         exit(0);
       }
-      CalculateGreenFuncMoments2_real(creal(w),creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt);
+      CalculateGreenFuncMoments2_real(creal(w),creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt,sample%sampleChunk);
+      
 #ifdef _DEBUG_VMCCAL
       if(sample%sample_to_print==0) fprintf(stdout, "Debug: End: CalculateGreenFuncMoments2_real\n"); fflush(stdout);
 #endif
       StopTimer(42);
-
-
+      
+      if((sample%sampleChunk == sampleChunk -1) || (sample == sampleEnd-1)) {      
+        sampleSize=sample%sampleChunk+1;
+        printf("sampleSize=%d\n",sampleSize);
+        int N1 = sampleChunk*NExcitation;
+        int N2 = NExcitation*NExcitation;
+        double alpha = 0.5;
+        int ii;
+        for (ii = 0; ii < NCisAjs; ii++) {
+          C_ADD_AxB(&Phys_nACm[ii*N2], &O_AC_vec1[ii*N1], &O0_vec1[ii*N1], NExcitation, alpha, sampleSize);
+          C_ADD_AxB(&Phys_nCAm[ii*N2], &O_CA_vec1[ii*N1], &O0_vec1[ii*N1], NExcitation, alpha, sampleSize);
+          
+          C_ADD_AxB(&Phys_nACm[ii*N2], &O0_vec2[ii*N1], &O_AC_vec2[ii*N1], NExcitation, alpha, sampleSize);
+          C_ADD_AxB(&Phys_nCAm[ii*N2], &O0_vec2[ii*N1], &O_CA_vec2[ii*N1], NExcitation, alpha, sampleSize);
+          
+          C_ADD_AxB(&Phys_nAHCm[ii*N2], &H_AC_vec1[ii*N1], &O0_vec1[ii*N1], NExcitation, alpha, sampleSize);
+          C_ADD_AxB(&Phys_nCHAm[ii*N2], &H_CA_vec1[ii*N1], &O0_vec1[ii*N1], NExcitation, alpha, sampleSize);
+          
+          C_ADD_AxB(&Phys_nAHCm[ii*N2], &O0_vec2[ii*N1], &H_AC_vec2[ii*N1], NExcitation, alpha, sampleSize);
+          C_ADD_AxB(&Phys_nCHAm[ii*N2], &O0_vec2[ii*N1], &H_CA_vec2[ii*N1], NExcitation, alpha, sampleSize);
+        }
+      }
     }
   } /* end of for(sample) */
-  exit(0);
+  //exit(0);
+  
+
 // calculate OO and HO at NVMCCalMode==0
   if(NVMCCalMode==0){
     if(NSRCG!=0 || NStoreO!=0){
