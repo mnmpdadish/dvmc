@@ -373,13 +373,10 @@ void SetMemory() {
 
   /***** Physical Quantity *****/
   if(NVMCCalMode==1 || NVMCCalMode==2 || NVMCCalMode==3){
-    PhysCisAjs  = (double complex*)malloc(sizeof(double complex)
-                    *(NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC+NCisAjs));
-//                     +NCisAjsCktAltCmuAnu)); //Maxime
+    PhysCisAjs  = (double complex*)calloc((NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC+NCisAjs),sizeof(double complex));
     PhysCisAjsCktAlt   = PhysCisAjs       + NCisAjs;
     PhysCisAjsCktAltDC = PhysCisAjsCktAlt + NCisAjsCktAlt;
     LocalCisAjs = PhysCisAjsCktAltDC + NCisAjsCktAltDC;
-//    PhysCisAjsCktAltCmuAnu = LocalCisAjs + NCisAjs; //Maxime
 
     if(NLanczosMode>0){
       QQQQ = (double complex*)malloc(sizeof(double complex)
@@ -418,91 +415,6 @@ void SetMemory() {
 
       PhysN2 = (double complex*)malloc(sizeof(double complex)
                       *(NCisAjs*TWO_SITES_PHYS_QTY) );
-                      
-      /*
-
-      Phys_G_Moments = (double complex*)malloc(sizeof(double complex)
-                      *(NCisAjs*PHYS_MOMENTS_QTY) );
-      
-      
-      Phys_AC_quantities = (double complex*)malloc(sizeof(double complex)
-                      *(4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors));
-                 
-      printf("memory usage: %d times double complex.\n", 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors);
-      
-      PhysAC = Phys_AC_quantities + 0*NCisAjs;   
-      PhysCA = Phys_AC_quantities + 1*NCisAjs;   
-      PhysAHC= Phys_AC_quantities + 2*NCisAjs;   
-      PhysCHA= Phys_AC_quantities + 3*NCisAjs;
-      
-      PhysACN= Phys_AC_quantities + 4*NCisAjs + 0*NCisAjs*NNeighbors;
-      PhysACM= Phys_AC_quantities + 4*NCisAjs + 1*NCisAjs*NNeighbors;
-      PhysACD= Phys_AC_quantities + 4*NCisAjs + 2*NCisAjs*NNeighbors;
-      PhysNAC= Phys_AC_quantities + 4*NCisAjs + 3*NCisAjs*NNeighbors;
-      PhysMAC= Phys_AC_quantities + 4*NCisAjs + 4*NCisAjs*NNeighbors;
-      PhysDAC= Phys_AC_quantities + 4*NCisAjs + 5*NCisAjs*NNeighbors;
-      
-      PhysCAN= Phys_AC_quantities + 4*NCisAjs + 6*NCisAjs*NNeighbors;
-      PhysCAM= Phys_AC_quantities + 4*NCisAjs + 7*NCisAjs*NNeighbors;
-      PhysCAD= Phys_AC_quantities + 4*NCisAjs + 8*NCisAjs*NNeighbors;
-      PhysNCA= Phys_AC_quantities + 4*NCisAjs + 9*NCisAjs*NNeighbors;
-      PhysMCA= Phys_AC_quantities + 4*NCisAjs +10*NCisAjs*NNeighbors;
-      PhysDCA= Phys_AC_quantities + 4*NCisAjs +11*NCisAjs*NNeighbors;
-      
-      PhysAHCN= Phys_AC_quantities + 4*NCisAjs +12*NCisAjs*NNeighbors;
-      PhysAHCM= Phys_AC_quantities + 4*NCisAjs +13*NCisAjs*NNeighbors;
-      PhysAHCD= Phys_AC_quantities + 4*NCisAjs +14*NCisAjs*NNeighbors;
-      PhysNAHC= Phys_AC_quantities + 4*NCisAjs +15*NCisAjs*NNeighbors;
-      PhysMAHC= Phys_AC_quantities + 4*NCisAjs +16*NCisAjs*NNeighbors;
-      PhysDAHC= Phys_AC_quantities + 4*NCisAjs +17*NCisAjs*NNeighbors;
-      
-      PhysCHAN= Phys_AC_quantities + 4*NCisAjs +18*NCisAjs*NNeighbors;
-      PhysCHAM= Phys_AC_quantities + 4*NCisAjs +19*NCisAjs*NNeighbors;
-      PhysCHAD= Phys_AC_quantities + 4*NCisAjs +20*NCisAjs*NNeighbors;
-      PhysNCHA= Phys_AC_quantities + 4*NCisAjs +21*NCisAjs*NNeighbors;
-      PhysMCHA= Phys_AC_quantities + 4*NCisAjs +22*NCisAjs*NNeighbors;
-      PhysDCHA= Phys_AC_quantities + 4*NCisAjs +23*NCisAjs*NNeighbors;
-      
-      PhysNACN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 0*NCisAjs*NNeighbors*NNeighbors;
-      PhysNACM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 1*NCisAjs*NNeighbors*NNeighbors;
-      PhysNACD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 2*NCisAjs*NNeighbors*NNeighbors;
-      PhysMACN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 3*NCisAjs*NNeighbors*NNeighbors;
-      PhysMACM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 4*NCisAjs*NNeighbors*NNeighbors;
-      PhysMACD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 5*NCisAjs*NNeighbors*NNeighbors;
-      PhysDACN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 6*NCisAjs*NNeighbors*NNeighbors;
-      PhysDACM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 7*NCisAjs*NNeighbors*NNeighbors;
-      PhysDACD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 8*NCisAjs*NNeighbors*NNeighbors;
-      
-      PhysNCAN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors + 9*NCisAjs*NNeighbors*NNeighbors;
-      PhysNCAM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +10*NCisAjs*NNeighbors*NNeighbors;
-      PhysNCAD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +11*NCisAjs*NNeighbors*NNeighbors;
-      PhysMCAN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +12*NCisAjs*NNeighbors*NNeighbors;
-      PhysMCAM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +13*NCisAjs*NNeighbors*NNeighbors;
-      PhysMCAD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +14*NCisAjs*NNeighbors*NNeighbors;
-      PhysDCAN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +15*NCisAjs*NNeighbors*NNeighbors;
-      PhysDCAM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +16*NCisAjs*NNeighbors*NNeighbors;
-      PhysDCAD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +17*NCisAjs*NNeighbors*NNeighbors;
-      
-      PhysNAHCN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +18*NCisAjs*NNeighbors*NNeighbors;
-      PhysNAHCM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +19*NCisAjs*NNeighbors*NNeighbors;
-      PhysNAHCD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +20*NCisAjs*NNeighbors*NNeighbors;
-      PhysMAHCN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +21*NCisAjs*NNeighbors*NNeighbors;
-      PhysMAHCM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +22*NCisAjs*NNeighbors*NNeighbors;
-      PhysMAHCD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +23*NCisAjs*NNeighbors*NNeighbors;
-      PhysDAHCN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +24*NCisAjs*NNeighbors*NNeighbors;
-      PhysDAHCM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +25*NCisAjs*NNeighbors*NNeighbors;
-      PhysDAHCD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +26*NCisAjs*NNeighbors*NNeighbors;
-      
-      PhysNCHAN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +27*NCisAjs*NNeighbors*NNeighbors;
-      PhysNCHAM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +28*NCisAjs*NNeighbors*NNeighbors;
-      PhysNCHAD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +29*NCisAjs*NNeighbors*NNeighbors;
-      PhysMCHAN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +30*NCisAjs*NNeighbors*NNeighbors;
-      PhysMCHAM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +31*NCisAjs*NNeighbors*NNeighbors;
-      PhysMCHAD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +32*NCisAjs*NNeighbors*NNeighbors;
-      PhysDCHAN= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +33*NCisAjs*NNeighbors*NNeighbors;
-      PhysDCHAM= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +34*NCisAjs*NNeighbors*NNeighbors;
-      PhysDCHAD= Phys_AC_quantities + 4*NCisAjs +24*NCisAjs*NNeighbors +35*NCisAjs*NNeighbors*NNeighbors;
-      //*/
     }
     
     ijst_to_idx = (int**)malloc(sizeof(int*)*2*Nsite);
@@ -531,22 +443,19 @@ void SetMemory() {
       LocalCktAltCmuAnu[i] = (double *)malloc(sizeof(double) * NCisAjs);
     }
     
-
     if(NVMCCalMode==3){
-      O_AC_vec1 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
-      O_AC_vec2 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
-      O_CA_vec1 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
-      O_CA_vec2 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
-      H_AC_vec1 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
-      H_AC_vec2 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
-      H_CA_vec1 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
-      H_CA_vec2 = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
-      O0_vec1   = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
-      O0_vec2   = (double *)malloc(sizeof(double)*(NCisAjs*NExcitation*sampleChunk) );
+      O_AC_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      O_AC_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      O_CA_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      O_CA_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      H_AC_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      H_AC_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      H_CA_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      H_CA_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      O0_vec1   = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      O0_vec2   = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
     }
-
-    
-    
+     
   }
 
   initializeWorkSpaceAll();

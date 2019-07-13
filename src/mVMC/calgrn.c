@@ -676,19 +676,19 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return 1;
     }
     else if(t==1){ 
-      return eleNum[ra+(1-s)*Nsite]  + DEL((1-s),u) * (DEL(ra,rm)-DEL(ra,rn));
+      return eleNum[ra+(1-s)*Nsite]  + del((1-s),u) * (del(ra,rm)-del(ra,rn));
     }
     else if(t==2){
-      return (eleNum[ra+   s *Nsite] + (DEL(ra,rm)-DEL(ra,rn)) * DEL(u,s)    + sign * (DEL(ra,ri)-DEL(ra,rj)) )
-            *(eleNum[rb+   s *Nsite] + (DEL(rb,rm)-DEL(rb,rn)) * DEL(u,s)    + sign * (DEL(rb,ri)-DEL(rb,rj)) );
+      return (eleNum[ra+   s *Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,s)    + sign * (del(ra,ri)-del(ra,rj)) )
+            *(eleNum[rb+   s *Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s)    + sign * (del(rb,ri)-del(rb,rj)) );
     }
     else if(t==3){
-      return (eleNum[ra+(1-s)*Nsite] + (DEL(ra,rm)-DEL(ra,rn)) * DEL(u,1-s))
-            *(eleNum[rb+(1-s)*Nsite] + (DEL(rb,rm)-DEL(rb,rn)) * DEL(u,1-s));
+      return (eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s))
+            *(eleNum[rb+(1-s)*Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,1-s));
     }
     else if(t==4){
-      return (eleNum[ra+(1-s)*Nsite] + (DEL(ra,rm)-DEL(ra,rn)) * DEL(u,1-s))
-            *(eleNum[rb+   s *Nsite] + (DEL(rb,rm)-DEL(rb,rn)) * DEL(u,s)    + sign * (DEL(rb,ri)-DEL(rb,rj)) )   ;
+      return (eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s))
+            *(eleNum[rb+   s *Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s)    + sign * (del(rb,ri)-del(rb,rj)) )   ;
     }
     else{
       printf("oups, error %d\n", t);
@@ -709,8 +709,8 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return eleNum[ra+(1-s)*Nsite] ;
     }
     else if(t==2){ 
-      return (eleNum[ra+    s*Nsite] + sign * (DEL(ra,ri)-DEL(ra,rj) ) )
-            *(eleNum[rb+    s*Nsite] + sign * (DEL(rb,ri)-DEL(rb,rj) ) );
+      return (eleNum[ra+    s*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) )
+            *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );
     }
     else if(t==3){ 
       return (eleNum[ra+(1-s)*Nsite] )
@@ -718,7 +718,7 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
     }
     else if(t==4){ 
       return (eleNum[ra+(1-s)*Nsite] )
-            *(eleNum[rb+    s*Nsite] + sign * (DEL(rb,ri)-DEL(rb,rj) ) );
+            *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );
     }
     else{
       printf("oups, error %d\n", t);
@@ -772,25 +772,23 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
   int idx,idx0,idx1;
   int ri,rj,s,rk,rl,t;
   double tmp;
-  int *myEleIdx, *myEleNum, *myProjCntNew;
+  int *myEleIdx, *myEleNum, *myEleCfg, *myProjCntNew;
   double *myBuffer_real;
   
   double AC_tmp, CA_tmp;
   
   //#pragma omp parallel default(shared)                \
   //private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx, O_AC_vec, O_CA_vec, O0_vec, H_vec)//, O_vec)
-  { 
+  {
     myEleIdx = (int*)malloc(sizeof(int) * Nsize );
     myEleNum = (int*)malloc(sizeof(int) * Nsite2 );
     //myEleCfg = (int*)malloc(sizeof(int) * Nsite2 );
     myProjCntNew = (int*)malloc(sizeof(int) * NProj );
     myBuffer_real = (double *)malloc(sizeof(double) * (NQPFull+2*Nsize) );
 
-    //#pragma loop noalias
-    for(idx=0;idx<Nsize;idx++) myEleIdx[idx] = eleIdx[idx];
-    //#pragma loop noalias
+    for(idx=0;idx<Nsize;idx++)  myEleIdx[idx] = eleIdx[idx];
     for(idx=0;idx<Nsite2;idx++) myEleNum[idx] = eleNum[idx];
-
+    //for(idx=0;idx<Nsite2;idx++) myEleCfg[idx] = eleCfg[idx];
     
     double factor;
     int rm, rn, u;
@@ -812,6 +810,14 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
       PhysCisAjs[idx] += w*LocalCisAjs[idx];
     }
 
+    /*
+    for(idx=0;idx<NCisAjsCktAltDC;idx++) {
+      PhysCisAjsCktAltDC[idx] = 0.0;
+    }
+     for(idx=0;idx<NCisAjsCktAltDC;idx++) {
+      PhysCisAjsCktAltDC[idx] = 0.0;
+    }
+    //*/
 
 //#pragma omp for private(idx,idx_trans,rk,rl,t,rm,rn,u) schedule(dynamic) nowait
     for(idx=0;idx<NCisAjs;idx++) {
@@ -854,7 +860,7 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         int idx_vectorEx = idx_exc + (sample + sampleChunk*idx_green)*NExcitation;
         
         // <phi|ac|x> / <phi|x> = delta_{ri,rj} * <phi|x> / <phi|x> - <phi|ca|x> / <phi|x>           <-- need to reverse indices
-        AC_tmp  = DEL(ri,rj);
+        AC_tmp  = del(ri,rj);
         AC_tmp -= ((double) LocalCisAjs[idx_green]);
         AC_tmp *= ((double) (Commute_Nat_(with_AisCjs, ra1, ra2, t, ri, rj, s, 0,0,0, myEleNum)));
         O_AC_vec1[idx_vector]   = AC_tmp;
@@ -877,11 +883,11 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         for(idx_int=0;idx_int<NCoulombIntra;idx_int++) {
           rm = CoulombIntra[idx_int];
           factor = ParaCoulombIntra[idx_int] *
-                   ( 1.*DEL(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
+                   ( 1.*del(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
           tmp_int_AHC += factor;        
 
           factor = ParaCoulombIntra[idx_int] *
-                   ( -1.*DEL(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
+                   ( -1.*del(rj,rm) + myEleNum[rm+s*Nsite])*myEleNum[rm+(1-s)*Nsite];
           tmp_int_CHA += factor;
         }
         
@@ -901,7 +907,7 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
           int idx_green0 = ijst_to_idx[ri+s*Nsite][rn+s*Nsite];
           tmp = -1.0 * ParaTransfer[idx_trans] 
                      * (((double)LocalCktAltCmuAnu[idx_trans][idx]) 
-                        - DEL(rm,rj) * DEL(s,u) * ((double)LocalCisAjs[idx_green0]) ) 
+                        - del(rm,rj) * del(s,u) * ((double)LocalCisAjs[idx_green0]) ) 
                      * (Commute_Nat_(with_CisCmuAnuAjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum)) ;
           H_CA_vec1[idx_vector]   += tmp;
           H_CA_vec2[idx_vectorEx] += tmp;//conj(tmp);
@@ -911,8 +917,8 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
           int idx_green3 = ijst_to_idx[rm+u*Nsite][ri+u*Nsite];
           tmp = -1.0 * ParaTransfer[idx_trans] 
                      * ( - ((double) LocalCktAltCmuAnu[idx_trans][idx_green1]) 
-                         + DEL(ri,rj) * ((double) LocalCisAjs[idx_green2]) 
-                         + DEL(rn,rj) * DEL(s,u) * ( DEL(rm,ri) - ((double) LocalCisAjs[idx_green3])) )
+                         + del(ri,rj) * ((double) LocalCisAjs[idx_green2]) 
+                         + del(rn,rj) * del(s,u) * ( del(rm,ri) - ((double) LocalCisAjs[idx_green3])) )
                      * Commute_Nat_(with_AisCmuAnuCjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum) ;
           H_AC_vec1[idx_vector]   += tmp;
           H_AC_vec2[idx_vectorEx] += tmp;//conj(tmp);
@@ -921,13 +927,15 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         ///
       }
     } 
+    free(myEleIdx);
+    free(myEleNum);
+    //free(myEleCfg);
+    free(myProjCntNew);
+    free(myBuffer_real);  
   } //
   
   
-  free(myEleIdx);
-  free(myEleNum);
-  free(myProjCntNew);
-  free(myBuffer_real);
+
   return;
 }
 

@@ -256,10 +256,12 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
 
 
 void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
-  int n = NCisAjs*NExcitation*NExcitation;
+  int n;
   double *vec_real;
   double complex *vec;
-  
+
+
+  n = NCisAjs*NExcitation*NExcitation;
   vec_real = Phys_nCHAm;
   weightAverageReduce_real(n,vec_real,comm);
 
@@ -272,9 +274,10 @@ void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
   vec_real = Phys_nACm;
   weightAverageReduce_real(n,vec_real,comm);
 
-  //n = NCisAjs;//+NCisAjsCktAlt;//+NCisAjsCktAltDC;
-  //vec = PhysCisAjs;
-  //weightAverageReduce_fcmp(n,vec,comm);
+  n = NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
+  vec = PhysCisAjs;
+  weightAverageReduce_fcmp(n,vec,comm);
+
   
   return;
 }
@@ -356,6 +359,8 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
   MPI_Comm_rank(comm,&rank);
   MPI_Comm_size(comm,&size);
 
+  printf(" %d / %d \n",rank,size);
+
   if(size>1) {
     RequestWorkSpaceComplex(n);
     buf = GetWorkSpaceComplex(n);
@@ -384,6 +389,8 @@ void weightAverageReduce_real(int n, double *vec, MPI_Comm comm) {
     int rank,size;
     MPI_Comm_rank(comm,&rank);
     MPI_Comm_size(comm,&size);
+
+    printf(" %d / %d \n",rank+1,size);
 
     if(size>1) {
       RequestWorkSpaceDouble(n);
