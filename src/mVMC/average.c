@@ -260,24 +260,22 @@ void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
   double *vec_real;
   double complex *vec;
 
-
   n = NCisAjs*NExcitation*NExcitation;
   vec_real = Phys_nCHAm;
-  weightAverageReduce_real(n,vec_real,comm);
+  weightAverageReduce(n,vec_real,comm);
 
   vec_real = Phys_nAHCm;
-  weightAverageReduce_real(n,vec_real,comm);
+  weightAverageReduce(n,vec_real,comm);
 
   vec_real = Phys_nCAm;
-  weightAverageReduce_real(n,vec_real,comm);
+  weightAverageReduce(n,vec_real,comm);
 
   vec_real = Phys_nACm;
-  weightAverageReduce_real(n,vec_real,comm);
+  weightAverageReduce(n,vec_real,comm);
 
-  n = NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
-  vec = PhysCisAjs;
-  weightAverageReduce_fcmp(n,vec,comm);
-
+  n = NCisAjs;
+  vec_real = Phys_CA;
+  weightAverageReduce(n,vec_real,comm);
   
   return;
 }
@@ -324,12 +322,17 @@ void WeightAverageGreenFunc(MPI_Comm comm) {
 
 void weightAverageReduce(int n, double *vec, MPI_Comm comm) {
   int i;
-  const double invW = 1.0/Wc;
+  const double invW = 1.0/creal(Wc);
   double *buf;
   int rank,size;
   MPI_Comm_rank(comm,&rank);
   MPI_Comm_size(comm,&size);
+  
+  //for(i=0;i<NExcitation;i++)
+  //printf("real %d / %d   %d %d %d \n",rank+1,size, ChargeExcitationIdx[i][0],ChargeExcitationIdx[i][1],ChargeExcitationIdx[i][2]);
+  //printf("real %d / %d   %d %d %d \n",rank+1,size, CisAjsIdx[i][0],CisAjsIdx[i][1],CisAjsIdx[i][2]);
 
+  
   if(size>1) {
     RequestWorkSpaceDouble(n);
     buf = GetWorkSpaceDouble(n);
@@ -359,7 +362,7 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
   MPI_Comm_rank(comm,&rank);
   MPI_Comm_size(comm,&size);
 
-  printf(" %d / %d \n",rank,size);
+  printf("fcmp %d / %d \n",rank+1,size);
 
   if(size>1) {
     RequestWorkSpaceComplex(n);
@@ -384,13 +387,13 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
 
 void weightAverageReduce_real(int n, double *vec, MPI_Comm comm) {
     int i;
-    const double invW = 1.0/Wc;
+    const double invW = 1.0/creal(Wc);
     double *buf;
     int rank,size;
     MPI_Comm_rank(comm,&rank);
     MPI_Comm_size(comm,&size);
 
-    printf(" %d / %d \n",rank+1,size);
+    printf("real %d / %d \n",rank+1,size);
 
     if(size>1) {
       RequestWorkSpaceDouble(n);

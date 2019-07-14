@@ -650,9 +650,6 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       if(rank==0) {
         outputData();
         printf("after output.\n"); fflush(stdout);
-        //fclose(File_nACm);
-        //fclose(File_nCAm);
-        //fclose(File_nAHCm);
         fclose(File_nCHAm);
         printf("after close.\n"); fflush(stdout);
       }
@@ -670,7 +667,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
 void outputData() {
   int i, j;
 
-  /* zvo_out.dat */
+  // zvo_out.dat 
 //[s] MERGE BY TM
  // fprintf(FileOut, "% .18e % .18e % .18e \n", Etot, Etot2, (Etot2 - Etot*Etot)/(Etot*Etot));
  //   fprintf(FileOut, "% .18e % .18e  % .18e % .18e \n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)));
@@ -680,18 +677,18 @@ void outputData() {
  //         creal((Etot2 - Etot * Etot) / (Etot * Etot)));
 //[e] MERGE BY TM
 
-  /* zvo_var.dat */
-  if (FlagBinary == 0) { /* formatted output*/
+  // zvo_var.dat 
+  if (FlagBinary == 0) { // formatted output
     fprintf(FileVar, "% .18e % .18e 0.0 % .18e % .18e 0.0 ", creal(Etot), cimag(Etot), creal(Etot2), cimag(Etot2));
     for (i = 0; i < NPara; i++) fprintf(FileVar, "% .18e % .18e 0.0 ", creal(Para[i]), cimag(Para[i]));
     fprintf(FileVar, "\n");
     //for(i=0;i<NPara;i++)  printf("DEBUG:i=%d: % .18e % .18e  \n",i, creal(Para[i]),cimag(Para[i]));
-  } else { /* binary output */
+  } else { // binary output 
     fwrite(Para, sizeof(double), NPara, FileVar);
   }
 
   if (NVMCCalMode == 1) {
-    /* zvo_cisajs.dat */
+    // zvo_cisajs.dat 
     if (NCisAjs > 0) {
       if(NLanczosMode <2) {
         for (i = 0; i < NCisAjs; i++) {
@@ -711,14 +708,14 @@ void outputData() {
       }
       fprintf(FileCisAjs, "\n");
     }
-    /* zvo_cisajscktalt.dat */
+    // zvo_cisajscktalt.dat 
     if (NCisAjsCktAlt > 0) {
       for (i = 0; i < NCisAjsCktAlt; i++)
         fprintf(FileCisAjsCktAlt, "% .18e  % .18e ", creal(PhysCisAjsCktAlt[i]), cimag(PhysCisAjsCktAlt[i]));
       fprintf(FileCisAjsCktAlt, "\n");
     }
 
-    /* zvo_cisajscktaltdc.dat */
+    // zvo_cisajscktaltdc.dat
     if (NCisAjsCktAltDC > 0) {
       for (i = 0; i < NCisAjsCktAltDC; i++) {
         fprintf(FileCisAjsCktAltDC, "%d %d %d %d %d %d %d %d % .18e % .18e\n",
@@ -764,68 +761,6 @@ void outputData() {
 //          fprintf(FileN, "% .8e  % .8e   ", creal(PhysN2[i+NCisAjs*j]), cimag(PhysN2[i+NCisAjs*j]));
         fprintf(FileN2, "\n");
       }
-      //printf("printed files.\n"); fflush(stdout);
-      /*
-      //header:
-      fprintf(File_AC, "# i   s   j   s     ");
-      fprintf(File_AC, "AC          CA          AHC          CHA \n");
-      int k=0, jj=0;
-      for (i = 0; i < NCisAjs; i++) {
-        fprintf(File_AC, "%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-        for (k = 0; k < 4; k++)  fprintf(File_AC, "% 0.3e  ",  creal(PhysAC[i+k*NCisAjs]));  //for (k = 0; k < 4; k++)  fprintf(File_AC, "% 0.6e % 0.6e  ",  creal(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysAC[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
-        // print PhysAC, PhysCA, PhysAHC and PhysCHA : see setmemory.c
-        fprintf(File_AC, "\n");
-      }
-      
-      //header:
-      fprintf(File_ACN, "# i   s   j   s  dx dy     ");
-      fprintf(File_ACN, "ACN         ACM         ACD         NAC         MAC         DAC         ");
-      fprintf(File_ACN, "CAN         CAM         CAD         NCA         MCA         DCA         ");
-      fprintf(File_ACN, "AHCN        AHCM        AHCD        NAHC        MAHC        DAHC        ");
-      fprintf(File_ACN, "CHAN        CHAM        CHAD        NCHA        MCHA        DCHA     \n");
-      
-      for (i = 0; i < NCisAjs; i++) {
-        for (j = 0; j < NNeighbors; j++) {
-         fprintf(File_ACN, "%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-         fprintf(File_ACN, "% d % d  ", neighbors_delta_x[j], neighbors_delta_y[j]);
-         for (k = 0; k < 24; k++)  fprintf(File_ACN, "% 0.3e  ",  creal(PhysACN[i+k*NCisAjs*NNeighbors + NCisAjs*j]));
-         //for (k = 0; k < 24; k++)  fprintf(File_ACN, "% 0.6e % 0.6e  ",  creal(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
-         // print everything from PhysACN ... to ... PhysDCHA : see setmemory.c
-         fprintf(File_ACN, "\n");
-        }
-      }
-      
-      //header:
-      fprintf(File_NACN, "# i   s   j   s  dx dy  dx dy       ");
-      fprintf(File_NACN, "NACN        NACM        NACD        MACN        MACM        MACD        DACN        DACM        DACD        ");
-      fprintf(File_NACN, "NCAN        NCAM        NCAD        MCAN        MCAM        MCAD        DCAN        DCAM        DCAD        ");
-      fprintf(File_NACN, "NAHCN       NAHCM       NAHCD       MAHCN       MAHCM       MAHCD       DAHCN       DAHCM       DAHCD       ");
-      fprintf(File_NACN, "NCHAN       NCHAM       NCHAD       MCHAN       MCHAM       MCHAD       DCHAN       DCHAM       DCHAD    \n");
-       
-      for (i = 0; i < NCisAjs; i++) {
-        for (j = 0; j < NNeighbors; j++) {
-          for (jj = 0; jj < NNeighbors; jj++) {
-            fprintf(File_NACN, "%3d %3d %3d %3d  ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-            fprintf(File_NACN, "% d % d  % d % d  ", neighbors_delta_x[j], neighbors_delta_y[j], neighbors_delta_x[jj], neighbors_delta_y[jj]);
-            for (k = 0; k < 36; k++)  fprintf(File_NACN, "% 0.3e  ",  creal(PhysNACN[i+k*NCisAjs*NNeighbors*NNeighbors + NCisAjs*(jj+j*NNeighbors)]));
-            //MACM[idx+(idx_l*NNeighbors+idx_k)*NumElem] += f_signs*MultiplyFactor(AC_input,n,rsk,rsl,1,ri,1-s,1,rj,1-s,eleNum, PH);
-          
-            //for (k = 0; k < 36; k++)  fprintf(File_NACN, "% 0.6e % 0.6e  ",  creal(PhysNACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]), cimag(PhysNACN[i+j*NCisAjs + k*NCisAjs*NNeighbors]));
-            // print everything from PhysNACN ... to ... PhysDCHAD : see setmemory.c
-            fprintf(File_NACN, "\n");
-          }
-        }
-      }
-      
-
-      ////
-      for (i = 0; i < NCisAjs; i++) {
-        fprintf(File_G_Moments, "%d %d %d %d ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-        for (j = 0; j < PHYS_MOMENTS_QTY; j++) 
-          fprintf(File_G_Moments, "% .8e   ", creal(Phys_G_Moments[i+NCisAjs*j]) );
-        fprintf(File_G_Moments, "\n");
-      }///
-      */
       
     }
     for (i = 0; i < Nsite; i++) {
@@ -835,24 +770,6 @@ void outputData() {
       fprintf(FileN1, "\n");
     }
     fprintf(FileN1, "\n");
-    /*
-    int NExcitation2 = NExcitation*NExcitation;
-    int nn,mm;
-    fprintf(File_nCHAm, "#i s j s   n m");
-    for (i = 0; i < NCisAjs; i++) {
-      for (nn = 0; nn < NExcitation; nn++) {
-        for (mm = 0; mm < NExcitation; mm++) {
-          fprintf(File_nCHAm, "\n %d %d %d %d   ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
-          fprintf(File_nCHAm, "%d %d  ", nn,mm);
-          fprintf(File_nCHAm, "% 0.4f   ",  creal( Phys_nCAm[nn+NExcitation*mm + i*NExcitation2] ) );
-          fprintf(File_nCHAm, "% 0.4f   ",  creal( Phys_nACm[nn+NExcitation*mm + i*NExcitation2] ) );
-          fprintf(File_nCHAm, "% 0.4f   ",  creal(Phys_nCHAm[nn+NExcitation*mm + i*NExcitation2] ) );
-          fprintf(File_nCHAm, "% 0.4f   ",  creal(Phys_nAHCm[nn+NExcitation*mm + i*NExcitation2] ) );
-        }
-        fprintf(File_nCHAm, " "); 
-      }
-    }
-    */
     printf("ending of print files.\n"); fflush(stdout);
     
   }
@@ -860,8 +777,7 @@ void outputData() {
     printf("trying to print files.\n"); fflush(stdout);
     if (NCisAjs > 0) {
       for (i = 0; i < NCisAjs; i++) {
-          fprintf(FileCisAjs, "%d %d %d %d % .18e  % .18e \n", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2],
-                  CisAjsIdx[i][3], creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
+          fprintf(FileCisAjs, "%d %d %d %d % 0.4e \n", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3], Phys_CA[i]);
       }
     }
     

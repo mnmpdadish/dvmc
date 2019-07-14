@@ -279,8 +279,8 @@ double complex *PhysN1; /* [Nsite * ONE_SITE_PHYS_QTY] */
 double complex *PhysN2; /* [NCisAjs * TWO_SITES_PHYS_QTY] */
 
 
-#define PHYS_MOMENTS_QTY 2
-double complex *Phys_G_Moments; /* [NCisAjs * PHYS_MOMENTS_QTY] */
+//#define PHYS_MOMENTS_QTY 2
+//double complex *Phys_G_Moments; /* [NCisAjs * PHYS_MOMENTS_QTY] */
 double complex Sztot,Sztot2; /* <Sz>,<Sz^2> */
 
 //// MC + TJS /////
@@ -288,84 +288,20 @@ double complex Sztot,Sztot2; /* <Sz>,<Sz^2> */
 
 
 // following arrays has size [NCisAjs]:
-double complex *Phys_AC_quantities;
+//double complex *Phys_AC_quantities;
 
-double complex *PhysAC;
-double complex *PhysCA;
-double complex *PhysAHC;
-double complex *PhysCHA;
 
-// following arrays has size [NCisAjs*NNeighbors]:
-double complex *PhysACN, *PhysACM, *PhysACD, *PhysNAC, *PhysMAC, *PhysDAC;
-double complex *PhysCAN, *PhysCAM, *PhysCAD, *PhysNCA, *PhysMCA, *PhysDCA;
-double complex *PhysAHCN, *PhysAHCM, *PhysAHCD, *PhysNAHC, *PhysMAHC, *PhysDAHC;
-double complex *PhysCHAN, *PhysCHAM, *PhysCHAD, *PhysNCHA, *PhysMCHA, *PhysDCHA;
-
-// following arrays has size [NCisAjs*NNeighbors^2]:
-double complex *PhysNACN, *PhysNACM, *PhysNACD, *PhysMACN, *PhysMACM, *PhysMACD, *PhysDACN, *PhysDACM, *PhysDACD;
-double complex *PhysNCAN, *PhysNCAM, *PhysNCAD, *PhysMCAN, *PhysMCAM, *PhysMCAD, *PhysDCAN, *PhysDCAM, *PhysDCAD;
-double complex *PhysNAHCN, *PhysNAHCM, *PhysNAHCD, *PhysMAHCN, *PhysMAHCM, *PhysMAHCD, *PhysDAHCN, *PhysDAHCM, *PhysDAHCD;
-double complex *PhysNCHAN, *PhysNCHAM, *PhysNCHAD, *PhysMCHAN, *PhysMCHAM, *PhysMCHAD, *PhysDCHAN, *PhysDCHAM, *PhysDCHAD;
 
 typedef enum {with_nothing, with_CisAjs, with_AisCjs,with_CisCmuAnuAjs,with_AisCmuAnuCjs} commuting_with; 
 
-
-int NExcitation = 46;
-int ChargeExcitationIdx[1024][3];/* =
-{
-  -1, 0, 0,
-   1, 0, 0,
-   0, 1, 0,
-   1, 1, 0,
-   2, 1, 0,
-   3, 1,-1,
-   3, 1, 0,
-   3, 1, 2,
-   3, 1, 3,
-   4, 1, 2,
-   4, 1, 3,
-   4, 1, 4,
-   0, 2, 0,
-   1, 2, 0,
-   2, 2, 0,
-   3, 2, 0,
-   3, 2, 1,
-   3, 2, 3,
-   3, 2, 4,
-   4, 2, 1,
-   4, 2, 3,
-   4, 2, 4,
-   0, 3, 0,
-   1, 3, 0,
-   2, 3, 0,
-   3, 3, 1,
-   3, 3, 2,
-   3, 3, 4,
-   3, 3, 5,
-   4, 3, 1,
-   4, 3, 2,
-   4, 3, 4,
-   4, 3, 5,
-   0, 4, 0,
-   1, 4, 0,
-   2, 4, 0,
-   3, 4, 1,
-   3, 4, 2,
-   3, 4, 3,
-   3, 4, 5,
-   3, 4, 6,
-   3, 4, 7,
-   4, 4, 2,
-   4, 4, 3,
-   4, 4, 5,
-   4, 4, 6,
-};
-*/
-
+int NExcitation = 0;
+//int ChargeExcitationIdx[1024][3];
+int **ChargeExcitationIdx;
 int sampleChunk = 50;
       
 // following arrays has size [NCisAjs*NExcitation*NExcitation]
 double *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;
+double *Phys_CA, *Local_CA;
 
 double *O_AC_vec1, *O_CA_vec1, AC_tmp, CA_tmp;
 double *O_AC_vec2, *O_CA_vec2;

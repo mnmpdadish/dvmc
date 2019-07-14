@@ -58,7 +58,7 @@ int ReadPairHopValue(FILE *fp, int **ArrayIdx, double *ArrayValue, int Nsite, in
 
 int ReadPairDValue(FILE *fp, int **ArrayIdx, double *ArrayValue, int Nsite, int NArray, char *defname);
 
-int GetInfoExcitation(FILE *fp, int (*ArrayIdx)[3], int Nsite, int NArray, char *defname);
+int GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname);
 
 int GetInfoGutzwiller(FILE *fp, int *ArrayIdx, int *ArrayOpt, int iComplxFlag, int *iOptCount, int Nsite, int NArray,
                       char *defname);
@@ -696,6 +696,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
                  + Nsite * NQPTrans /* QPTrans */
                  + Nsite * NQPTrans /* QPTransInv */
                  + Nsite * NQPTrans /* QPTransSgn */
+                 + 3 * NExcitation /* ChargeExcitation */
                  + 4 * NCisAjs /* CisAjs */
                  + 8 * NCisAjsCktAlt /* CisAjsCktAlt */
                  + 8 * NCisAjsCktAltDC /* CisAjsCktAltDC */
@@ -1930,7 +1931,7 @@ int GetInfoTransSym(FILE *fp, int **Array, int **ArraySgn, int **ArrayInv, doubl
 
 
 int
-GetInfoExcitation(FILE *fp, int (*ArrayIdx)[3], int Nsite, int NArray, char *defname) {
+GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname) {
   char ctmp2[256];
   int idx = 0, info = 0;
   int x0 = 0, x1 = 0, x2 = 0;//, x3 = 0;
@@ -1940,17 +1941,14 @@ GetInfoExcitation(FILE *fp, int (*ArrayIdx)[3], int Nsite, int NArray, char *def
     ArrayIdx[idx][0] = x0;
     ArrayIdx[idx][1] = x1;
     ArrayIdx[idx][2] = x2;
-    //if (CheckPairSite(x1, x2, Nsite) != 0) {
-    //  fprintf(stderr, "Error: Site index is incorrect. \n");
-    //  info = 1;
-    //  break;
-    //}
+    if (CheckPairSite(x1, x2, Nsite) != 0) {
+      fprintf(stderr, "Error: Site index is incorrect. \n");
+      info = 1;
+      break;
+    }
     idx++;
   }
-  if (NArray >1024){
-    fprintf(stderr, "no more the 1024 excitations. fast implementation, please do a proper malloc instead of this fast implementation. \n");
-  }
-
+  
   if (idx != NArray) info = ReadDefFileError(defname);
   return info;
 }

@@ -172,6 +172,13 @@ void SetMemoryDef() {
     CisAjsCktAltDCIdx[i] = pInt;
     pInt += 8;
   }
+
+
+  ChargeExcitationIdx = (int**)malloc(sizeof(int*)*NExcitation);
+  for(i=0;i<NExcitation;i++) {
+    ChargeExcitationIdx[i] = pInt;
+    pInt += 3;
+  }
   
 /*  //Maxime
   CisAjsCktAltCmuAnuIdx = (int**)malloc(sizeof(int*)*NCisAjsCktAltCmuAnu);
@@ -401,49 +408,15 @@ void SetMemory() {
       }
     }
     
-    if((NVMCCalMode==3)||(NVMCCalMode==2)){
-      printf("memory usage: %d times double.\n", NCisAjs*NExcitation*NExcitation);
-      Phys_nCHAm = (double *)malloc(sizeof(double )*(NCisAjs*NExcitation*NExcitation));
-      Phys_nAHCm = (double *)malloc(sizeof(double )*(NCisAjs*NExcitation*NExcitation));
-      Phys_nCAm  = (double *)malloc(sizeof(double )*(NCisAjs*NExcitation*NExcitation));
-      Phys_nACm  = (double *)malloc(sizeof(double )*(NCisAjs*NExcitation*NExcitation));
-    }
-    
-    if(NVMCCalMode==2){
-      PhysN1 = (double complex*)malloc(sizeof(double complex)
-                      *(Nsite*ONE_SITE_PHYS_QTY) );
-
-      PhysN2 = (double complex*)malloc(sizeof(double complex)
-                      *(NCisAjs*TWO_SITES_PHYS_QTY) );
-    }
-    
-    ijst_to_idx = (int**)malloc(sizeof(int*)*2*Nsite);
-    ijst_to_trans_idx = (int**)malloc(sizeof(int*)*2*Nsite);
-    for(i=0;i<2*Nsite;i++) {
-      ijst_to_idx[i] = malloc(sizeof(int) * 2*Nsite);
-      ijst_to_trans_idx[i] = malloc(sizeof(int) * 2*Nsite);
-    }    
-    for(i=0;i<NCisAjs;i++){
-      int ri = CisAjsIdx[i][0];
-      int  s = CisAjsIdx[i][1];
-      int rj = CisAjsIdx[i][2];
-      int  t = CisAjsIdx[i][3];
-      ijst_to_idx[ri+Nsite*s][rj+Nsite*t] = i;
-    }
-    for(i=0;i<NTransfer;i++){
-      int ri = Transfer[i][0];
-      int  s = Transfer[i][1];
-      int rj = Transfer[i][2];
-      int  t = Transfer[i][3];
-      ijst_to_trans_idx[ri+Nsite*s][rj+Nsite*t] = i;
-    }
-    
-    LocalCktAltCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
-    for(i=0;i<NTransfer;i++) {
-      LocalCktAltCmuAnu[i] = (double *)malloc(sizeof(double) * NCisAjs);
-    }
-    
     if(NVMCCalMode==3){
+      printf("memory usage: %d times double.\n", NCisAjs*NExcitation*NExcitation);
+      Phys_nCAm  = (double *)calloc((NCisAjs*NExcitation*NExcitation),sizeof(double));
+      Phys_nACm  = (double *)calloc((NCisAjs*NExcitation*NExcitation),sizeof(double));
+      Phys_nCHAm = (double *)calloc((NCisAjs*NExcitation*NExcitation),sizeof(double));
+      Phys_nAHCm = (double *)calloc((NCisAjs*NExcitation*NExcitation),sizeof(double));
+      Phys_CA    = (double *)calloc(NCisAjs,sizeof(double));
+      Local_CA   = (double *)calloc(NCisAjs,sizeof(double));
+
       O_AC_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
       O_AC_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
       O_CA_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
@@ -455,6 +428,29 @@ void SetMemory() {
       O0_vec1   = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
       O0_vec2   = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
     }
+    
+    if(NVMCCalMode==2){
+      PhysN1 = (double complex*)calloc(Nsite*ONE_SITE_PHYS_QTY, sizeof(double complex));
+      PhysN2 = (double complex*)calloc(NCisAjs*TWO_SITES_PHYS_QTY, sizeof(double complex) );
+    }
+    
+    ijst_to_idx = (int**)malloc(sizeof(int*)*2*Nsite);
+    for(i=0;i<2*Nsite;i++) {
+      ijst_to_idx[i] = malloc(sizeof(int) * 2*Nsite);
+    }    
+    for(i=0;i<NCisAjs;i++){
+      int ri = CisAjsIdx[i][0];
+      int  s = CisAjsIdx[i][1];
+      int rj = CisAjsIdx[i][2];
+      int  t = CisAjsIdx[i][3];
+      ijst_to_idx[ri+Nsite*s][rj+Nsite*t] = i;
+    }
+    
+    LocalCktAltCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
+    for(i=0;i<NTransfer;i++) {
+      LocalCktAltCmuAnu[i] = (double *)calloc(NCisAjs,sizeof(double));
+    }
+    
      
   }
 
@@ -506,13 +502,15 @@ void FreeMemory() {
     free(H_CA_vec1);
     free(H_CA_vec2);
     free(O0_vec1);
-    free(O0_vec2);
-  }
-  if((NVMCCalMode==3)||(NVMCCalMode==2)){
+    free(O0_vec2);      
+  
     free(Phys_nCHAm);
     free(Phys_nAHCm);
     free(Phys_nCAm);
     free(Phys_nACm);
+  
+    free(Phys_CA);
+    free(Local_CA);
   }
   
   free(QPFullWeight);
