@@ -101,7 +101,7 @@ void VMCMainCal(MPI_Comm comm) {
   StopTimer(24);
   for(sample=sampleStart;sample<sampleEnd;sample++) {
     //if(rank==0) printf("  Debug: sample=%d: CalculateMAll \n",sample);
-    int sample_to_print = 100;
+    int sample_to_print = 10000;
 
     eleIdx = EleIdx + sample*Nsize;
     eleCfg = EleCfg + sample*Nsite2;
