@@ -301,7 +301,7 @@ int sampleChunk = 50;
       
 // following arrays has size [NCisAjs*NExcitation*NExcitation]
 double *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;
-double *Phys_CA, *Local_CA;
+double *Phys_CA, *Local_CA, *Local_AC;
 
 double *O_AC_vec1, *O_CA_vec1, AC_tmp, CA_tmp;
 double *O_AC_vec2, *O_CA_vec2;
@@ -329,9 +329,8 @@ int StdFace_W=1;
 //int **NeighborsSpin; /*[Nsite][2*NNeighbors]*/
 int **ijst_to_idx; /*[2*Nsite][2*Nsite]*/
 int **ijst_to_trans_idx; /*[2*Nsite][2*Nsite]*/
-double **LocalCktAltCmuAnu; /* [NCisAjs][NTransfer] */
-//double complex **LocalAHTCijsklm; /* [NCisAjs][NTransfer] */
-//double complex **LocalCHTAijsklm; /* [NCisAjs][NTransfer] */
+double **Local_CisAjsCmuAnu; /* [NCisAjs][NTransfer] */
+double **Local_AisCjsCmuAnu; /* [NCisAjs][NTransfer] */
 
 
 //// MC + TJS end /////

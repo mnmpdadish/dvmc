@@ -416,6 +416,7 @@ void SetMemory() {
       Phys_nAHCm = (double *)calloc((NCisAjs*NExcitation*NExcitation),sizeof(double));
       Phys_CA    = (double *)calloc(NCisAjs,sizeof(double));
       Local_CA   = (double *)calloc(NCisAjs,sizeof(double));
+      Local_AC   = (double *)calloc(NCisAjs,sizeof(double));
 
       O_AC_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
       O_AC_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
@@ -446,9 +447,11 @@ void SetMemory() {
       ijst_to_idx[ri+Nsite*s][rj+Nsite*t] = i;
     }
     
-    LocalCktAltCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
+    Local_CisAjsCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
+    Local_AisCjsCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
     for(i=0;i<NTransfer;i++) {
-      LocalCktAltCmuAnu[i] = (double *)calloc(NCisAjs,sizeof(double));
+      Local_CisAjsCmuAnu[i] = (double *)calloc(NCisAjs,sizeof(double));
+      Local_AisCjsCmuAnu[i] = (double *)calloc(NCisAjs,sizeof(double));
     }
     
      
@@ -473,9 +476,11 @@ void FreeMemory() {
     free(ijst_to_idx);
     
     for(i=0;i<NTransfer;i++) {
-      free(LocalCktAltCmuAnu[i]);
+      free(Local_CisAjsCmuAnu[i]);
+      free(Local_AisCjsCmuAnu[i]);
     }
-    free(LocalCktAltCmuAnu);
+    free(Local_CisAjsCmuAnu);
+    free(Local_AisCjsCmuAnu);
 
     if(NLanczosMode>0){
       free(QQQQ);
@@ -511,6 +516,7 @@ void FreeMemory() {
   
     free(Phys_CA);
     free(Local_CA);
+    free(Local_AC);
   }
   
   free(QPFullWeight);

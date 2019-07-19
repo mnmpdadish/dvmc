@@ -39,8 +39,8 @@ int read_StdFace_L_W(){
   {
     if (fgets(tmpbuff,200,tmpfile))
     {
-      if(sscanf (tmpbuff,"L = %d",&StdFace_L)) { }//printf("found L=%d\n", StdFace_L);} 
-      if(sscanf (tmpbuff,"W = %d",&StdFace_W)) { } //printf("found W=%d\n", StdFace_W);} 
+      if(sscanf (tmpbuff,"L = %d",&StdFace_L)) { printf("found L=%d\n", StdFace_L);} 
+      if(sscanf (tmpbuff,"W = %d",&StdFace_W)) { printf("found W=%d\n", StdFace_W);} 
     }
   }
   assert(StdFace_L*StdFace_W==Nsite);
@@ -128,10 +128,6 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
     
     //#pragma omp master
     {StopTimer(50);}
-
-  
-
-
   }
   ReleaseWorkSpaceThreadInt();
   ReleaseWorkSpaceThreadComplex();
@@ -144,10 +140,6 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
 int del(int i,int j){
   return ((i==j)? 1:0);
 }
-
-#define DEL(i,j)         ((i==j) ?  (1) : (0))
-
-
 
 int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj, int s, int rm, int rn, int u, int *eleNum) {
   int sign;
@@ -250,7 +242,8 @@ unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, do
   char transA= 'N', transB= 'C';
   double beta=1.0;
   //int ONE = 1;
-  //M_DGEMM(&transA,&transB,&N,&N,&sampleSize, &weight, &A[0], &N, &B[0], &N, &beta, &C[0], &N); 
+  M_DGEMM(&transA,&transB,&N,&N,&sampleSize, &weight, &A[0], &N, &B[0], &N, &beta, &C[0], &N); 
+  /*
   int ii, jj, kk;
   for(ii=0; ii<N; ii++){
     for(jj=0; jj<N; jj++){
@@ -258,7 +251,7 @@ unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, do
         C[ii+jj*N] += weight * A[ii+kk*N] * B[jj+kk*N];
       }
     }
-  }
+  }*/
   return 0;
 }
 
@@ -297,9 +290,11 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
       ri = CisAjsIdx[idx][0];
       rj = CisAjsIdx[idx][2];
       s  = CisAjsIdx[idx][3];
-      tmp = GreenFunc1_real(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
-                       myProjCntNew,myBuffer_real);
-      Local_CA[idx] = tmp;
+      Local_CA[idx] = GreenFunc1_real(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
+                                                              myProjCntNew,myBuffer_real); 
+
+      Local_AC[idx] = GreenFunc1_real_AisCjs(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
+                                                                myProjCntNew,myBuffer_real); 
     }
 
 //#pragma omp for private(idx) nowait
@@ -307,34 +302,28 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
       Phys_CA[idx] += w*Local_CA[idx];
     }
 
-    /*
-    for(idx=0;idx<NCisAjsCktAltDC;idx++) {
-      PhysCisAjsCktAltDC[idx] = 0.0;
-    }
-     for(idx=0;idx<NCisAjsCktAltDC;idx++) {
-      PhysCisAjsCktAltDC[idx] = 0.0;
-    }
-    //*/
-
 //#pragma omp for private(idx,idx_trans,rk,rl,t,rm,rn,u) schedule(dynamic) nowait
     for(idx=0;idx<NCisAjs;idx++) {
-      rk = CisAjsIdx[idx][0];
-      rl = CisAjsIdx[idx][2];
-      t  = CisAjsIdx[idx][3];
+      ri = CisAjsIdx[idx][0];
+      rj = CisAjsIdx[idx][2];
+      s  = CisAjsIdx[idx][3];
 
       for(idx_trans=0;idx_trans<NTransfer;idx_trans++) {
       
         rm = Transfer[idx_trans][0];
         rn = Transfer[idx_trans][2];
         u  = Transfer[idx_trans][3];
-          
-        LocalCktAltCmuAnu[idx_trans][idx] = GreenFunc2_real(rk,rl,rm,rn,t,u,ip,
-               myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer_real);
+        
+        Local_CisAjsCmuAnu[idx_trans][idx] = GreenFunc2_real(ri,rj,rm,rn,s,u,ip,
+                myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer_real);
+
+        Local_AisCjsCmuAnu[idx_trans][idx] = GreenFunc2_real_AisCjsCktAlt(ri,rj,rm,rn,s,u,ip,
+                              myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer_real);
       }
     }
     
 ///*
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 //#pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic) nowait    
     for(idx=0;idx<NCisAjs;idx++) {
       ri = CisAjsIdx[idx][0];
@@ -343,9 +332,9 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
       double tmp_CA = Local_CA[idx];
       int idx_exc;
       for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
-        //int idx_vector = idx_exc + idx*NExcitation;
-        //int idx_vectorEx = idx_exc + idx_green*NExcitation;
-        int idx_green = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
+        //int idx_reverse = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
+        int idx_reverse = ijst_to_idx[ri+s*Nsite][(2*ri-rj+Nsite)%Nsite+s*Nsite];  // BEWARE: this line impose invariance under translation and assume periodic boundary condition
+        
         int t   = ChargeExcitationIdx[idx_exc][0];  // type
         int dr1 = ChargeExcitationIdx[idx_exc][1];  // position 1
         int dr2 = ChargeExcitationIdx[idx_exc][2];  // position 2
@@ -353,20 +342,18 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         int ra2 = (dr2+ri+Nsite) % Nsite;
         int rb1 = (dr1+rj+Nsite) % Nsite;
         int rb2 = (dr2+rj+Nsite) % Nsite;
-        int idx_vector   = idx_exc + (sample + sampleChunk*idx)      *NExcitation;
-        int idx_vectorEx = idx_exc + (sample + sampleChunk*idx_green)*NExcitation;
+        int idx_vector   = idx_exc + (sample + sampleChunk*idx)        *NExcitation;
+        int idx_vectorEx = idx_exc + (sample + sampleChunk*idx_reverse)*NExcitation;
         
         //printf("%d %d %d \n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2]);
-      
+        
         // <phi|ca|x> / <phi|x>
         CA_tmp = Local_CA[idx] * Commute_Nat_(with_CisAjs,  ra1, ra2, t, ri, rj, s, 0,0,0, myEleNum);        
         O_CA_vec1[idx_vector]   = CA_tmp;        
         O_CA_vec2[idx_vectorEx] = CA_tmp;//conj(CA_tmp);        
 
         // <phi|ac|x> / <phi|x> = delta_{ri,rj} * <phi|x> / <phi|x> - <phi|ca|x> / <phi|x>           <-- need to reverse indices
-        AC_tmp  = del(ri,rj);
-        AC_tmp -= Local_CA[idx_green];
-        AC_tmp *= Commute_Nat_(with_AisCjs, ra1, ra2, t, ri, rj, s, 0,0,0, myEleNum);
+        AC_tmp = Local_AC[idx] * Commute_Nat_(with_AisCjs,  ra1, ra2, t, ri, rj, s, 0,0,0, myEleNum);        
         O_AC_vec1[idx_vector]   = AC_tmp;
         O_AC_vec2[idx_vectorEx] = AC_tmp;//conj(AC_tmp);
         
@@ -405,19 +392,16 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
           
           int idx_green0 = ijst_to_idx[ri+s*Nsite][rn+s*Nsite];
           tmp = -1.0 * ParaTransfer[idx_trans] 
-                     * (LocalCktAltCmuAnu[idx_trans][idx] 
+                     * (Local_CisAjsCmuAnu[idx_trans][idx] 
                         - del(rm,rj) * del(s,u) * Local_CA[idx_green0] ) 
-                     * (Commute_Nat_(with_CisCmuAnuAjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum)) ;
+                     * Commute_Nat_(with_CisCmuAnuAjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum) ;
           H_CA_vec1[idx_vector]   += tmp;
           H_CA_vec2[idx_vectorEx] += tmp;//conj(tmp);
           
-          int idx_green1 = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
-          int idx_green2 = ijst_to_idx[rm+u*Nsite][rn+u*Nsite];
-          int idx_green3 = ijst_to_idx[rm+u*Nsite][ri+u*Nsite];
+          int idx_green1 = ijst_to_idx[ri+s*Nsite][rm+s*Nsite];
           tmp = -1.0 * ParaTransfer[idx_trans] 
-                     * ( - LocalCktAltCmuAnu[idx_trans][idx_green1] 
-                         + del(ri,rj) * Local_CA[idx_green2] 
-                         + del(rn,rj) * del(s,u) * ( del(rm,ri) - Local_CA[idx_green3] ))
+                     * (Local_AisCjsCmuAnu[idx_trans][idx] 
+                        + del(rn,rj) * del(s,u) * Local_AC[idx_green1] ) 
                      * Commute_Nat_(with_AisCmuAnuCjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum) ;
           H_AC_vec1[idx_vector]   += tmp;
           H_AC_vec2[idx_vectorEx] += tmp;//conj(tmp);
@@ -430,7 +414,7 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
     free(myEleNum);
     //free(myEleCfg);
     free(myProjCntNew);
-    free(myBuffer_real);  
+    free(myBuffer_real);
   } //
   
   

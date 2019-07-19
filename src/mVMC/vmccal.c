@@ -92,7 +92,7 @@ void VMCMainCal(MPI_Comm comm) {
   printf("  Debug: SplitLoop\n");
 #endif
   SplitLoop(&sampleStart,&sampleEnd,NVMCSample,rank,size);
-  printf(" %d / %d   %d %d \n",rank,size,sampleStart,sampleEnd);
+  //printf(" %d / %d   %d %d \n",rank,size,sampleStart,sampleEnd);
     
 
   /* initialization */

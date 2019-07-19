@@ -164,6 +164,130 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
 }
 
 
+
+
+
+
+
+/* Calculate 1-body Green function <CisAjs> */
+/* buffer size = NQPFull */
+double  GreenFunc1_real_AisCjs(const int ri, const int rj, const int s, const double ip,
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
+                  int *projCntNew, double *buffer) {
+  double  z;
+  int mi,msi,rsi,rsj;
+  double  *pfMNew_real = buffer; /* NQPFull */
+  
+  rsi = ri + s*Nsite;
+  rsj = rj + s*Nsite;
+
+  if(rsi==rsj) return (1.0-eleNum[rsi]);
+  if(eleNum[rsi]==0 || eleNum[rsj]==1) return 0.0;
+
+  mi = eleCfg[rsi];
+  msi = mi + s*Ne;
+  
+  /* hopping */
+  eleIdx[msi] = rj;
+  eleNum[rsi] = 0;
+  eleNum[rsj] = 1;
+  UpdateProjCnt(ri, rj, s, projCntNew, eleProjCnt, eleNum);
+  z = ProjRatio(projCntNew,eleProjCnt);
+
+  /* calculate Pfaffian */
+  CalculateNewPfM_real(mi, s, pfMNew_real, eleIdx, 0, NQPFull);
+  z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
+
+  /* revert hopping */
+  eleIdx[msi] = ri;
+  eleNum[rsi] = 1;
+  eleNum[rsj] = 0;
+  
+  if(rsi==rsj) return (1.0-z/ip);
+
+  return -z/ip;//TBC
+}
+
+/* buffer size = NQPFull+2*Nsize */
+double GreenFunc2_real_AisCjsAktClt(const int ri, const int rj, const int rk, const int rl,
+                  const int s, const int t, const double ip,
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
+                  int *projCntNew, double *buffer) {
+  double z;
+  int mj,msj,ml,mtl;
+  int rsi,rsj,rtk,rtl;
+  double *pfMNew_real = buffer; /* [NQPFull] */
+  double *bufV   = buffer+NQPFull; /* 2*Nsize */
+
+  rsi = ri + s*Nsite;
+  rsj = rj + s*Nsite;
+  rtk = rk + t*Nsite;
+  rtl = rl + t*Nsite;
+
+  if(rtk==rtl){ /* AisCjs(1-Nkt) */
+    if(eleNum[rtk]==1) return 0.0;
+    else return GreenFunc1_real_AisCjs(ri,rj,s,ip,eleIdx,eleCfg,eleNum,
+                                           eleProjCnt,projCntNew,buffer); /* AisCjs */
+  }
+  else if(rsi==rsj){ /* AisCisAktClt */
+    if(rsi==rtl) return 0.0;
+    else if(rsi==rtk) {  /* AisCls Nis (i!=l) */
+      if(eleNum[rsi]==0) return 0.0;
+      return GreenFunc1_real_AisCjs(ri,rl,s,ip,eleIdx,eleCfg,eleNum,
+                                           eleProjCnt,projCntNew,buffer); /* AisCls */
+    } 
+    /* AktClt(1-Nis) */
+    else if(eleNum[rsi]==1) return 0.0;
+    else return GreenFunc1_real_AisCjs(rk,rl,t,ip,eleIdx,eleCfg,eleNum,
+                                           eleProjCnt,projCntNew,buffer); /* AktClt */
+  }
+  else{ /* AisCjsAktClt becomes (-1)^2 * CjsAisCltAkt */
+    return GreenFunc2_real(rj,ri,rl,rk,s,t,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew,buffer);
+  }
+}
+
+/* buffer size = NQPFull+2*Nsize */
+double GreenFunc2_real_AisCjsCktAlt(const int ri, const int rj, const int rk, const int rl,
+                  const int s, const int t, const double ip,
+                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
+                  int *projCntNew, double *buffer) {
+  double z;
+  int mj,msj,ml,mtl;
+  int rsi,rsj,rtk,rtl;
+  double *pfMNew_real = buffer; /* [NQPFull] */
+  double *bufV   = buffer+NQPFull; /* 2*Nsize */
+
+  rsi = ri + s*Nsite;
+  rsj = rj + s*Nsite;
+  rtk = rk + t*Nsite;
+  rtl = rl + t*Nsite;
+
+  if(rtk==rtl){ /* AisCjs(Nkt) */
+    if(eleNum[rtk]==0) return 0.0;
+    else return GreenFunc1_real_AisCjs(ri,rj,s,ip,eleIdx,eleCfg,eleNum,
+                                          eleProjCnt,projCntNew,buffer); /* AisCjs */
+  }
+  else if(rsi==rsj){ /* AisCisCktAlt */
+    if(rsi==rtk) return 0.0;
+    else if(rsi==rtl) { /* CksAis Nis */
+      if(eleNum[rsi]==0) return 0.0;
+      return GreenFunc1_real(rk,ri,s,ip,eleIdx,eleCfg,eleNum,
+                                eleProjCnt,projCntNew,buffer); /* CksAis */
+    }
+    else {  /* CktAlt (1-Nis) (is!=kt,lt) */
+      if(eleNum[rsi]==1) return 0.0;
+      return GreenFunc1_real(rk,rl,t,ip,eleIdx,eleCfg,eleNum,
+                                eleProjCnt,projCntNew,buffer); /* CktAlt */
+    }
+  }
+  else{ /* AisCjsCktAlt becomes -CjsAisCktAlt */
+    return -GreenFunc2_real(rj,ri,rk,rl,s,t,ip,eleIdx,eleCfg,eleNum,
+                                      eleProjCnt,projCntNew,buffer); /* -CjsAisCktAlt */
+  }
+}
+
+
+
 /// Calculate n-body Green function
 /// <phi| c1 a1 c2 a2 ... cn an |x>
 /// c_k = c_rsi[k], a_k = a_rsj[k]

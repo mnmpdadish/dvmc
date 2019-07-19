@@ -1941,11 +1941,11 @@ GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname
     ArrayIdx[idx][0] = x0;
     ArrayIdx[idx][1] = x1;
     ArrayIdx[idx][2] = x2;
-    if (CheckPairSite(x1, x2, Nsite) != 0) {
-      fprintf(stderr, "Error: Site index is incorrect. \n");
-      info = 1;
-      break;
-    }
+    //if (CheckPairSite(x1, x2, Nsite) != 0) {
+    //  fprintf(stderr, "Error: Site index is incorrect. \n");
+    //  info = 1;
+    //  break;
+    //}
     idx++;
   }
   

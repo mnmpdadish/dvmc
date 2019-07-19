@@ -296,7 +296,7 @@ int main(int argc, char* argv[])
     StartTimer(2);
     /*-- VMC Physical Quantity Calculation --*/
     if(rank0==0) fprintf(stdout,"Start: Calculate VMC physical quantities.\n");
-    if(NVMCCalMode==2)   read_StdFace_L_W();
+    //if(NVMCCalMode==3)   read_StdFace_L_W();
     VMCPhysCal(comm0, comm1, comm2);
     if(rank0==0) fprintf(stdout,"End  : Calculate VMC physical quantities.\n");
     StopTimer(2);
@@ -789,10 +789,10 @@ void outputData() {
         for (mm = 0; mm < NExcitation; mm++) {
           fprintf(File_nCHAm, "\n %d %d %d %d   ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
           fprintf(File_nCHAm, "%d %d  ", nn,mm);
-          fprintf(File_nCHAm, "% 0.4e   ",  creal( Phys_nCAm[nn+NExcitation*mm + i*NExcitation2] ) );
-          fprintf(File_nCHAm, "% 0.4e   ",  creal( Phys_nACm[nn+NExcitation*mm + i*NExcitation2] ) );
-          fprintf(File_nCHAm, "% 0.4e   ",  creal(Phys_nCHAm[nn+NExcitation*mm + i*NExcitation2] ) );
-          fprintf(File_nCHAm, "% 0.4e   ",  creal(Phys_nAHCm[nn+NExcitation*mm + i*NExcitation2] ) );
+          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nCAm[nn+NExcitation*mm + i*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nACm[nn+NExcitation*mm + i*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ", Phys_nCHAm[nn+NExcitation*mm + i*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ", Phys_nAHCm[nn+NExcitation*mm + i*NExcitation2] );
         }
         fprintf(File_nCHAm, " "); 
       }
