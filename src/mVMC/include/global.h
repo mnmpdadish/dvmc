@@ -283,18 +283,11 @@ double complex *PhysN2; /* [NCisAjs * TWO_SITES_PHYS_QTY] */
 //double complex *Phys_G_Moments; /* [NCisAjs * PHYS_MOMENTS_QTY] */
 double complex Sztot,Sztot2; /* <Sz>,<Sz^2> */
 
-//// MC + TJS /////
-
-
-
-// following arrays has size [NCisAjs]:
-//double complex *Phys_AC_quantities;
-
-
+//// MC /////
 
 typedef enum {with_nothing, with_CisAjs, with_AisCjs,with_CisCmuAnuAjs,with_AisCmuAnuCjs} commuting_with; 
 
-int NExcitation = 0;
+int NExcitation = 0, Dimension_1=0, Dimension_2=0;
 //int ChargeExcitationIdx[1024][3];
 int **ChargeExcitationIdx;
 int sampleChunk = 50;
@@ -309,31 +302,15 @@ double *O0_vec1, *O0_vec2;
 double *H_AC_vec1, *H_CA_vec1;
 double *H_AC_vec2, *H_CA_vec2;
 
-
-int NNeighbors = 3; // assuming square lattice TJS + MC
-//int neighbors_delta_x[9] = {0,1,-1,0,1,-1,0,1,-1};
-//int neighbors_delta_y[9] = {0,0,0,1,1,1,-1,-1,-1};
-int neighbors_delta_x[5] = {0,0,0,0,0};
-int neighbors_delta_y[5] = {0,1,2,3,4};
-//int neighbors_delta_x[1] = {0};
-//int neighbors_delta_y[1] = {0};
-//int neighbors_delta_y[9] = {0,1,2,0,1,2,0,1,2};
-//int neighbors_delta_x[9] = {0,0,0,1,1,1,2,2,2};
-  
-
 int StdFace_L=1;
 int StdFace_W=1;
-
   
-//int **Neighbors; /*[Nsite][NNeighbors]*/
-//int **NeighborsSpin; /*[Nsite][2*NNeighbors]*/
 int **ijst_to_idx; /*[2*Nsite][2*Nsite]*/
-int **ijst_to_trans_idx; /*[2*Nsite][2*Nsite]*/
 double **Local_CisAjsCmuAnu; /* [NCisAjs][NTransfer] */
 double **Local_AisCjsCmuAnu; /* [NCisAjs][NTransfer] */
 
 
-//// MC + TJS end /////
+//// MC end /////
 
 
 const int NLSHam = 2; /* 0: I, 1: H */

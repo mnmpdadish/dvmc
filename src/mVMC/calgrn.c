@@ -64,9 +64,8 @@ void CalculateGreenFuncMoments(const double w, const double complex ip,
   
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
   //RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
-  RequestWorkSpaceThreadComplex(NQPFull + 2*Nsize + 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors);
+  RequestWorkSpaceThreadComplex(NQPFull + 2*Nsize);
   // GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize 
-  // Phys_AC_quantities: 4*NCisAjs + 24*NCisAjs*NNeighbors + 36*NCisAjs*NNeighbors*NNeighbors
 
   //#pragma omp parallel default(shared)                \
   private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx)
@@ -235,7 +234,18 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
 
 
 
+// retunr i%N, in the same way that python treat the negative numbers
+int moduloPython(int i,int N){
+  return ((i % N) + N) % N;
+}
 
+int find_neighbor_site(int r,int dx,int dy){
+  assert(Dimension_1*Dimension_2==Nsite);
+  int r_x   = moduloPython(r + dx            , Dimension_1);  
+  int r_y   = moduloPython(r + Dimension_1*dy, Nsite);  
+  int r_out = moduloPython(r_x + Dimension_1*r_y,Nsite);    
+  return r_out;
+}
 
 //C=C+weight*A*B
 unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, double weight, int sampleSize) {
@@ -335,15 +345,29 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         //int idx_reverse = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
         int idx_reverse = ijst_to_idx[ri+s*Nsite][(2*ri-rj+Nsite)%Nsite+s*Nsite];  // BEWARE: this line impose invariance under translation and assume periodic boundary condition
         
+        if (APFlag == 1) { 
+          printf("error: last line (about idx_reverse) in the code requires periodic boundary conditions\n");
+          exit(0);
+        }
+        
+        
         int t   = ChargeExcitationIdx[idx_exc][0];  // type
-        int dr1 = ChargeExcitationIdx[idx_exc][1];  // position 1
-        int dr2 = ChargeExcitationIdx[idx_exc][2];  // position 2
-        int ra1 = (dr1+ri+Nsite) % Nsite;
-        int ra2 = (dr2+ri+Nsite) % Nsite;
-        int rb1 = (dr1+rj+Nsite) % Nsite;
-        int rb2 = (dr2+rj+Nsite) % Nsite;
+        int dr1_x = ChargeExcitationIdx[idx_exc][1];  // position 1
+        int dr1_y = ChargeExcitationIdx[idx_exc][2];  // position 1
+        int dr2_x = ChargeExcitationIdx[idx_exc][3];  // position 2
+        int dr2_y = ChargeExcitationIdx[idx_exc][4];  // position 2
+        
+        int ra1 = find_neighbor_site(ri,dr1_x,dr1_y);
+        int ra2 = find_neighbor_site(ri,dr2_x,dr2_y);
+        int rb1 = find_neighbor_site(rj,dr1_x,dr1_y);
+        int rb2 = find_neighbor_site(rj,dr2_x,dr2_y);
+        
         int idx_vector   = idx_exc + (sample + sampleChunk*idx)        *NExcitation;
         int idx_vectorEx = idx_exc + (sample + sampleChunk*idx_reverse)*NExcitation;
+        
+        //printf("%d %d %d %d %d\n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2],ChargeExcitationIdx[idx_exc][3],ChargeExcitationIdx[idx_exc][4]);
+        //printf("%d %d \n", Dimension_1, Dimension_2); fflush(stdout);
+        //printf("%d %d %d %d \n", ra1,ra1,rb1,rb2);
         
         //printf("%d %d %d \n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2]);
         

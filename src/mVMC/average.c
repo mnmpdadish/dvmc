@@ -328,11 +328,6 @@ void weightAverageReduce(int n, double *vec, MPI_Comm comm) {
   MPI_Comm_rank(comm,&rank);
   MPI_Comm_size(comm,&size);
   
-  //for(i=0;i<NExcitation;i++)
-  //printf("real %d / %d   %d %d %d \n",rank+1,size, ChargeExcitationIdx[i][0],ChargeExcitationIdx[i][1],ChargeExcitationIdx[i][2]);
-  //printf("real %d / %d   %d %d %d \n",rank+1,size, CisAjsIdx[i][0],CisAjsIdx[i][1],CisAjsIdx[i][2]);
-
-  
   if(size>1) {
     RequestWorkSpaceDouble(n);
     buf = GetWorkSpaceDouble(n);
