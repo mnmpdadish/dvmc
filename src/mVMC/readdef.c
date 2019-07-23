@@ -59,6 +59,7 @@ int ReadPairHopValue(FILE *fp, int **ArrayIdx, double *ArrayValue, int Nsite, in
 int ReadPairDValue(FILE *fp, int **ArrayIdx, double *ArrayValue, int Nsite, int NArray, char *defname);
 
 int GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname);
+int GetInfoDynamicalG(FILE *fp, int **Array, int Nsite, char *defname);
 
 int GetInfoGutzwiller(FILE *fp, int *ArrayIdx, int *ArrayOpt, int iComplxFlag, int *iOptCount, int Nsite, int NArray,
                       char *defname);
@@ -448,6 +449,10 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
             cerr = ReadBuffInt(fp, &bufInt[IdxNQPTrans]);
             break;
 
+          case KWDynamicalG:
+            cerr = ReadBuffInt(fp, &bufInt[IdxNDynamicalG]);
+            break;
+
           case KWOneBodyG:
             cerr = ReadBuffInt(fp, &bufInt[IdxNOneBodyG]);
             break;
@@ -659,7 +664,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   NExcitation = bufInt[IdxNExcitation];
   Dimension_1 = bufInt[IdxDimension_1];
   Dimension_2 = bufInt[IdxDimension_2];
-
+  NDynamicalGIdx = bufInt[IdxNDynamicalG];
+  
   if (NMPTrans < 0) {
     APFlag = 1; /* anti-periodic boundary */
     NMPTrans *= -1;
@@ -717,6 +723,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
                  + Nsite * NQPTrans /* QPTransInv */
                  + Nsite * NQPTrans /* QPTransSgn */
                  + 5 * NExcitation /* ChargeExcitation */
+                 + Nsite*Nsite /* DynamicalGIdx */
                  + 4 * NCisAjs /* CisAjs */
                  + 8 * NCisAjsCktAlt /* CisAjsCktAlt */
                  + 8 * NCisAjsCktAltDC /* CisAjsCktAltDC */
@@ -878,6 +885,11 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm) {
           if (GetInfoTransSym(fp, QPTrans, QPTransSgn, QPTransInv, ParaQPTrans, APFlag, Nsite, NQPTrans, defname) !=
               0)
             info = 1;
+          break;
+
+        case KWDynamicalG:
+          /*dynamicalgreen.def----------------------------------------*/
+          if (GetInfoDynamicalG(fp, DynamicalGIdx, Nsite, defname) != 0) info = 1;
           break;
 
         case KWOneBodyG:
@@ -1969,6 +1981,24 @@ GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname
   }
   
   if (idx != NArray) info = ReadDefFileError(defname);
+  return info;
+}
+
+
+int
+GetInfoDynamicalG(FILE *fp, int **Array, int Nsite, char *defname) {
+  char ctmp2[256];
+  int idx = 0, info = 0;
+  int i = 0, j = 0, Gij = 0;
+  while (fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp) != NULL) {
+    sscanf(ctmp2, "%d %d %d\n", &i, &j, &Gij);
+    //printf("%d %d %d\n", i,j, Gij);
+    if (CheckPairSite(i, j, Nsite) != 0) {
+      fprintf(stderr, "Error: Site index is incorrect. \n");
+      return -1;
+    }
+    Array[i][j] = Gij;    
+  }
   return info;
 }
 

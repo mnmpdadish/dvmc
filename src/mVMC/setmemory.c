@@ -153,6 +153,15 @@ void SetMemoryDef() {
     QPTransSgn[i] = pInt;
     pInt += Nsite;
   }
+  
+  DynamicalGIdx = (int**)malloc(sizeof(int*)*Nsite);
+  for(i=0;i<Nsite;i++) {
+    DynamicalGIdx[i] = pInt;
+    pInt += Nsite;
+    for(j=0;j<Nsite;j++) {
+      DynamicalGIdx[i][j]=0;
+    }
+  }
 
   CisAjsIdx = (int**)malloc(sizeof(int*)*NCisAjs);
   for(i=0;i<NCisAjs;i++) {
@@ -268,6 +277,7 @@ void FreeMemoryDef() {
   free(PosBF);
   free(RangeIdx);
   free(BackFlowIdx);
+  free(DynamicalGIdx);
   return;
 }
 
@@ -409,14 +419,14 @@ void SetMemory() {
     }
     
     if(NVMCCalMode==3){
-      printf("memory usage: %d times double.\n", 4*NOrbitalIdx*NExcitation*NExcitation + 10*Nsite*Nsite*NExcitation*sampleChunk);
-      Phys_nCAm  = (double *)calloc((NOrbitalIdx*NExcitation*NExcitation),sizeof(double));
-      Phys_nACm  = (double *)calloc((NOrbitalIdx*NExcitation*NExcitation),sizeof(double));
-      Phys_nCHAm = (double *)calloc((NOrbitalIdx*NExcitation*NExcitation),sizeof(double));
-      Phys_nAHCm = (double *)calloc((NOrbitalIdx*NExcitation*NExcitation),sizeof(double));
-      Phys_CA    = (double *)calloc(2*NOrbitalIdx,sizeof(double));
+      printf("memory usage: %d times double.\n", 4*NDynamicalGIdx*NExcitation*NExcitation + 10*Nsite*Nsite*NExcitation*sampleChunk);
+      Phys_nCAm  = (double *)calloc((NDynamicalGIdx*NExcitation*NExcitation),sizeof(double));
+      Phys_nACm  = (double *)calloc((NDynamicalGIdx*NExcitation*NExcitation),sizeof(double));
+      Phys_nCHAm = (double *)calloc((NDynamicalGIdx*NExcitation*NExcitation),sizeof(double));
+      Phys_nAHCm = (double *)calloc((NDynamicalGIdx*NExcitation*NExcitation),sizeof(double));
+      Phys_CA    = (double *)calloc(2*NDynamicalGIdx,sizeof(double));
       Local_CA   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
-      Local_AC   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
+      //Local_AC   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
 
       O_AC_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
       O_AC_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
@@ -497,7 +507,7 @@ void FreeMemory() {
   
     free(Phys_CA);
     free(Local_CA);
-    free(Local_AC);
+    //free(Local_AC);
   }
   
   free(QPFullWeight);

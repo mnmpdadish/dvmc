@@ -129,6 +129,7 @@ int **OrbitalSgn; /* OrbitalSgn[Nsite][Nsite] = +1 or -1 */
 int iFlgOrbitalGeneral=0;
 int iNOrbitalParallel=0;
 int iNOrbitalAntiParallel=0;
+int NDynamicalGIdx, **DynamicalGIdx; /* [Nsite][Nsite] */
 
 /* zqptransidx.def */
 int NQPTrans, **QPTrans, **QPTransInv; /* [NQPTrans][Nsite] */

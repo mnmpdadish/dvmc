@@ -252,8 +252,8 @@ unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, do
   char transA= 'N', transB= 'C';
   double beta=1.0;
   //int ONE = 1;
-  M_DGEMM(&transA,&transB,&N,&N,&sampleSize, &weight, &A[0], &N, &B[0], &N, &beta, &C[0], &N); 
-  /*
+  //M_DGEMM(&transA,&transB,&N,&N,&sampleSize, &weight, &A[0], &N, &B[0], &N, &beta, &C[0], &N); 
+  //*
   int ii, jj, kk;
   for(ii=0; ii<N; ii++){
     for(jj=0; jj<N; jj++){
@@ -261,7 +261,7 @@ unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, do
         C[ii+jj*N] += weight * A[ii+kk*N] * B[jj+kk*N];
       }
     }
-  }*/
+  }//*/
   return 0;
 }
 
@@ -294,21 +294,12 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
     int rm, rn, u;
     int idx_int, idx_trans;
 
-
-    if(iFlgOrbitalGeneral!=0)
-    { 
-      printf("Green function calculation here is only implemented iFlgOrbitalGeneral==0.\n"); 
-      printf("It also uses the OrbitalIdx array to choose the indepedent greens.\n");
-      exit(0);
-    }
-
-    double multiplicity = (double) (Nsite*Nsite) / (double) NOrbitalIdx;
+    double multiplicity = (double) (Nsite*Nsite) / (double) NDynamicalGIdx;
     double f0 = 1.0/multiplicity;
     //printf("multiplicity: %f,  %f\n", multiplicity, f0);
     //exit(0);
 
-    int ri;
-    int rj;
+    int ri, rj;
 //#pragma omp for private(idx,ri,rj,s,tmp) schedule(dynamic) nowait
     for(ri=0;ri<Nsite;ri++) {
      for(rj=0;rj<Nsite;rj++) {
@@ -326,7 +317,7 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
     for(ri=0;ri<Nsite;ri++) {
      for(rj=0;rj<Nsite;rj++) {
       for(s=0;s<2;s++) {
-       Phys_CA[OrbitalIdx[ri][rj] + s*NOrbitalIdx] += w*f0*Local_CA[ri+Nsite*rj+Nsite*Nsite*s];
+       Phys_CA[DynamicalGIdx[ri][rj] + s*NDynamicalGIdx] += w*f0*Local_CA[ri+Nsite*rj+Nsite*Nsite*s];
       }
      }
     }

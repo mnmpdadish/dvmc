@@ -778,15 +778,15 @@ void outputData() {
 
     fprintf(FileCisAjs, "#orbitalIdx   <ca>");
     int ii;
-    for (ii = 0; ii < NOrbitalIdx; ii++) {      
+    for (ii = 0; ii < NDynamicalGIdx; ii++) {      
        fprintf(FileCisAjs, "%d    % 0.4e \n", ii, Phys_CA[ii]);
     }
     
     int NExcitation2 = NExcitation*NExcitation;
     int nn,mm;
-    fprintf(File_nCHAm, "#orbitalIdx   <n|ca|m>  <n|ac|m>  <n|cHa|m>  <n|aHc|m>");
+    fprintf(File_nCHAm, "#orbitalIdx n m   <n|ca|m>   <n|ac|m>   <n|cHa|m>   <n|aHc|m>");
 
-    for (ii = 0; ii < NOrbitalIdx; ii++) {
+    for (ii = 0; ii < NDynamicalGIdx; ii++) {
       for (nn = 0; nn < NExcitation; nn++) {
         for (mm = 0; mm < NExcitation; mm++) {
           fprintf(File_nCHAm, "\n %d  ", ii);

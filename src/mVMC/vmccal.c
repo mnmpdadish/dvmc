@@ -318,7 +318,7 @@ void VMCMainCal(MPI_Comm comm) {
       StopTimer(42);
       //if(rank==0)
       {
-        double multiplicity = (double) (Nsite*Nsite) / (double) NOrbitalIdx;
+        double multiplicity = (double) (Nsite*Nsite) / (double) NDynamicalGIdx;
         double f0 = 1.0/multiplicity;
         //printf("multiplicity: %f,  %f\n", multiplicity, f0);
         int ri,rj;
@@ -333,7 +333,7 @@ void VMCMainCal(MPI_Comm comm) {
           //int ii;
           for (ri = 0; ri < Nsite; ri++) {
            for (rj = 0; rj < Nsite; rj++) {
-            int ii = OrbitalIdx[ri][rj];
+            int ii = DynamicalGIdx[ri][rj];
             int idx = ri+Nsite*rj;
             
             C_ADD_AxB(&Phys_nACm[ii*N2], &O_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
@@ -682,17 +682,17 @@ void clearPhysQuantity(){
         for(i=0;i<n;i++) vec_real[i] = 0.0;
       }
     }
-  } else if(NVMCCalMode==2) { //no need now because of calloc
+  } else if(NVMCCalMode==2) {
     for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0+0.0*I;
     for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++)  PhysN1[i] = 0.0+0.0*I;
-  } else if(NVMCCalMode==3) { //no need now because of calloc
-    for(i=0;i<NOrbitalIdx*NExcitation*NExcitation; i++){
+  } else if(NVMCCalMode==3) { 
+    for(i=0;i<NDynamicalGIdx*NExcitation*NExcitation; i++){
       Phys_nCHAm[i] = 0.0;
       Phys_nAHCm[i] = 0.0;
       Phys_nCAm[i]  = 0.0;
       Phys_nACm[i]  = 0.0;
     }
-    for(i=0;i<2*NOrbitalIdx;i++) {
+    for(i=0;i<2*NDynamicalGIdx;i++) {
       Phys_CA[i]  = 0.0;
 //      Local_CA[i] = 0.0;
     }
