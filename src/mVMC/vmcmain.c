@@ -775,27 +775,30 @@ void outputData() {
   }
   else if (NVMCCalMode==3) {
     printf("trying to print files.\n"); fflush(stdout);
-    if (NCisAjs > 0) {
-      for (i = 0; i < NCisAjs; i++) {
-          fprintf(FileCisAjs, "%d %d %d %d % 0.4e \n", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3], Phys_CA[i]);
-      }
+
+    fprintf(FileCisAjs, "#orbitalIdx   <ca>");
+    int ii;
+    for (ii = 0; ii < NOrbitalIdx; ii++) {      
+       fprintf(FileCisAjs, "%d    % 0.4e \n", ii, Phys_CA[ii]);
     }
     
     int NExcitation2 = NExcitation*NExcitation;
     int nn,mm;
-    fprintf(File_nCHAm, "#i s j s   n m");
-    for (i = 0; i < NCisAjs; i++) {
+    fprintf(File_nCHAm, "#orbitalIdx   <n|ca|m>  <n|ac|m>  <n|cHa|m>  <n|aHc|m>");
+
+    for (ii = 0; ii < NOrbitalIdx; ii++) {
       for (nn = 0; nn < NExcitation; nn++) {
         for (mm = 0; mm < NExcitation; mm++) {
-          fprintf(File_nCHAm, "\n %d %d %d %d   ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
+          fprintf(File_nCHAm, "\n %d  ", ii);
           fprintf(File_nCHAm, "%d %d  ", nn,mm);
-          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nCAm[nn+NExcitation*mm + i*NExcitation2] );
-          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nACm[nn+NExcitation*mm + i*NExcitation2] );
-          fprintf(File_nCHAm, "% 0.4e   ", Phys_nCHAm[nn+NExcitation*mm + i*NExcitation2] );
-          fprintf(File_nCHAm, "% 0.4e   ", Phys_nAHCm[nn+NExcitation*mm + i*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nCAm[nn+NExcitation*mm + ii*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nACm[nn+NExcitation*mm + ii*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ", Phys_nCHAm[nn+NExcitation*mm + ii*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ", Phys_nAHCm[nn+NExcitation*mm + ii*NExcitation2] );
         }
         fprintf(File_nCHAm, " "); 
       }
+     
     }
       
 

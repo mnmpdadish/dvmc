@@ -318,26 +318,36 @@ void VMCMainCal(MPI_Comm comm) {
       StopTimer(42);
       //if(rank==0)
       {
+        double multiplicity = (double) (Nsite*Nsite) / (double) NOrbitalIdx;
+        double f0 = 1.0/multiplicity;
+        //printf("multiplicity: %f,  %f\n", multiplicity, f0);
+        int ri,rj;
+
         if((sample%sampleChunk == sampleChunk -1) || (sample == sampleEnd-1)) {      
           sampleSize=sample%sampleChunk+1;
           //printf("sampleSize=%d\n",sampleSize);
           int N1 = sampleChunk*NExcitation;
           int N2 = NExcitation*NExcitation;
-          double alpha = 0.5;
+          double alpha = 0.5*f0;
           //double alpha2 = 0.0;
-          int ii;
-          for (ii = 0; ii < NCisAjs; ii++) {
-            C_ADD_AxB(&Phys_nACm[ii*N2], &O_AC_vec1[ii*N1], &O0_vec1[ii*N1], NExcitation, alpha, sampleSize);
-            C_ADD_AxB(&Phys_nCAm[ii*N2], &O_CA_vec1[ii*N1], &O0_vec1[ii*N1], NExcitation, alpha, sampleSize);
+          //int ii;
+          for (ri = 0; ri < Nsite; ri++) {
+           for (rj = 0; rj < Nsite; rj++) {
+            int ii = OrbitalIdx[ri][rj];
+            int idx = ri+Nsite*rj;
             
-            C_ADD_AxB(&Phys_nACm[ii*N2], &O0_vec2[ii*N1], &O_AC_vec2[ii*N1], NExcitation, alpha, sampleSize);
-            C_ADD_AxB(&Phys_nCAm[ii*N2], &O0_vec2[ii*N1], &O_CA_vec2[ii*N1], NExcitation, alpha, sampleSize);
+            C_ADD_AxB(&Phys_nACm[ii*N2], &O_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
+            C_ADD_AxB(&Phys_nCAm[ii*N2], &O_CA_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
             
-            C_ADD_AxB(&Phys_nAHCm[ii*N2], &H_AC_vec1[ii*N1], &O0_vec1[ii*N1], NExcitation, alpha, sampleSize);
-            C_ADD_AxB(&Phys_nCHAm[ii*N2], &H_CA_vec1[ii*N1], &O0_vec1[ii*N1], NExcitation, alpha, sampleSize);
+            C_ADD_AxB(&Phys_nACm[ii*N2], &O0_vec2[idx*N1], &O_AC_vec2[idx*N1], NExcitation, alpha, sampleSize);
+            C_ADD_AxB(&Phys_nCAm[ii*N2], &O0_vec2[idx*N1], &O_CA_vec2[idx*N1], NExcitation, alpha, sampleSize);
             
-            C_ADD_AxB(&Phys_nAHCm[ii*N2], &O0_vec2[ii*N1], &H_AC_vec2[ii*N1], NExcitation, alpha, sampleSize);
-            C_ADD_AxB(&Phys_nCHAm[ii*N2], &O0_vec2[ii*N1], &H_CA_vec2[ii*N1], NExcitation, alpha, sampleSize);
+            C_ADD_AxB(&Phys_nAHCm[ii*N2], &H_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
+            C_ADD_AxB(&Phys_nCHAm[ii*N2], &H_CA_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
+            
+            C_ADD_AxB(&Phys_nAHCm[ii*N2], &O0_vec2[idx*N1], &H_AC_vec2[idx*N1], NExcitation, alpha, sampleSize);
+            C_ADD_AxB(&Phys_nCHAm[ii*N2], &O0_vec2[idx*N1], &H_CA_vec2[idx*N1], NExcitation, alpha, sampleSize);
+           }
           }
         }
       }
@@ -673,20 +683,19 @@ void clearPhysQuantity(){
       }
     }
   } else if(NVMCCalMode==2) { //no need now because of calloc
-//#pragma omp parallel for default(shared) private(i)
-//    for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0+0.0*I;
-//    for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++)  PhysN1[i] = 0.0+0.0*I;
+    for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0+0.0*I;
+    for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++)  PhysN1[i] = 0.0+0.0*I;
   } else if(NVMCCalMode==3) { //no need now because of calloc
-//    for(i=0;i<NCisAjs*NExcitation*NExcitation; i++){
-      //Phys_nCHAm[i] = 0.0;
-      //Phys_nAHCm[i] = 0.0;
-      //Phys_nCAm[i]  = 0.0;
-      //Phys_nACm[i]  = 0.0;
-//    }
-//    for(i=0;i<NCisAjs;i++) {
-      //Phys_CA[i]  = 0.0;
+    for(i=0;i<NOrbitalIdx*NExcitation*NExcitation; i++){
+      Phys_nCHAm[i] = 0.0;
+      Phys_nAHCm[i] = 0.0;
+      Phys_nCAm[i]  = 0.0;
+      Phys_nACm[i]  = 0.0;
+    }
+    for(i=0;i<2*NOrbitalIdx;i++) {
+      Phys_CA[i]  = 0.0;
 //      Local_CA[i] = 0.0;
-//    }
+    }
   }
   return;
 }

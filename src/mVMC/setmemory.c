@@ -409,25 +409,25 @@ void SetMemory() {
     }
     
     if(NVMCCalMode==3){
-      printf("memory usage: %d times double.\n", NCisAjs*NExcitation*NExcitation);
-      Phys_nCAm  = (double *)calloc((NCisAjs*NExcitation*NExcitation),sizeof(double));
-      Phys_nACm  = (double *)calloc((NCisAjs*NExcitation*NExcitation),sizeof(double));
-      Phys_nCHAm = (double *)calloc((NCisAjs*NExcitation*NExcitation),sizeof(double));
-      Phys_nAHCm = (double *)calloc((NCisAjs*NExcitation*NExcitation),sizeof(double));
-      Phys_CA    = (double *)calloc(NCisAjs,sizeof(double));
-      Local_CA   = (double *)calloc(NCisAjs,sizeof(double));
-      Local_AC   = (double *)calloc(NCisAjs,sizeof(double));
+      printf("memory usage: %d times double.\n", 4*NOrbitalIdx*NExcitation*NExcitation + 10*Nsite*Nsite*NExcitation*sampleChunk);
+      Phys_nCAm  = (double *)calloc((NOrbitalIdx*NExcitation*NExcitation),sizeof(double));
+      Phys_nACm  = (double *)calloc((NOrbitalIdx*NExcitation*NExcitation),sizeof(double));
+      Phys_nCHAm = (double *)calloc((NOrbitalIdx*NExcitation*NExcitation),sizeof(double));
+      Phys_nAHCm = (double *)calloc((NOrbitalIdx*NExcitation*NExcitation),sizeof(double));
+      Phys_CA    = (double *)calloc(2*NOrbitalIdx,sizeof(double));
+      Local_CA   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
+      Local_AC   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
 
-      O_AC_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
-      O_AC_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
-      O_CA_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
-      O_CA_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
-      H_AC_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
-      H_AC_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
-      H_CA_vec1 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
-      H_CA_vec2 = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
-      O0_vec1   = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
-      O0_vec2   = (double *)calloc(NCisAjs*NExcitation*sampleChunk,sizeof(double) );
+      O_AC_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+      O_AC_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+      O_CA_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+      O_CA_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+      H_AC_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+      H_AC_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+      H_CA_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+      H_CA_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+      O0_vec1   = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+      O0_vec2   = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
     }
     
     if(NVMCCalMode==2){
@@ -435,26 +435,12 @@ void SetMemory() {
       PhysN2 = (double complex*)calloc(NCisAjs*TWO_SITES_PHYS_QTY, sizeof(double complex) );
     }
     
-    ijst_to_idx = (int**)malloc(sizeof(int*)*2*Nsite);
-    for(i=0;i<2*Nsite;i++) {
-      ijst_to_idx[i] = malloc(sizeof(int) * 2*Nsite);
-    }    
-    for(i=0;i<NCisAjs;i++){
-      int ri = CisAjsIdx[i][0];
-      int  s = CisAjsIdx[i][1];
-      int rj = CisAjsIdx[i][2];
-      int  t = CisAjsIdx[i][3];
-      ijst_to_idx[ri+Nsite*s][rj+Nsite*t] = i;
-    }
-    
     Local_CisAjsCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
-    Local_AisCjsCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
+    //Local_AisCjsCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
     for(i=0;i<NTransfer;i++) {
-      Local_CisAjsCmuAnu[i] = (double *)calloc(NCisAjs,sizeof(double));
-      Local_AisCjsCmuAnu[i] = (double *)calloc(NCisAjs,sizeof(double));
+      Local_CisAjsCmuAnu[i] = (double *)calloc(Nsite*Nsite,sizeof(double));
+      //Local_AisCjsCmuAnu[i] = (double *)calloc(Nsite*Nsite,sizeof(double));
     }
-    
-     
   }
 
   initializeWorkSpaceAll();
@@ -469,18 +455,13 @@ void FreeMemory() {
     free(PhysN1);
     free(PhysN2);
     
-    int i;
-    for(i=0;i<2*Nsite;i++) {
-      free(ijst_to_idx[i]);
-    }
-    free(ijst_to_idx);
-    
+    int i;    
     for(i=0;i<NTransfer;i++) {
       free(Local_CisAjsCmuAnu[i]);
-      free(Local_AisCjsCmuAnu[i]);
+      //free(Local_AisCjsCmuAnu[i]);
     }
     free(Local_CisAjsCmuAnu);
-    free(Local_AisCjsCmuAnu);
+    //free(Local_AisCjsCmuAnu);
 
     if(NLanczosMode>0){
       free(QQQQ);

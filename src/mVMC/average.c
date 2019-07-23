@@ -260,7 +260,7 @@ void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
   double *vec_real;
   double complex *vec;
 
-  n = NCisAjs*NExcitation*NExcitation;
+  n = NOrbitalIdx*NExcitation*NExcitation;
   vec_real = Phys_nCHAm;
   weightAverageReduce(n,vec_real,comm);
 
@@ -273,7 +273,7 @@ void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
   vec_real = Phys_nACm;
   weightAverageReduce(n,vec_real,comm);
 
-  n = NCisAjs;
+  n = NOrbitalIdx;
   vec_real = Phys_CA;
   weightAverageReduce(n,vec_real,comm);
   
