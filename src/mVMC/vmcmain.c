@@ -776,7 +776,7 @@ void outputData() {
   else if (NVMCCalMode==3) {
     printf("trying to print files.\n"); fflush(stdout);
 
-    fprintf(FileCisAjs, "#orbitalIdx   <ca>");
+    fprintf(FileCisAjs, "#orbitalIdx   <ca>  %d\n", NDynamicalGIdx);
     int ii;
     for (ii = 0; ii < NDynamicalGIdx; ii++) {      
        fprintf(FileCisAjs, "%d    % 0.4e \n", ii, Phys_CA[ii]);

@@ -298,6 +298,8 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
     double f0 = 1.0/multiplicity;
     //printf("multiplicity: %f,  %f\n", multiplicity, f0);
     //exit(0);
+    
+        
 
     int ri, rj;
 //#pragma omp for private(idx,ri,rj,s,tmp) schedule(dynamic) nowait
@@ -310,9 +312,9 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
        //Local_AC[ri+Nsite*rj] = GreenFunc1_real_AisCjs(ri,rj,spin,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
        //                                                   myProjCntNew,myBuffer_real); 
       }
+      //printf("%d %d   %d  / %d \n", ri,rj,DynamicalGIdx[ri][rj],NDynamicalGIdx); fflush(stdout);
      }
     }
-
 //#pragma omp for private(idx) nowait
     for(ri=0;ri<Nsite;ri++) {
      for(rj=0;rj<Nsite;rj++) {
