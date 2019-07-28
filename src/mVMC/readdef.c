@@ -136,7 +136,7 @@ char *ReadBuffIntCmpFlg(FILE *fp, int *iNbuf, int *iComplexFlag) {
   return cerr;
 }
 
-char *ReadBuffIntDim(FILE *fp, int *iNbuf, int *idimension_1, int *idimension_2) {
+char *ReadBuffIntDim(FILE *fp, int *iNbuf, int *idynamicalG_L, int *idynamicalG_W) {
   char *cerr;
   char ctmp[D_FileNameMax];
   char ctmp2[D_FileNameMax];
@@ -145,9 +145,9 @@ char *ReadBuffIntDim(FILE *fp, int *iNbuf, int *idimension_1, int *idimension_2)
     cerr = fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp);
     sscanf(ctmp2, "%s %d\n", ctmp, iNbuf); //2
     cerr = fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp);
-    sscanf(ctmp2, "%s %d\n", ctmp, idimension_1); //3
+    sscanf(ctmp2, "%s %d\n", ctmp, idynamicalG_L); //3
     cerr = fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp);
-    sscanf(ctmp2, "%s %d\n", ctmp, idimension_2); //4
+    sscanf(ctmp2, "%s %d\n", ctmp, idynamicalG_W); //4
   }
   return cerr;
 }
@@ -405,7 +405,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
 
           case KWExcitation:   
             //cerr = ReadBuffInt(fp, &bufInt[IdxNExcitation]);
-            cerr = ReadBuffIntDim(fp, &bufInt[IdxNExcitation], &bufInt[IdxDimension_1], &bufInt[IdxDimension_2]);
+            cerr = ReadBuffIntDim(fp, &bufInt[IdxNExcitation], &bufInt[IdxdynamicalG_L], &bufInt[IdxdynamicalG_W]);
             break;
 
           case KWGutzwiller:
@@ -662,8 +662,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   DSROptCGTol = bufDouble[IdxSROptCGTol];
   TwoSz = bufInt[Idx2Sz];
   NExcitation = bufInt[IdxNExcitation];
-  Dimension_1 = bufInt[IdxDimension_1];
-  Dimension_2 = bufInt[IdxDimension_2];
+  dynamicalG_L = bufInt[IdxdynamicalG_L];
+  dynamicalG_W = bufInt[IdxdynamicalG_W];
   NDynamicalGIdx = bufInt[IdxNDynamicalG];
   
   if (NMPTrans < 0) {
@@ -1522,8 +1522,8 @@ void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufInt[Idx2Sz] = -1;// -1: sz is not fixed :fsz
   bufInt[IdxNCond] = -1;
   bufInt[IdxNExcitation] = 0;
-  bufInt[IdxDimension_1] = 0;
-  bufInt[IdxDimension_2] = 0;
+  bufInt[IdxdynamicalG_L] = 0;
+  bufInt[IdxdynamicalG_W] = 0;
 
   bufDouble[IdxSROptRedCut] = 0.001;
   bufDouble[IdxSROptStaDel] = 0.02;
@@ -1972,6 +1972,7 @@ GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname
   if (NArray == 0) return 0;
   while (fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp) != NULL) {
     sscanf(ctmp2, "%d %d %d %d %d\n", &x0, &x1, &x2, &x3, &x4);
+    printf("%d %d %d %d %d\n", x0, x1, x2, x3, x4);
     ArrayIdx[idx][0] = x0;
     ArrayIdx[idx][1] = x1;
     ArrayIdx[idx][2] = x2;

@@ -146,7 +146,7 @@ void InitFilePhysCal(int i, int rank) {
     
     sprintf(fileName, "%s_physN2_%03d.dat", CDataFileHead, idx);
     FileN2 = fopen(fileName, "w");
-
+/*
     sprintf(fileName, "%s_physAC_%03d.dat", CDataFileHead, idx);
     File_AC = fopen(fileName, "w");
     
@@ -157,7 +157,7 @@ void InitFilePhysCal(int i, int rank) {
     File_NACN = fopen(fileName, "w");
 
     sprintf(fileName, "%s_phys_nCHAm_%03d.dat", CDataFileHead, idx);
-    File_nCHAm = fopen(fileName, "w");
+    File_nCHAm = fopen(fileName, "w");*/
   }
   else if(NVMCCalMode==3){
     if(NCisAjs>0){
@@ -165,7 +165,7 @@ void InitFilePhysCal(int i, int rank) {
       FileCisAjs = fopen(fileName, "w");
     }
 
-    sprintf(fileName, "%s_phys_nCHAm_%03d.dat", CDataFileHead, idx);
+    sprintf(fileName, "%s_nCHAm_nAHCm_%03d.dat", CDataFileHead, idx);
     File_nCHAm = fopen(fileName, "w");
   }
   return;

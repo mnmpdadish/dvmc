@@ -288,7 +288,7 @@ double complex Sztot,Sztot2; /* <Sz>,<Sz^2> */
 
 typedef enum {with_nothing, with_CisAjs, with_AisCjs,with_CisCmuAnuAjs,with_AisCmuAnuCjs} commuting_with; 
 
-int NExcitation = 0, Dimension_1=0, Dimension_2=0;
+int NExcitation = 0, dynamicalG_W=1, dynamicalG_L=1;
 //int ChargeExcitationIdx[1024][3];
 int **ChargeExcitationIdx;
 int sampleChunk = 50;

@@ -89,7 +89,7 @@ enum ParamIdxInt{
   IdxNTwoBodyGEx, IdxNInterAll, IdxNQPOptTrans,
   IdxSROptCGMaxIter,
   IdxNBF,IdxNrange, IdxNNz, Idx2Sz, IdxNCond,
-  IdxNExcitation,IdxDimension_1,IdxDimension_2,
+  IdxNExcitation,IdxdynamicalG_L,IdxdynamicalG_W,
   IdxNDynamicalG,
   ParamIdxInt_End
 };

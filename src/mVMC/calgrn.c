@@ -240,10 +240,10 @@ int moduloPython(int i,int N){
 }
 
 int find_neighbor_site(int r,int dx,int dy){
-  assert(Dimension_1*Dimension_2==Nsite);
-  int r_x   = moduloPython(r + dx            , Dimension_1);  
-  int r_y   = moduloPython(r + Dimension_1*dy, Nsite);  
-  int r_out = moduloPython(r_x + Dimension_1*r_y,Nsite);    
+  assert(dynamicalG_L*dynamicalG_W==Nsite);
+  int r_x   = moduloPython(r + dx            , dynamicalG_L);  
+  int r_y   = moduloPython(r/dynamicalG_L+dy  , dynamicalG_W);  
+  int r_out = moduloPython(r_x + dynamicalG_L*r_y,Nsite);    
   return r_out;
 }
 
@@ -252,8 +252,8 @@ unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, do
   char transA= 'N', transB= 'C';
   double beta=1.0;
   //int ONE = 1;
-  //M_DGEMM(&transA,&transB,&N,&N,&sampleSize, &weight, &A[0], &N, &B[0], &N, &beta, &C[0], &N); 
-  //*
+  M_DGEMM(&transA,&transB,&N,&N,&sampleSize, &weight, &A[0], &N, &B[0], &N, &beta, &C[0], &N); 
+  /*
   int ii, jj, kk;
   for(ii=0; ii<N; ii++){
     for(jj=0; jj<N; jj++){
@@ -375,7 +375,7 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         int idx_vector2 = idx_exc + NExcitation*(sample + sampleChunk*idx2);
         
         //printf("%d %d %d %d %d\n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2],ChargeExcitationIdx[idx_exc][3],ChargeExcitationIdx[idx_exc][4]);
-        //printf("%d %d \n", Dimension_1, Dimension_2); fflush(stdout);
+        //printf("%d %d \n", dynamicalG_L, dynamicalG_W); fflush(stdout);
         //printf("%d %d %d %d \n", ra1,ra1,rb1,rb2);
         
         //printf("%d %d %d \n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2]);
