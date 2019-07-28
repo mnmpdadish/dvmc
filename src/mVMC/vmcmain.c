@@ -671,22 +671,24 @@ void outputData() {
 //[s] MERGE BY TM
  // fprintf(FileOut, "% .18e % .18e % .18e \n", Etot, Etot2, (Etot2 - Etot*Etot)/(Etot*Etot));
  //   fprintf(FileOut, "% .18e % .18e  % .18e % .18e \n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)));
-   fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)),creal(Sztot),creal(Sztot2));
-  // fprintf(FileOut, "% .18e % .18e % .18e \n", Etot, Etot2, (Etot2 - Etot*Etot)/(Etot*Etot));
- // fprintf(FileOut, "% .18e % .18e  % .18e % .18e \n", creal(Etot), cimag(Etot), creal(Etot2),
- //         creal((Etot2 - Etot * Etot) / (Etot * Etot)));
-//[e] MERGE BY TM
+  if (NVMCCalMode <2) {
+    fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)),creal(Sztot),creal(Sztot2));
+    // fprintf(FileOut, "% .18e % .18e % .18e \n", Etot, Etot2, (Etot2 - Etot*Etot)/(Etot*Etot));
+   // fprintf(FileOut, "% .18e % .18e  % .18e % .18e \n", creal(Etot), cimag(Etot), creal(Etot2),
+   //         creal((Etot2 - Etot * Etot) / (Etot * Etot)));
+  //[e] MERGE BY TM
 
-  // zvo_var.dat 
-  if (FlagBinary == 0) { // formatted output
-    fprintf(FileVar, "% .18e % .18e 0.0 % .18e % .18e 0.0 ", creal(Etot), cimag(Etot), creal(Etot2), cimag(Etot2));
-    for (i = 0; i < NPara; i++) fprintf(FileVar, "% .18e % .18e 0.0 ", creal(Para[i]), cimag(Para[i]));
-    fprintf(FileVar, "\n");
-    //for(i=0;i<NPara;i++)  printf("DEBUG:i=%d: % .18e % .18e  \n",i, creal(Para[i]),cimag(Para[i]));
-  } else { // binary output 
-    fwrite(Para, sizeof(double), NPara, FileVar);
+    // zvo_var.dat 
+    if (FlagBinary == 0) { // formatted output
+      fprintf(FileVar, "% .18e % .18e 0.0 % .18e % .18e 0.0 ", creal(Etot), cimag(Etot), creal(Etot2), cimag(Etot2));
+      for (i = 0; i < NPara; i++) fprintf(FileVar, "% .18e % .18e 0.0 ", creal(Para[i]), cimag(Para[i]));
+      fprintf(FileVar, "\n");
+      //for(i=0;i<NPara;i++)  printf("DEBUG:i=%d: % .18e % .18e  \n",i, creal(Para[i]),cimag(Para[i]));
+    } else { // binary output 
+      fwrite(Para, sizeof(double), NPara, FileVar);
+    }
   }
-
+  
   if (NVMCCalMode == 1) {
     // zvo_cisajs.dat 
     if (NCisAjs > 0) {
@@ -776,29 +778,33 @@ void outputData() {
   else if (NVMCCalMode==3) {
     printf("trying to print files.\n"); fflush(stdout);
 
-    fprintf(FileCisAjs, "#orbitalIdx   <ca>  %d\n", NDynamicalGIdx);
+    fprintf(FileCisAjs, "#orbitalIdx   <ca>  %d\n", Nsite*Nsite);
     int ii;
-    for (ii = 0; ii < NDynamicalGIdx; ii++) {      
+    for (ii = 0; ii < Nsite*Nsite; ii++) {      
        fprintf(FileCisAjs, "%d    % 0.4e \n", ii, Phys_CA[ii]);
     }
     
     int NExcitation2 = NExcitation*NExcitation;
-    int nn,mm;
-    fprintf(File_nCHAm, "#orbitalIdx n m   <n|ca|m>   <n|ac|m>   <n|cHa|m>   <n|aHc|m>");
+    int nn,mm,ri,rj;
+    fprintf(File_nCHAm, "#ri rj  n m   <n|ca|m>   <n|ac|m>   <n|cHa|m>   <n|aHc|m> %d",Nsite);
 
-    for (ii = 0; ii < NDynamicalGIdx; ii++) {
+    for (ri = 0; ri < Nsite; ri++) {
+     for (rj = 0; rj < Nsite; rj++) {
+      int idx = ri+Nsite*rj;
+      printf("\n%d  ", NExcitation);
       for (nn = 0; nn < NExcitation; nn++) {
         for (mm = 0; mm < NExcitation; mm++) {
-          fprintf(File_nCHAm, "\n %d  ", ii);
+          printf("\n%d %d  ", nn,mm);
+          fprintf(File_nCHAm, "\n %d %d  ", ri,rj);
           fprintf(File_nCHAm, "%d %d  ", nn,mm);
-          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nCAm[nn+NExcitation*mm + ii*NExcitation2] );
-          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nACm[nn+NExcitation*mm + ii*NExcitation2] );
-          fprintf(File_nCHAm, "% 0.4e   ", Phys_nCHAm[nn+NExcitation*mm + ii*NExcitation2] );
-          fprintf(File_nCHAm, "% 0.4e   ", Phys_nAHCm[nn+NExcitation*mm + ii*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nCAm[nn+NExcitation*mm + idx*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nACm[nn+NExcitation*mm + idx*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ", Phys_nCHAm[nn+NExcitation*mm + idx*NExcitation2] );
+          fprintf(File_nCHAm, "% 0.4e   ", Phys_nAHCm[nn+NExcitation*mm + idx*NExcitation2] );
         }
         fprintf(File_nCHAm, " "); 
       }
-     
+     }
     }
       
 

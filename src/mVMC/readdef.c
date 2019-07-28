@@ -59,7 +59,7 @@ int ReadPairHopValue(FILE *fp, int **ArrayIdx, double *ArrayValue, int Nsite, in
 int ReadPairDValue(FILE *fp, int **ArrayIdx, double *ArrayValue, int Nsite, int NArray, char *defname);
 
 int GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname);
-int GetInfoDynamicalG(FILE *fp, int **Array, int Nsite, char *defname);
+//int GetInfoDynamicalG(FILE *fp, int **Array, int Nsite, char *defname);
 
 int GetInfoGutzwiller(FILE *fp, int *ArrayIdx, int *ArrayOpt, int iComplxFlag, int *iOptCount, int Nsite, int NArray,
                       char *defname);
@@ -136,7 +136,7 @@ char *ReadBuffIntCmpFlg(FILE *fp, int *iNbuf, int *iComplexFlag) {
   return cerr;
 }
 
-char *ReadBuffIntDim(FILE *fp, int *iNbuf, int *idynamicalG_L, int *idynamicalG_W) {
+char *ReadBuffIntDim(FILE *fp, int *iNbuf, int *iExcitation_L, int *iExcitation_W) {
   char *cerr;
   char ctmp[D_FileNameMax];
   char ctmp2[D_FileNameMax];
@@ -145,13 +145,12 @@ char *ReadBuffIntDim(FILE *fp, int *iNbuf, int *idynamicalG_L, int *idynamicalG_
     cerr = fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp);
     sscanf(ctmp2, "%s %d\n", ctmp, iNbuf); //2
     cerr = fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp);
-    sscanf(ctmp2, "%s %d\n", ctmp, idynamicalG_L); //3
+    sscanf(ctmp2, "%s %d\n", ctmp, iExcitation_L); //3
     cerr = fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp);
-    sscanf(ctmp2, "%s %d\n", ctmp, idynamicalG_W); //4
+    sscanf(ctmp2, "%s %d\n", ctmp, iExcitation_W); //4
   }
   return cerr;
 }
-
 
 void SetDefaultValuesModPara(int *buf, double *bufDouble);
 
@@ -405,7 +404,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
 
           case KWExcitation:   
             //cerr = ReadBuffInt(fp, &bufInt[IdxNExcitation]);
-            cerr = ReadBuffIntDim(fp, &bufInt[IdxNExcitation], &bufInt[IdxdynamicalG_L], &bufInt[IdxdynamicalG_W]);
+            cerr = ReadBuffIntDim(fp, &bufInt[IdxNExcitation], &bufInt[IdxExcitation_L], &bufInt[IdxExcitation_W]);
             break;
 
           case KWGutzwiller:
@@ -449,9 +448,9 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
             cerr = ReadBuffInt(fp, &bufInt[IdxNQPTrans]);
             break;
 
-          case KWDynamicalG:
-            cerr = ReadBuffInt(fp, &bufInt[IdxNDynamicalG]);
-            break;
+//          case KWDynamicalG:
+//            cerr = ReadBuffInt(fp, &bufInt[IdxNDynamicalG]);
+//            break;
 
           case KWOneBodyG:
             cerr = ReadBuffInt(fp, &bufInt[IdxNOneBodyG]);
@@ -662,9 +661,9 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   DSROptCGTol = bufDouble[IdxSROptCGTol];
   TwoSz = bufInt[Idx2Sz];
   NExcitation = bufInt[IdxNExcitation];
-  dynamicalG_L = bufInt[IdxdynamicalG_L];
-  dynamicalG_W = bufInt[IdxdynamicalG_W];
-  NDynamicalGIdx = bufInt[IdxNDynamicalG];
+  Excitation_L = bufInt[IdxExcitation_L];
+  Excitation_W = bufInt[IdxExcitation_W];
+//  NDynamicalGIdx = bufInt[IdxNDynamicalG];
   
   if (NMPTrans < 0) {
     APFlag = 1; /* anti-periodic boundary */
@@ -723,7 +722,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
                  + Nsite * NQPTrans /* QPTransInv */
                  + Nsite * NQPTrans /* QPTransSgn */
                  + 5 * NExcitation /* ChargeExcitation */
-                 + Nsite*Nsite /* DynamicalGIdx */
+//                 + Nsite*Nsite /* DynamicalGIdx */
                  + 4 * NCisAjs /* CisAjs */
                  + 8 * NCisAjsCktAlt /* CisAjsCktAlt */
                  + 8 * NCisAjsCktAltDC /* CisAjsCktAltDC */
@@ -887,10 +886,10 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm) {
             info = 1;
           break;
 
-        case KWDynamicalG:
-          /*dynamicalgreen.def----------------------------------------*/
-          if (GetInfoDynamicalG(fp, DynamicalGIdx, Nsite, defname) != 0) info = 1;
-          break;
+//        case KWDynamicalG:
+//          /*dynamicalgreen.def----------------------------------------*/
+//          if (GetInfoDynamicalG(fp, DynamicalGIdx, Nsite, defname) != 0) info = 1;
+//          break;
 
         case KWOneBodyG:
           /*cisajs.def----------------------------------------*/
@@ -1522,8 +1521,8 @@ void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufInt[Idx2Sz] = -1;// -1: sz is not fixed :fsz
   bufInt[IdxNCond] = -1;
   bufInt[IdxNExcitation] = 0;
-  bufInt[IdxdynamicalG_L] = 0;
-  bufInt[IdxdynamicalG_W] = 0;
+  bufInt[IdxExcitation_L] = 0;
+  bufInt[IdxExcitation_W] = 0;
 
   bufDouble[IdxSROptRedCut] = 0.001;
   bufDouble[IdxSROptStaDel] = 0.02;
@@ -1985,7 +1984,7 @@ GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname
   return info;
 }
 
-
+/*
 int
 GetInfoDynamicalG(FILE *fp, int **Array, int Nsite, char *defname) {
   char ctmp2[256];
@@ -2002,6 +2001,7 @@ GetInfoDynamicalG(FILE *fp, int **Array, int Nsite, char *defname) {
   }
   return info;
 }
+*/
 
 int
 GetInfoOneBodyG(FILE *fp, int **ArrayIdx, int **ArrayToIdx, int _NLanczosMode, int Nsite, int NArray, char *defname) {

@@ -240,10 +240,10 @@ int moduloPython(int i,int N){
 }
 
 int find_neighbor_site(int r,int dx,int dy){
-  assert(dynamicalG_L*dynamicalG_W==Nsite);
-  int r_x   = moduloPython(r + dx            , dynamicalG_L);  
-  int r_y   = moduloPython(r/dynamicalG_L+dy  , dynamicalG_W);  
-  int r_out = moduloPython(r_x + dynamicalG_L*r_y,Nsite);    
+  assert(Excitation_L*Excitation_W==Nsite);
+  int r_x   = moduloPython(r + dx            , Excitation_L);  
+  int r_y   = moduloPython(r/Excitation_L+dy  , Excitation_W);  
+  int r_out = moduloPython(r_x + Excitation_L*r_y,Nsite);    
   return r_out;
 }
 
@@ -294,8 +294,8 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
     int rm, rn, u;
     int idx_int, idx_trans;
 
-    double multiplicity = (double) (Nsite*Nsite) / (double) NDynamicalGIdx;
-    double f0 = 1.0/multiplicity;
+    //double multiplicity = (double) (Nsite*Nsite) / (double) NDynamicalGIdx;
+    //double f0 = 1.0/multiplicity;
     //printf("multiplicity: %f,  %f\n", multiplicity, f0);
     //exit(0);
     
@@ -319,7 +319,7 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
     for(ri=0;ri<Nsite;ri++) {
      for(rj=0;rj<Nsite;rj++) {
       for(s=0;s<2;s++) {
-       Phys_CA[DynamicalGIdx[ri][rj] + s*NDynamicalGIdx] += w*f0*Local_CA[ri+Nsite*rj+Nsite*Nsite*s];
+       Phys_CA[ri+Nsite*rj+Nsite*Nsite*s] += w*Local_CA[ri+Nsite*rj+Nsite*Nsite*s];
       }
      }
     }
@@ -375,7 +375,7 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         int idx_vector2 = idx_exc + NExcitation*(sample + sampleChunk*idx2);
         
         //printf("%d %d %d %d %d\n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2],ChargeExcitationIdx[idx_exc][3],ChargeExcitationIdx[idx_exc][4]);
-        //printf("%d %d \n", dynamicalG_L, dynamicalG_W); fflush(stdout);
+        //printf("%d %d \n", Excitation_L, Excitation_W); fflush(stdout);
         //printf("%d %d %d %d \n", ra1,ra1,rb1,rb2);
         
         //printf("%d %d %d \n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2]);

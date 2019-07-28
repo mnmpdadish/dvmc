@@ -153,7 +153,8 @@ void SetMemoryDef() {
     QPTransSgn[i] = pInt;
     pInt += Nsite;
   }
-  
+
+/*  
   DynamicalGIdx = (int**)malloc(sizeof(int*)*Nsite);
   for(i=0;i<Nsite;i++) {
     DynamicalGIdx[i] = pInt;
@@ -161,7 +162,7 @@ void SetMemoryDef() {
     for(j=0;j<Nsite;j++) {
       DynamicalGIdx[i][j]=0;
     }
-  }
+  }*/
 
   CisAjsIdx = (int**)malloc(sizeof(int*)*NCisAjs);
   for(i=0;i<NCisAjs;i++) {
@@ -277,7 +278,7 @@ void FreeMemoryDef() {
   free(PosBF);
   free(RangeIdx);
   free(BackFlowIdx);
-  free(DynamicalGIdx);
+  //free(DynamicalGIdx);
   return;
 }
 
@@ -419,12 +420,12 @@ void SetMemory() {
     }
     
     if(NVMCCalMode==3){
-      printf("memory usage: %d times double.\n", 4*NDynamicalGIdx*NExcitation*NExcitation + 10*Nsite*Nsite*NExcitation*sampleChunk);
-      Phys_nCAm  = (double *)calloc((NDynamicalGIdx*NExcitation*NExcitation),sizeof(double));
-      Phys_nACm  = (double *)calloc((NDynamicalGIdx*NExcitation*NExcitation),sizeof(double));
-      Phys_nCHAm = (double *)calloc((NDynamicalGIdx*NExcitation*NExcitation),sizeof(double));
-      Phys_nAHCm = (double *)calloc((NDynamicalGIdx*NExcitation*NExcitation),sizeof(double));
-      Phys_CA    = (double *)calloc(2*NDynamicalGIdx,sizeof(double));
+      printf("memory usage: %d times double.\n", 4*Nsite*Nsite*NExcitation*NExcitation + 10*Nsite*Nsite*NExcitation*sampleChunk);
+      Phys_nCAm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+      Phys_nACm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+      Phys_nCHAm = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+      Phys_nAHCm = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+      Phys_CA    = (double *)calloc(2*Nsite*Nsite,sizeof(double));
       Local_CA   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
       //Local_AC   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
 

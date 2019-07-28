@@ -64,7 +64,7 @@ enum KWIdxInt{
   KWInterAll, KWOptTrans, KWInOptTrans,
   KWBF, KWBFRange,
   KWExcitation,
-  KWDynamicalG,
+//  KWDynamicalG,
   KWIdxInt_end
 };
 
@@ -89,8 +89,8 @@ enum ParamIdxInt{
   IdxNTwoBodyGEx, IdxNInterAll, IdxNQPOptTrans,
   IdxSROptCGMaxIter,
   IdxNBF,IdxNrange, IdxNNz, Idx2Sz, IdxNCond,
-  IdxNExcitation,IdxdynamicalG_L,IdxdynamicalG_W,
-  IdxNDynamicalG,
+  IdxNExcitation,IdxExcitation_L,IdxExcitation_W,
+//  IdxNDynamicalG,
   ParamIdxInt_End
 };
 

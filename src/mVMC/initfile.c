@@ -76,17 +76,19 @@ void InitFilePhysCal(int i, int rank) {
 
   if(rank!=0) return;
 
-  sprintf(fileName, "%s_out_%03d.dat", CDataFileHead, idx);
-  FileOut = fopen(fileName, "w");
- 
-  if(FlagBinary==0) {
-    sprintf(fileName, "%s_var_%03d.dat", CDataFileHead, idx);
-    FileVar = fopen(fileName, "w");
-  } else {
-    sprintf(fileName, "%s_varbin_%03d.dat", CDataFileHead, idx);
-    FileVar = fopen(fileName, "wb");
-    fwrite(&NPara,sizeof(int),1,FileVar);
-    fwrite(&one,sizeof(int),1,FileVar);
+  if(NVMCCalMode<2){
+    sprintf(fileName, "%s_out_%03d.dat", CDataFileHead, idx);
+    FileOut = fopen(fileName, "w");
+   
+    if(FlagBinary==0) {
+      sprintf(fileName, "%s_var_%03d.dat", CDataFileHead, idx);
+      FileVar = fopen(fileName, "w");
+    } else {
+      sprintf(fileName, "%s_varbin_%03d.dat", CDataFileHead, idx);
+      FileVar = fopen(fileName, "wb");
+      fwrite(&NPara,sizeof(int),1,FileVar);
+      fwrite(&one,sizeof(int),1,FileVar);
+    }
   }
 
   if(NVMCCalMode==1){
@@ -188,9 +190,11 @@ void CloseFile(int rank) {
 void CloseFilePhysCal(int rank) {
   if(rank!=0) return;
 
-  fclose(FileOut);
-  fclose(FileVar);
-  
+  if(NVMCCalMode<2) {
+    fclose(FileOut);
+    fclose(FileVar);
+  }
+
   if(NCisAjs>0){
     fclose(FileCisAjs);
   }
