@@ -295,6 +295,8 @@ int sampleChunk = 50;
       
 // following arrays has size [NCisAjs*NExcitation*NExcitation]
 double *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;
+double *Phys_nCAm_averaged, *Phys_nACm_averaged;
+double *Phys_nCHAm_averaged, *Phys_nAHCm_averaged;
 double *Phys_CA, *Local_CA, *Local_AC;
 
 double *O_AC_vec1, *O_CA_vec1, AC_tmp, CA_tmp;

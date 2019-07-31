@@ -420,7 +420,13 @@ void SetMemory() {
     }
     
     if(NVMCCalMode==3){
-      printf("memory usage: %d times double.\n", 4*Nsite*Nsite*NExcitation*NExcitation + 10*Nsite*Nsite*NExcitation*sampleChunk);
+      printf("memory usage: %d times double.\n", 4*Nsite*NExcitation*NExcitation+4*Nsite*Nsite*NExcitation*NExcitation + 10*Nsite*Nsite*NExcitation*sampleChunk);
+
+      Phys_nCAm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
+      Phys_nACm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
+      Phys_nCHAm_averaged = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
+      Phys_nAHCm_averaged = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
+
       Phys_nCAm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
       Phys_nACm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
       Phys_nCHAm = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
@@ -505,6 +511,11 @@ void FreeMemory() {
     free(Phys_nAHCm);
     free(Phys_nCAm);
     free(Phys_nACm);
+
+    free(Phys_nCHAm_averaged);
+    free(Phys_nAHCm_averaged);
+    free(Phys_nCAm_averaged);
+    free(Phys_nACm_averaged);
   
     free(Phys_CA);
     free(Local_CA);

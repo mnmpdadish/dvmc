@@ -239,6 +239,22 @@ int moduloPython(int i,int N){
   return ((i % N) + N) % N;
 }
 
+
+
+
+int find_neighbor_difference(int ri,int rj){
+  assert(Excitation_L*Excitation_W==Nsite);
+  int ri_x = moduloPython(ri,              Excitation_L);
+  int ri_y = moduloPython(ri/Excitation_L, Excitation_W);
+  int rj_x = moduloPython(rj,              Excitation_L);
+  int rj_y = moduloPython(rj/Excitation_L, Excitation_W);
+
+  int dr_out = moduloPython(rj_x-ri_x,Excitation_L) + Excitation_L*moduloPython(rj_y-ri_y,Excitation_W);
+  //int dr_out = moduloPython(moduloPython(rj_x-ri_x,Nsite) + Excitation_L*moduloPython(rj_y-ri_y,Nsite),Nsite);    
+  return dr_out;
+}
+
+
 int find_neighbor_site(int r,int dx,int dy){
   assert(Excitation_L*Excitation_W==Nsite);
   int r_x   = moduloPython(r + dx            , Excitation_L);  
@@ -286,7 +302,7 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
     myProjCntNew = (int*)malloc(sizeof(int) * NProj );
     myBuffer_real = (double *)malloc(sizeof(double) * (NQPFull+2*Nsize) );
 
-    for(idx=0;idx<Nsize;idx++)  myEleIdx[idx] = eleIdx[idx];
+    for(idx=0;idx<Nsize; idx++) myEleIdx[idx] = eleIdx[idx];
     for(idx=0;idx<Nsite2;idx++) myEleNum[idx] = eleNum[idx];
     //for(idx=0;idx<Nsite2;idx++) myEleCfg[idx] = eleCfg[idx];
     
