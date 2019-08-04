@@ -291,7 +291,7 @@ typedef enum {with_nothing, with_CisAjs, with_AisCjs,with_CisCmuAnuAjs,with_AisC
 int NExcitation = 0, Excitation_W=1, Excitation_L=1;
 //int ChargeExcitationIdx[1024][3];
 int **ChargeExcitationIdx;
-int sampleChunk = 50;
+int sampleChunk = 10;
       
 // following arrays has size [NCisAjs*NExcitation*NExcitation]
 double *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;

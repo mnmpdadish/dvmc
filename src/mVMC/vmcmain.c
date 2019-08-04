@@ -788,11 +788,12 @@ void outputData() {
 // 4567
 // 0123    
     int nn,mm,ri,rj;
+    /*
     for (ri = 0; ri < Nsite; ri++) {
      for (rj = 0; rj < Nsite; rj++) {
       printf("\n%d %d  %d", ri,rj,find_neighbor_difference(ri, rj));
      }
-    }
+    }*/
     
     for(ii=0;ii<Nsite*NExcitation*NExcitation; ii++){
       Phys_nCHAm_averaged[ii] = 0.0;

@@ -420,8 +420,12 @@ void SetMemory() {
     }
     
     if(NVMCCalMode==3){
+      double mem1 = 8.*4.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
+      double mem2 = 8.*4.*((double)Nsite*Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
+      double mem3 = 8.*10.*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
       printf("memory usage: %d times double.\n", 4*Nsite*NExcitation*NExcitation+4*Nsite*Nsite*NExcitation*NExcitation + 10*Nsite*Nsite*NExcitation*sampleChunk);
-
+      printf("memory usage per cpu: %f Go.\n", mem1+mem2+mem3);
+      
       Phys_nCAm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
       Phys_nACm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
       Phys_nCHAm_averaged = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));

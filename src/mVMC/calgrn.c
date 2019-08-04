@@ -150,7 +150,7 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return 1;
     }
     else if(t==1){ 
-      return eleNum[ra+(1-s)*Nsite]  + del((1-s),u) * (del(ra,rm)-del(ra,rn));
+      return (eleNum[ra+(1-s)*Nsite] + del((1-s),u) * (del(ra,rm)-del(ra,rn)));
     }
     else if(t==2){
       if(ra==rb){
@@ -167,6 +167,25 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return (eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s))
             *(eleNum[rb+   s *Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s)    + sign * (del(rb,ri)-del(rb,rj)) )   ;
     }
+    else if(t==5){
+      return (eleNum[ri+(1-s)*Nsite] + del((1-s),u) * (del(ri,rm)-del(ri,rn)))
+            *(eleNum[ra+   s *Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,s)    + sign * (del(ra,ri)-del(ra,rj)) )
+            *(eleNum[rb+   s *Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s)    + sign * (del(rb,ri)-del(rb,rj)) );
+    }
+    else if(t==6){
+      return (eleNum[ri+(1-s)*Nsite] + del((1-s),u) * (del(ri,rm)-del(ri,rn)))
+            *(eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s))
+            *(eleNum[rb+(1-s)*Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,1-s));
+    }
+    else if(t==7){
+      return (eleNum[ri+(1-s)*Nsite] + del((1-s),u) * (del(ri,rm)-del(ri,rn)))
+            *(eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s))
+            *(eleNum[rb+   s *Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s)    + sign * (del(rb,ri)-del(rb,rj)) )   ;
+    }
+//    else if(t==5){
+//      return (eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s)) * (eleNum[ra+s*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,s) + sign * (del(ra,ri)-del(ra,rj)))
+//            *(eleNum[rb+(1-s)*Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,1-s)) * (eleNum[rb+s*Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s) + sign * (del(rb,ri)-del(rb,rj)));
+//    }
     else{
       printf("oups, error %d\n", t);
       exit(1);
@@ -183,7 +202,7 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return 1;
     }
     else if(t==1){ // electron reverse-spin
-      return eleNum[ra+(1-s)*Nsite] ;
+      return (eleNum[ra+(1-s)*Nsite]) ;
     }
     else if(t==2){ 
       if(ra==rb) {
@@ -200,6 +219,25 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return (eleNum[ra+(1-s)*Nsite] )
             *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );
     }
+    else if(t==5){ 
+      return (eleNum[ri+(1-s)*Nsite])
+            *(eleNum[ra+    s*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) )
+            *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );      
+    }
+    else if(t==6){ 
+      return (eleNum[ri+(1-s)*Nsite])
+            *(eleNum[ra+(1-s)*Nsite] )
+            *(eleNum[rb+(1-s)*Nsite] );
+    }
+    else if(t==7){ 
+      return (eleNum[ri+(1-s)*Nsite])
+            *(eleNum[ra+(1-s)*Nsite] )
+            *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );
+    }
+//    else if(t==5){ 
+//      return (eleNum[ra+s*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) ) * (eleNum[ra+(1-s)*Nsite])
+//            *(eleNum[rb+s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) ) * (eleNum[rb+(1-s)*Nsite]);      
+//    }
     else{
       printf("oups, error %d\n", t);
       exit(1);
@@ -211,7 +249,7 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return 1;
     }    
     else if(t==1){ //1 electron reverse-spin
-      return eleNum[ra+(1-s)*Nsite];
+      return (eleNum[ra+(1-s)*Nsite]);
     }
     else if(t==2){ 
       return (eleNum[ra+s*Nsite]*eleNum[rb+s*Nsite]);
@@ -222,13 +260,27 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
     else if(t==4){ 
       return (eleNum[ra+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
     }
+    else if(t==5){ 
+      return (eleNum[ri+(1-s)*Nsite])
+            *(eleNum[ra+s*Nsite]*eleNum[rb+s*Nsite]);
+    }
+    else if(t==6){ 
+      return (eleNum[ri+(1-s)*Nsite])
+            *(eleNum[ra+(1-s)*Nsite]*eleNum[rb+(1-s)*Nsite]);
+    }
+    else if(t==7){ 
+      return (eleNum[ri+(1-s)*Nsite])
+            *(eleNum[ra+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
+    }
+//    else if(t==5){ 
+//      return (eleNum[ra+(1-s)*Nsite]*eleNum[ra+s*Nsite]) * (eleNum[rb+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
+//    }
     else{
       printf("oups, error %d\n", t);
       exit(1);
       return -1;
     }
-  }
-  
+  }  
 }
 
 
@@ -372,9 +424,8 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
       int idx2 = rj+Nsite*ri;
       
       int idx_exc;
+      
       for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
-        //int idx_reverse = ijst_to_idx[rj+s*Nsite][ri+s*Nsite];
-        //int idx_reverse = ijst_to_idx[ri+s*Nsite][(2*ri-rj+Nsite)%Nsite+s*Nsite];  // BEWARE: this line impose invariance under translation and assume periodic boundary condition
         
         int t     = ChargeExcitationIdx[idx_exc][0];  // type
         int dr1_x = ChargeExcitationIdx[idx_exc][1];  // position 1
@@ -410,8 +461,8 @@ void CalculateGreenFuncMoments2_real(const double w, const double ip,
         O_AC_vec2[idx_vector2] = AC_tmp;//conj(AC_tmp);
         
         // <phi|x>
-        O0_vec1[idx_vector1]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  0,  0, s, 0,0,0, myEleNum)));
-        O0_vec2[idx_vector2]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  0,  0, s, 0,0,0, myEleNum)));
+        O0_vec1[idx_vector1]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  rj, ri, s, 0,0,0, myEleNum)));
+        O0_vec2[idx_vector2]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  rj, ri, s, 0,0,0, myEleNum)));
         //
         // <phi|H_U|x> 
         double tmp_int_AHC=0.0;
