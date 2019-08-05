@@ -794,7 +794,7 @@ void outputData() {
       printf("\n%d %d  %d", ri,rj,find_neighbor_difference(ri, rj));
      }
     }*/
-    
+    /*
     for(ii=0;ii<Nsite*NExcitation*NExcitation; ii++){
       Phys_nCHAm_averaged[ii] = 0.0;
       Phys_nAHCm_averaged[ii] = 0.0;
@@ -802,7 +802,6 @@ void outputData() {
       Phys_nACm_averaged[ii]  = 0.0;
     }
     
-    int NExcitation2 = NExcitation*NExcitation;
     double factor = 1.0/((double)Nsite);
     for (rj = 0; rj < Nsite; rj++) {
      for (ri = 0; ri < Nsite; ri++) {
@@ -817,8 +816,9 @@ void outputData() {
         }
       }
      }
-    }
+    }*/
     
+    int NExcitation2 = NExcitation*NExcitation;
     fprintf(File_nCHAm, "#rj-ri  n m   <n|ca|m>   <n|ac|m>   <n|cHa|m>   <n|aHc|m> %d",Nsite);
     int dr;
     for (dr = 0; dr < Nsite; dr++) {
