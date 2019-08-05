@@ -205,17 +205,17 @@ void WeightAverageSROpt_real(MPI_Comm comm) {
 */
 
 
-void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
+void WeightAverageStaticQuantities_real(MPI_Comm comm) { //Maxime
   int n;
-  double complex *vec;
+  //double complex *vec;
   double *vec_real;
   n = NCisAjs*TWO_SITES_PHYS_QTY;
-  vec = PhysN2;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = PhysN2;
+  weightAverageReduce_real(n,vec_real,comm);
   
   n = Nsite*ONE_SITE_PHYS_QTY;
-  vec = PhysN1;
-  weightAverageReduce_fcmp(n,vec,comm);
+  vec_real = PhysN1;
+  weightAverageReduce_real(n,vec_real,comm);
   
   //n = NCisAjs*PHYS_MOMENTS_QTY;
   //vec = Phys_G_Moments;
@@ -231,7 +231,7 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
   vec = PhysCisAjs;
   weightAverageReduce_fcmp(n,vec,comm);
   
-  */
+  
   
   
   n = NCisAjs*NExcitation*NExcitation;
@@ -255,10 +255,10 @@ void WeightAverageGreenFuncMoments(MPI_Comm comm) { //Maxime
 
 
 
-void WeightAverageGreenFuncMoments2(MPI_Comm comm) { //Maxime
+void WeightAverageDynamicalGreenFunc_real(MPI_Comm comm) { //Maxime
   int n;
   double *vec_real;
-  double complex *vec;
+  //double complex *vec;
 
   n = Nsite*NExcitation*NExcitation;
   vec_real = Phys_nCHAm_averaged;

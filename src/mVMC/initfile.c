@@ -138,10 +138,10 @@ void InitFilePhysCal(int i, int rank) {
   
   }
   else if(NVMCCalMode==2){
-    if(NCisAjs>0){
-      sprintf(fileName, "%s_cisajs_%03d.dat", CDataFileHead, idx);
-      FileCisAjs = fopen(fileName, "w");
-    }
+    //if(NCisAjs>0){
+    //  sprintf(fileName, "%s_cisajs_%03d.dat", CDataFileHead, idx);
+    //  FileCisAjs = fopen(fileName, "w");
+    //}
     
     sprintf(fileName, "%s_physN1_%03d.dat", CDataFileHead, idx);
     FileN1 = fopen(fileName, "w");

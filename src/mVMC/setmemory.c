@@ -390,7 +390,7 @@ void SetMemory() {
   }
 
   /***** Physical Quantity *****/
-  if(NVMCCalMode==1 || NVMCCalMode==2 || NVMCCalMode==3){
+  if(NVMCCalMode==1 ){
     PhysCisAjs  = (double complex*)calloc((NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC+NCisAjs),sizeof(double complex));
     PhysCisAjsCktAlt   = PhysCisAjs       + NCisAjs;
     PhysCisAjsCktAltDC = PhysCisAjsCktAlt + NCisAjsCktAlt;
@@ -418,47 +418,46 @@ void SetMemory() {
 
       }
     }
+  }
+  
+  if(NVMCCalMode==2){
+    PhysN1 = (double *)calloc(Nsite*ONE_SITE_PHYS_QTY, sizeof(double complex));
+    PhysN2 = (double *)calloc(NCisAjs*TWO_SITES_PHYS_QTY, sizeof(double complex) );
+  }
     
-    if(NVMCCalMode==3){
-      double mem1 = 8.*4.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
-      //double mem2 = 8.*4.*((double)Nsite*Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
-      double mem3 = 8.*10.*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
-      //printf("memory usage: %d times double.\n", 4*Nsite*NExcitation*NExcitation+/*4*Nsite*Nsite*NExcitation*NExcitation +*/ 10*Nsite*Nsite*NExcitation*sampleChunk);
-      printf("memory usage per cpu: %f Go.\n", mem1+/*mem2*/+mem3);
-      
-      Phys_nCAm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
-      Phys_nACm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
-      Phys_nCHAm_averaged = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
-      Phys_nAHCm_averaged = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
-      
-      /*
-      Phys_nCAm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
-      Phys_nACm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
-      Phys_nCHAm = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
-      Phys_nAHCm = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
-      */
-      Phys_CA    = (double *)calloc(2*Nsite*Nsite,sizeof(double));
-      Local_CA   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
-      //Local_AC   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
-      
+  if(NVMCCalMode==3){
+    double mem1 = 8.*4.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
+    //double mem2 = 8.*4.*((double)Nsite*Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
+    double mem3 = 8.*10.*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
+    //printf("memory usage: %d times double.\n", 4*Nsite*NExcitation*NExcitation+/*4*Nsite*Nsite*NExcitation*NExcitation +*/ 10*Nsite*Nsite*NExcitation*sampleChunk);
+    printf("memory usage per mpi thread: %f Go.\n", mem1+/*mem2*/+mem3);
+    
+    Phys_nCAm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
+    Phys_nACm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
+    Phys_nCHAm_averaged = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
+    Phys_nAHCm_averaged = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
+    
+    /*
+    Phys_nCAm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+    Phys_nACm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+    Phys_nCHAm = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+    Phys_nAHCm = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+    */
+    Phys_CA    = (double *)calloc(2*Nsite*Nsite,sizeof(double));
+    Local_CA   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
+    //Local_AC   = (double *)calloc(2*Nsite*Nsite,sizeof(double));
 
-      O_AC_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-      O_AC_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-      O_CA_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-      O_CA_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-      H_AC_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-      H_AC_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-      H_CA_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-      H_CA_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-      O0_vec1   = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-      O0_vec2   = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
-    }
-    
-    if(NVMCCalMode==2){
-      PhysN1 = (double complex*)calloc(Nsite*ONE_SITE_PHYS_QTY, sizeof(double complex));
-      PhysN2 = (double complex*)calloc(NCisAjs*TWO_SITES_PHYS_QTY, sizeof(double complex) );
-    }
-    
+    O_AC_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+    O_AC_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+    O_CA_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+    O_CA_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+    H_AC_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+    H_AC_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+    H_CA_vec1 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+    H_CA_vec2 = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+    O0_vec1   = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+    O0_vec2   = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
+
     Local_CisAjsCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
     //Local_AisCjsCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
     for(i=0;i<NTransfer;i++) {
@@ -466,7 +465,7 @@ void SetMemory() {
       //Local_AisCjsCmuAnu[i] = (double *)calloc(Nsite*Nsite,sizeof(double));
     }
   }
-
+  
   initializeWorkSpaceAll();
   return;
 }
@@ -474,19 +473,14 @@ void SetMemory() {
 void FreeMemory() {
   FreeWorkSpaceAll();
 
-  if(NVMCCalMode==1 || NVMCCalMode==2 || NVMCCalMode==3){
-    free(PhysCisAjs);
-    free(PhysN1);
-    free(PhysN2);
-    
-    int i;    
-    for(i=0;i<NTransfer;i++) {
-      free(Local_CisAjsCmuAnu[i]);
-      //free(Local_AisCjsCmuAnu[i]);
-    }
-    free(Local_CisAjsCmuAnu);
-    //free(Local_AisCjsCmuAnu);
+  if(NVMCCalMode==0){
+    free(SROptData);
+    free(SROptOO);
+  }
 
+  if(NVMCCalMode==1){
+    free(PhysCisAjs);
+    
     if(NLanczosMode>0){
       free(QQQQ);
       free(QQQQ_real);
@@ -497,9 +491,9 @@ void FreeMemory() {
     }
   }
 
-  if(NVMCCalMode==0){
-    free(SROptData);
-    free(SROptOO);
+  if(NVMCCalMode==2){
+    free(PhysN1);
+    free(PhysN2);
   }
   
   if(NVMCCalMode==3){
@@ -527,6 +521,13 @@ void FreeMemory() {
     free(Phys_CA);
     free(Local_CA);
     //free(Local_AC);
+    int i;    
+    for(i=0;i<NTransfer;i++) {
+      free(Local_CisAjsCmuAnu[i]);
+      //free(Local_AisCjsCmuAnu[i]);
+    }
+    free(Local_CisAjsCmuAnu);
+    //free(Local_AisCjsCmuAnu);
   }
   
   free(QPFullWeight);

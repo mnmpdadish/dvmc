@@ -627,31 +627,31 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       //printf("hey5\n");
     }
     else if(NVMCCalMode==2) {
-      printf("before averaging.\n"); fflush(stdout);
+      //printf("before averaging.\n"); fflush(stdout);
       WeightAverageWE(comm_parent);
-      WeightAverageGreenFuncMoments(comm_parent);
+      WeightAverageStaticQuantities_real(comm_parent);
       ReduceCounter(comm_child2);
       if(rank==0) {
         outputData();
-        printf("after output.\n"); fflush(stdout);
+        //printf("after output.\n"); fflush(stdout);
         fclose(FileN1);
         fclose(FileN2);
-        fclose(File_AC);
-        fclose(File_ACN);
-        fclose(File_NACN);
-        printf("after close.\n"); fflush(stdout);
+        //fclose(File_AC);
+        //fclose(File_ACN);
+        //fclose(File_NACN);
+        //printf("after close.\n"); fflush(stdout);
       }
     }
     else if(NVMCCalMode==3) {
-      printf("before averaging.\n"); fflush(stdout);
+      //printf("before averaging.\n"); fflush(stdout);
       WeightAverageWE(comm_parent);
-      WeightAverageGreenFuncMoments2(comm_parent);
+      WeightAverageDynamicalGreenFunc_real(comm_parent);
       ReduceCounter(comm_child2);
       if(rank==0) {
         outputData();
-        printf("after output.\n"); fflush(stdout);
+        //printf("after output.\n"); fflush(stdout);
         fclose(File_nCHAm);
-        printf("after close.\n"); fflush(stdout);
+        //printf("after close.\n"); fflush(stdout);
       }
     }
     StopTimer(5);
@@ -759,7 +759,7 @@ void outputData() {
       for (i = 0; i < NCisAjs; i++) {
         fprintf(FileN2, "%d %d %d %d ", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2], CisAjsIdx[i][3]);
         for (j = 0; j < TWO_SITES_PHYS_QTY; j++) 
-          fprintf(FileN2, "% 0.6e   ", creal(PhysN2[i+NCisAjs*j]) );
+          fprintf(FileN2, "% 0.6e   ", PhysN2[i+NCisAjs*j] );
 //          fprintf(FileN, "% .8e  % .8e   ", creal(PhysN2[i+NCisAjs*j]), cimag(PhysN2[i+NCisAjs*j]));
         fprintf(FileN2, "\n");
       }
@@ -768,7 +768,7 @@ void outputData() {
     for (i = 0; i < Nsite; i++) {
       fprintf(FileN1, "%d ", i);
       for (j = 0; j < ONE_SITE_PHYS_QTY; j++) 
-        fprintf(FileN1, "% 0.2e   ", creal(PhysN1[i+Nsite*j]) );
+        fprintf(FileN1, "% 0.2e   ", PhysN1[i+Nsite*j] );
       fprintf(FileN1, "\n");
     }
     fprintf(FileN1, "\n");

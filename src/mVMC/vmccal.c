@@ -290,12 +290,12 @@ void VMCMainCal(MPI_Comm comm) {
       StartTimer(42);
       /* Calculate Green Function */
 #ifdef _DEBUG_VMCCAL
-      if(sample%sample_to_print==0) fprintf(stdout, "Debug: Start: CalculateGreenFuncMoments\n"); fflush(stdout);
+      if(sample%sample_to_print==0) fprintf(stdout, "Debug: Start: CalculateStaticQuantities_real\n"); fflush(stdout);
 #endif
       
-      CalculateGreenFuncMoments(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+      CalculateStaticQuantities_real(w,eleIdx,eleCfg,eleNum,eleProjCnt);
 #ifdef _DEBUG_VMCCAL
-      if(sample%sample_to_print==0) fprintf(stdout, "Debug: End: CalculateGreenFuncMoments\n"); fflush(stdout);
+      if(sample%sample_to_print==0) fprintf(stdout, "Debug: End: CalculateStaticQuantities_real\n"); fflush(stdout);
 #endif
       StopTimer(42);
 
@@ -304,16 +304,16 @@ void VMCMainCal(MPI_Comm comm) {
       StartTimer(42);
       /* Calculate Green Function */
 #ifdef _DEBUG_VMCCAL
-      if(sample%sample_to_print==0) fprintf(stdout, "Debug: Start: CalculateGreenFuncMoments2_real\n"); fflush(stdout);
+      if(sample%sample_to_print==0) fprintf(stdout, "Debug: Start: CalculateDynamicalGreenFunc_real\n"); fflush(stdout);
 #endif
       if(AllComplexFlag!=0){
-        fprintf(stderr, "CalculateGreenFuncMoments2_real requires AllComplexFlag==0\n"); fflush(stdout);
+        fprintf(stderr, "CalculateDynamicalGreenFunc_real requires AllComplexFlag==0\n"); fflush(stdout);
         exit(0);
       }
-      CalculateGreenFuncMoments2_real(creal(w),creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt,sample%sampleChunk);
+      CalculateDynamicalGreenFunc_real(creal(w),creal(ip),eleIdx,eleCfg,eleNum,eleProjCnt,sample%sampleChunk);
       
 #ifdef _DEBUG_VMCCAL
-      if(sample%sample_to_print==0) fprintf(stdout, "Debug: End: CalculateGreenFuncMoments2_real\n"); fflush(stdout);
+      if(sample%sample_to_print==0) fprintf(stdout, "Debug: End: CalculateDynamicalGreenFunc_real\n"); fflush(stdout);
 #endif
       StopTimer(42);
       //if(rank==0)
@@ -680,8 +680,8 @@ void clearPhysQuantity(){
       }
     }
   } else if(NVMCCalMode==2) {
-    for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0+0.0*I;
-    for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++)  PhysN1[i] = 0.0+0.0*I;
+    for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0;
+    for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++)  PhysN1[i] = 0.0;
   } else if(NVMCCalMode==3) { 
     for(i=0;i<Nsite*NExcitation*NExcitation; i++){
       Phys_nCHAm_averaged[i] = 0.0;

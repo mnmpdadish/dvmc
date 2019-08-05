@@ -275,9 +275,9 @@ double complex *LocalCisAjs; /* [NCisAjs] */
 
 //Maxime
 #define ONE_SITE_PHYS_QTY 4
-double complex *PhysN1; /* [Nsite * ONE_SITE_PHYS_QTY] */  
+double *PhysN1; /* [Nsite * ONE_SITE_PHYS_QTY] */  
 #define TWO_SITES_PHYS_QTY 4
-double complex *PhysN2; /* [NCisAjs * TWO_SITES_PHYS_QTY] */
+double *PhysN2; /* [NCisAjs * TWO_SITES_PHYS_QTY] */
 
 
 //#define PHYS_MOMENTS_QTY 2
