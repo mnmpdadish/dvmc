@@ -245,6 +245,7 @@ int moduloPython(int i,int N){
   return ((i % N) + N) % N;
 }
 
+/*
 int find_neighbor_difference(int ri,int rj){
   int ri_x = moduloPython(ri,              Excitation_L);
   int ri_y = moduloPython(ri/Excitation_L, Excitation_W);
@@ -254,7 +255,7 @@ int find_neighbor_difference(int ri,int rj){
   int dr_out = moduloPython(rj_x-ri_x,Excitation_L) + Excitation_L*moduloPython(rj_y-ri_y,Excitation_W);
   //int dr_out = moduloPython(moduloPython(rj_x-ri_x,Nsite) + Excitation_L*moduloPython(rj_y-ri_y,Nsite),Nsite);    
   return dr_out;
-}
+}*/
 
 int find_neighbor_site(int r,int dx,int dy){
   int r_x   = moduloPython(r + dx             , Excitation_L);  

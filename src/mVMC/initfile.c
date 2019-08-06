@@ -237,18 +237,4 @@ void FlushFile(int step, int rank) {
 }
 
 
-int fileCopyAdd(char *inputfileName, FILE *ofp){
-  int i;
-  FILE *ifp;
-
-  ifp = fopen(inputfileName, "r");
-  if(ifp == NULL) return 1;
-
-  fprintf(ofp,"################\n#%s\n################\n",inputfileName);
-  while((i=getc(ifp))!=EOF) putc(i,ofp);
-  fclose(ifp);
-
-  return 0;
-}
-
 #endif
