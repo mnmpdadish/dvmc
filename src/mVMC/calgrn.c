@@ -264,8 +264,8 @@ int find_neighbor_site(int r,int dx,int dy){
 }
 
 int find_neighbor_site2(int r,int dr){
-  int dx = moduloPython(dr,Excitation_W);
-  int dy = moduloPython(dr/Excitation_W,Excitation_L);
+  int dx = moduloPython(dr,Excitation_L);
+  int dy = moduloPython(dr/Excitation_L,Excitation_W);
   return find_neighbor_site(r,dx,dy);
 }
 
