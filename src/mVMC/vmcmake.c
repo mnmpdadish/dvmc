@@ -838,8 +838,8 @@ void saveEleConfigBF(const int sample, const double logIp,
 }
 
 void MakeExactSample(MPI_Comm comm) {
-  int mi,mj,ri,rj,t,i,j;
-  int sample;
+  //int mi,mj,ri,rj,t,i,j;
+  int sample,i,j;
   int icount=0,jcount=0;
   int isample=0;
   int iel,jel;
@@ -849,11 +849,11 @@ void MakeExactSample(MPI_Comm comm) {
   int EleExactIdx[2*Ne    * NExactSample]; /* the number of samples */
   int EleExactNum[2*Nsite * NExactSample]; /* the number of samples */
 
-  double complex logIpOld=0.0; /* logarithm of inner product <phi|L|x> */
+  //double complex logIpOld=0.0; /* logarithm of inner product <phi|L|x> */
   int TempNumUp[Nsite],TempNumDn[Nsite];
   //int TempEleCfg[Nsite],TempEleIdx[Ne],TempEleNum[Nsite],TempEleProjCnt[Nsite];
-  double x,w;
-  char filename[20];
+  //double x,w;
+  //char filename[20];
 
   int icfg,jcfg,sampleStart,sampleEnd;
   int rank,size,tmp;

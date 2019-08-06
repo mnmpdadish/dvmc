@@ -54,43 +54,19 @@ void CalculateStaticQuantities_real(const double w,
                                int *eleIdx, int *eleCfg,
                                int *eleNum, int *eleProjCnt) {
 
-  int idx,idx0,idx1;
-  int ri,rj,s,rk,rl,t;
-  double complex tmp;
-  int *myEleIdx, *myEleNum, *myProjCntNew;
-  double complex *myBuffer;
+  int idx;
+  int ri,rj,s;
+  int *myEleNum;
   
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  //RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
-  RequestWorkSpaceThreadComplex(NQPFull + 2*Nsize);
-  // GreenFunc1: NQPFull, GreenFunc2: NQPFull+2*Nsize 
-
-  //#pragma omp parallel default(shared)                \
-  private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx)
   {
-    myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
-    myProjCntNew = GetWorkSpaceThreadInt(NProj);
-    myBuffer = GetWorkSpaceThreadComplex(NQPFull+2*Nsize);
-
-    //#pragma loop noalias
-    for(idx=0;idx<Nsize;idx++) myEleIdx[idx] = eleIdx[idx];
-    //#pragma loop noalias
     for(idx=0;idx<Nsite2;idx++) myEleNum[idx] = eleNum[idx];
 
-    //#pragma omp master
-    {
-      //printf("start:\n");
-      StartTimer(50);
-    }
-
-    //#pragma omp for private(idx,ri,rj,s,tmp) schedule(dynamic) nowait
     for(idx=0;idx<NCisAjs;idx++) {
       ri = CisAjsIdx[idx][0];
       rj = CisAjsIdx[idx][2];
       s  = CisAjsIdx[idx][3];
-
-
       
       //Doublon-Holon TJS
       PhysN2[idx+NCisAjs*0] += w*myEleNum[ri+s*Nsite]*myEleNum[ri+(1-s)*Nsite]
@@ -107,7 +83,6 @@ void CalculateStaticQuantities_real(const double w,
       PhysN2[idx+NCisAjs*3] += w*myEleNum[ri+s*Nsite] *(1.0-myEleNum[rj+s*Nsite]);
     }
 
-    //#pragma omp for private(ri,s) schedule(dynamic) nowait
     for(ri=0;ri<Nsite;ri++) {
       s=0;
       //Doublon MC
@@ -122,12 +97,8 @@ void CalculateStaticQuantities_real(const double w,
       //Density_down (s==1) MC
       PhysN1[ri+Nsite*3] += w*myEleNum[ri+Nsite];           
     }
-    
-    //#pragma omp master
-    {StopTimer(50);}
   }
   ReleaseWorkSpaceThreadInt();
-  ReleaseWorkSpaceThreadComplex();
   return;
 }
 
@@ -283,7 +254,9 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       exit(1);
       return -1;
     }
-  }  
+  }
+  exit(1);
+  return -2; 
 }
 
 // retunr i%N, in the same way that python treat the negative numbers
@@ -292,7 +265,6 @@ int moduloPython(int i,int N){
 }
 
 int find_neighbor_difference(int ri,int rj){
-  assert(Excitation_L*Excitation_W==Nsite);
   int ri_x = moduloPython(ri,              Excitation_L);
   int ri_y = moduloPython(ri/Excitation_L, Excitation_W);
   int rj_x = moduloPython(rj,              Excitation_L);
@@ -304,12 +276,18 @@ int find_neighbor_difference(int ri,int rj){
 }
 
 int find_neighbor_site(int r,int dx,int dy){
-  assert(Excitation_L*Excitation_W==Nsite);
-  int r_x   = moduloPython(r + dx            , Excitation_L);  
+  int r_x   = moduloPython(r + dx             , Excitation_L);  
   int r_y   = moduloPython(r/Excitation_L+dy  , Excitation_W);  
   int r_out = moduloPython(r_x + Excitation_L*r_y,Nsite);    
   return r_out;
 }
+
+int find_neighbor_site2(int r,int dr){
+  int dx = moduloPython(dr,Excitation_W);
+  int dy = moduloPython(dr/Excitation_W,Excitation_L);
+  return find_neighbor_site(r,dx,dy);
+}
+
 
 //C=C+weight*A*B
 unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, double weight, int sampleSize) {
@@ -335,16 +313,14 @@ unsigned int C_ADD_AxB(double * C, double const * A, double const * B, int N, do
 void CalculateDynamicalGreenFunc_real(const double w, const double ip, 
                                       int *eleIdx, int *eleCfg,
                                       int *eleNum, int *eleProjCnt, int sample) {
-  int idx,idx0,idx1;
-  int ri,rj,s,rk,rl,t;
-  int *myEleIdx, *myEleNum, *myEleCfg, *myProjCntNew;
+  int idx;
+  int ri,rj,s;
+  int *myEleIdx, *myEleNum, *myProjCntNew; //, *myEleCfg
   double *myBuffer_real;
   
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
   RequestWorkSpaceThreadDouble(NQPFull+2*Nsize);
   
-  //#pragma omp parallel default(shared)                \
-  //private(myEleIdx,myEleNum,myProjCntNew,myBuffer,idx, O_AC_vec, O_CA_vec, O0_vec, H_vec)//, O_vec)
 #pragma omp parallel default(shared)\
   private(myEleIdx,myEleNum,myProjCntNew,myBuffer_real)
   {
@@ -353,26 +329,14 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
     myProjCntNew   = GetWorkSpaceThreadInt(NProj);
     myBuffer_real  = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
     
-    //myEleIdx = (int*)malloc(sizeof(int) * Nsize );
-    //myEleNum = (int*)malloc(sizeof(int) * Nsite2 );
-    //myProjCntNew = (int*)malloc(sizeof(int) * NProj );
-    //myBuffer_real = (double *)malloc(sizeof(double) * (NQPFull+2*Nsize) );
-
     #pragma loop noalias
     for(idx=0;idx<Nsize; idx++) myEleIdx[idx] = eleIdx[idx];
     #pragma loop noalias
     for(idx=0;idx<Nsite2;idx++) myEleNum[idx] = eleNum[idx];
-    //for(idx=0;idx<Nsite2;idx++) myEleCfg[idx] = eleCfg[idx];
     
     int rm, rn, u;
     int idx_int, idx_trans;
 
-    //double multiplicity = (double) (Nsite*Nsite) / (double) NDynamicalGIdx;
-    //double f0 = 1.0/multiplicity;
-    //printf("multiplicity: %f,  %f\n", multiplicity, f0);
-    //exit(0);
-    
-        
 
     #pragma omp for private(idx,ri,rj,s) schedule(dynamic) 
     for(ri=0;ri<Nsite;ri++) {
@@ -380,11 +344,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
       for(s=0;s<2;s++) {
        Local_CA[ri+Nsite*rj+Nsite*Nsite*s] = GreenFunc1_real(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
                                                               myProjCntNew,myBuffer_real); 
-
-       //Local_AC[ri+Nsite*rj] = GreenFunc1_real_AisCjs(ri,rj,spin,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
-       //                                                   myProjCntNew,myBuffer_real); 
       }
-      //printf("%d %d   %d  / %d \n", ri,rj,DynamicalGIdx[ri][rj],NDynamicalGIdx); fflush(stdout);
      }
     }
     #pragma omp for private(idx,ri,rj,s) schedule(dynamic) nowait

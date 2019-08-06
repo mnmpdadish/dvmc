@@ -787,7 +787,7 @@ void outputData() {
 // 89ab
 // 4567
 // 0123    
-    int nn,mm,ri,rj;
+    int nn,mm;//,ri,rj;
     /*
     for (ri = 0; ri < Nsite; ri++) {
      for (rj = 0; rj < Nsite; rj++) {

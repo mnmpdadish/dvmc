@@ -208,84 +208,85 @@ double  GreenFunc1_real_AisCjs(const int ri, const int rj, const int s, const do
   return -z/ip;//TBC
 }
 
-/* buffer size = NQPFull+2*Nsize */
+/*
+// buffer size = NQPFull+2*Nsize 
 double GreenFunc2_real_AisCjsAktClt(const int ri, const int rj, const int rk, const int rl,
                   const int s, const int t, const double ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
                   int *projCntNew, double *buffer) {
-  double z;
-  int mj,msj,ml,mtl;
+  //double z;
+  //int mj,msj,ml,mtl;
   int rsi,rsj,rtk,rtl;
-  double *pfMNew_real = buffer; /* [NQPFull] */
-  double *bufV   = buffer+NQPFull; /* 2*Nsize */
+  //double *pfMNew_real = buffer; // [NQPFull] 
+  //double *bufV   = buffer+NQPFull; // 2*Nsize 
 
   rsi = ri + s*Nsite;
   rsj = rj + s*Nsite;
   rtk = rk + t*Nsite;
   rtl = rl + t*Nsite;
 
-  if(rtk==rtl){ /* AisCjs(1-Nkt) */
+  if(rtk==rtl){ // AisCjs(1-Nkt) 
     if(eleNum[rtk]==1) return 0.0;
     else return GreenFunc1_real_AisCjs(ri,rj,s,ip,eleIdx,eleCfg,eleNum,
-                                           eleProjCnt,projCntNew,buffer); /* AisCjs */
+                                           eleProjCnt,projCntNew,buffer); // AisCjs //
   }
-  else if(rsi==rsj){ /* AisCisAktClt */
+  else if(rsi==rsj){ // AisCisAktClt 
     if(rsi==rtl) return 0.0;
-    else if(rsi==rtk) {  /* AisCls Nis (i!=l) */
+    else if(rsi==rtk) {  // AisCls Nis (i!=l) //
       if(eleNum[rsi]==0) return 0.0;
       return GreenFunc1_real_AisCjs(ri,rl,s,ip,eleIdx,eleCfg,eleNum,
-                                           eleProjCnt,projCntNew,buffer); /* AisCls */
+                                           eleProjCnt,projCntNew,buffer); // AisCls //
     } 
-    /* AktClt(1-Nis) */
+    // AktClt(1-Nis) //
     else if(eleNum[rsi]==1) return 0.0;
     else return GreenFunc1_real_AisCjs(rk,rl,t,ip,eleIdx,eleCfg,eleNum,
-                                           eleProjCnt,projCntNew,buffer); /* AktClt */
+                                           eleProjCnt,projCntNew,buffer); // AktClt //
   }
-  else{ /* AisCjsAktClt becomes (-1)^2 * CjsAisCltAkt */
+  else{ // AisCjsAktClt becomes (-1)^2 * CjsAisCltAkt //
     return GreenFunc2_real(rj,ri,rl,rk,s,t,ip,eleIdx,eleCfg,eleNum,eleProjCnt,projCntNew,buffer);
   }
 }
 
-/* buffer size = NQPFull+2*Nsize */
+//buffer size = NQPFull+2*Nsize 
 double GreenFunc2_real_AisCjsCktAlt(const int ri, const int rj, const int rk, const int rl,
                   const int s, const int t, const double ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
                   int *projCntNew, double *buffer) {
-  double z;
-  int mj,msj,ml,mtl;
+  //double z;
+  //int mj,msj,ml,mtl;
   int rsi,rsj,rtk,rtl;
-  double *pfMNew_real = buffer; /* [NQPFull] */
-  double *bufV   = buffer+NQPFull; /* 2*Nsize */
+  //double *pfMNew_real = buffer; // [NQPFull] 
+  //double *bufV   = buffer+NQPFull; // 2*Nsize 
 
   rsi = ri + s*Nsite;
   rsj = rj + s*Nsite;
   rtk = rk + t*Nsite;
   rtl = rl + t*Nsite;
 
-  if(rtk==rtl){ /* AisCjs(Nkt) */
+  if(rtk==rtl){ // AisCjs(Nkt) 
     if(eleNum[rtk]==0) return 0.0;
     else return GreenFunc1_real_AisCjs(ri,rj,s,ip,eleIdx,eleCfg,eleNum,
-                                          eleProjCnt,projCntNew,buffer); /* AisCjs */
+                                          eleProjCnt,projCntNew,buffer); // AisCjs 
   }
-  else if(rsi==rsj){ /* AisCisCktAlt */
+  else if(rsi==rsj){ // AisCisCktAlt 
     if(rsi==rtk) return 0.0;
-    else if(rsi==rtl) { /* CksAis Nis */
+    else if(rsi==rtl) { // CksAis Nis 
       if(eleNum[rsi]==0) return 0.0;
       return GreenFunc1_real(rk,ri,s,ip,eleIdx,eleCfg,eleNum,
-                                eleProjCnt,projCntNew,buffer); /* CksAis */
+                                eleProjCnt,projCntNew,buffer); // CksAis 
     }
-    else {  /* CktAlt (1-Nis) (is!=kt,lt) */
+    else {  // CktAlt (1-Nis) (is!=kt,lt) 
       if(eleNum[rsi]==1) return 0.0;
       return GreenFunc1_real(rk,rl,t,ip,eleIdx,eleCfg,eleNum,
-                                eleProjCnt,projCntNew,buffer); /* CktAlt */
+                                eleProjCnt,projCntNew,buffer); // CktAlt 
     }
   }
-  else{ /* AisCjsCktAlt becomes -CjsAisCktAlt */
+  else{ // AisCjsCktAlt becomes -CjsAisCktAlt 
     return -GreenFunc2_real(rj,ri,rk,rl,s,t,ip,eleIdx,eleCfg,eleNum,
-                                      eleProjCnt,projCntNew,buffer); /* -CjsAisCktAlt */
+                                      eleProjCnt,projCntNew,buffer); // -CjsAisCktAlt 
   }
 }
-
+*/
 
 
 /// Calculate n-body Green function
