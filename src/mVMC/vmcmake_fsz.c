@@ -45,8 +45,6 @@ void updateEleConfig_fsz(int mi, int org_r, int dst_r, int org_spn,int dst_spn,
                      int *eleIdx, int *eleCfg, int *eleNum, int *eleSpn) ;
 void revertEleConfig_fsz(int mi, int org_ri, int dst_r, int org_spn,int dst_spn,
                      int *eleIdx, int *eleCfg, int *eleNum,int *eleSpn);
-void CheckEleConfig_fsz(int *eleIdx, int *eleCfg, int *eleNum,int *eleSpn,MPI_Comm comm);
-int CheckEleNum_fsz(int *eleIdx, int *eleCfg, int *eleNum,int *eleSpn,MPI_Comm comm);
 void makeCandidate_LocalSpinFlip_localspin(int *mi_, int *ri_, int *rj_, int *s_,int *t_, int *rejectFlag_,
                            const int *eleIdx, const int *eleCfg,const int *eleNum,const int *eleSpn);
 void makeCandidate_LocalSpinFlip_conduction(int *mi_, int *ri_, int *rj_, int *s_,int *t_, int *rejectFlag_,
@@ -83,12 +81,6 @@ void VMCMakeSample_fsz(MPI_Comm comm) {
 #endif
     makeInitialSample_fsz(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpEleSpn,
                       qpStart,qpEnd,comm);
-//DEBUG
-    //int total_num;
-    //CheckEleConfig_fsz(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleSpn,comm);
-    //total_num= CheckEleNum_fsz(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleSpn,comm);
-    //printf("%d \n",total_num);
-//DEBUG
   } else {
     copyFromBurnSample_fsz(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleProjCnt,TmpEleSpn) ;//fsz
   }
@@ -124,11 +116,6 @@ void VMCMakeSample_fsz(MPI_Comm comm) {
 #ifdef _DEBUG_DETAIL
       fprintf(stdout, "instep=%d/%d, outstep=%d/%d\n", inStep,nInStep, outStep, nOutStep);
 #endif
-//DEBUG
-      //CheckEleConfig_fsz(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleSpn,comm);
-      //total_num= CheckEleNum_fsz(TmpEleIdx,TmpEleCfg,TmpEleNum,TmpEleSpn,comm);
-      //printf("%d \n",total_num);
-//DEBUG
       updateType = getUpdateType(NExUpdatePath);
 
       if(updateType==HOPPING) { /* hopping */
@@ -731,36 +718,3 @@ void revertEleConfig_fsz(int mi, int org_r, int dst_r, int org_spn,int dst_spn,
   return;
 }
 
-int CheckEleNum_fsz(int *eleIdx, int *eleCfg, int *eleNum,int *eleSpn,MPI_Comm comm){
-  int ri,si;
-  int total_num;
-
-  total_num=0;
-  for(ri=0;ri<Nsite;ri++){
-    for(si=0;si<2;si++){
-      total_num+=eleNum[ri+si*Nsite];
-    }
-  }
-  return total_num;
-}
-
-void CheckEleConfig_fsz(int *eleIdx, int *eleCfg, int *eleNum,int *eleSpn,MPI_Comm comm){
-  int mi,ri,si;
-  int check_ri,check_si;
-  int rank;
-  MPI_Comm_rank(comm,&rank);
-
-  for(ri=0;ri<Nsite;ri++){
-    for(si=0;si<2;si++){
-      mi = eleCfg[ri+si*Nsite];
-      if(mi>=0){
-        check_ri = eleIdx[mi];
-        check_si = eleSpn[mi];
-        if(ri!=check_ri || si!=check_si){
-          if(rank==0) fprintf(stderr, "error: vmcmakesample: fatal error in making sample: mi %d :ri %d %d: si %d %d\n",mi,ri,check_ri,si,check_si);
-          MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
-        }
-      }
-    }
-  }
-}

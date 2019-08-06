@@ -54,25 +54,6 @@ int calculateMAll_BF_fcmp_child(const int *eleIdx, const int qpStart, const int 
 
 #define D_PfLimit 1.0e-100
 
-int getLWork() {
-  char uplo='U', mthd='P';
-  int n,lda,lwork,info=0;
-  double pfaff;
-  int iwork;
-  double a;
-  double optSize1,optSize2;
-
-  /* ask the optimal size of work */
-  n=lda=Nsize;
-  lwork=-1;
-  M_DGETRI(&n, &a, &lda, &iwork, &optSize1, &lwork, &info);
-  lwork=-1;
-  M_DSKPFA(&uplo, &mthd, &n, &a, &lda, &pfaff, &iwork, &optSize2, &lwork, &info);
-
-  lwork = (optSize1>optSize2) ? (int)optSize1 : (int)optSize2;
-  return lwork;
-}
-
 int getLWork_fcmp() {
   char uplo='U', mthd='P';
   int n,lda,lwork,info=0;

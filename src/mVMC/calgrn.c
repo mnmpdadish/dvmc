@@ -29,25 +29,6 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #ifndef _CALGRN_SRC
 #define _CALGRN_SRC
 
-int read_StdFace_L_W(){
-  FILE * tmpfile;
-  tmpfile = fopen("StdFace.def",  "r");
-  //rewind(file);
-    
-  char tmpbuff[200];
-  while(!feof(tmpfile)) 
-  {
-    if (fgets(tmpbuff,200,tmpfile))
-    {
-      if(sscanf (tmpbuff,"L = %d",&StdFace_L)) { printf("found L=%d\n", StdFace_L);} 
-      if(sscanf (tmpbuff,"W = %d",&StdFace_W)) { printf("found W=%d\n", StdFace_W);} 
-    }
-  }
-  assert(StdFace_L*StdFace_W==Nsite);
-  
-  fclose(tmpfile);
-  return 0;
-}
 
 
 void CalculateStaticQuantities_real(const double w, 

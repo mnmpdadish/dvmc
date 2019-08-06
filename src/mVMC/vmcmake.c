@@ -336,31 +336,6 @@ void saveEleConfig(const int sample, const double complex logIp,
   return;
 }
 
-void sortEleConfig(int *eleIdx, int *eleCfg, const int *eleNum) {
-/*   int ri,mi=0; */
-/*   for(ri=0;ri<Nsite;ri++) { */
-/*     if(eleNum[ri]>0) { */
-/*       eleCfg[ri]=mi; */
-/*       eleIdx[mi]=ri; */
-/*       mi++; */
-/*     } else { */
-/*       eleCfg[ri]=-1; */
-/*     } */
-/*   } */
-/*   mi=0; */
-/*   for(ri=0;ri<Nsite;ri++) { */
-/*     if(eleNum[ri+Nsite]>0) { */
-/*       eleCfg[ri+Nsite]=mi; */
-/*       eleIdx[mi+Ne]=ri; */
-/*       mi++; */
-/*     } else { */
-/*       eleCfg[ri+Nsite]=-1; */
-/*     } */
-/*   } */
-
-  return;
-}
-
 void ReduceCounter(MPI_Comm comm) {
   #ifdef _mpi_use
   int n=Counter_max;
@@ -837,6 +812,7 @@ void saveEleConfigBF(const int sample, const double logIp,
   return;
 }
 
+/*
 void MakeExactSample(MPI_Comm comm) {
   //int mi,mj,ri,rj,t,i,j;
   int sample,i,j;
@@ -845,11 +821,11 @@ void MakeExactSample(MPI_Comm comm) {
   int iel,jel;
   int NAllCfg = pow(2,Nsite);
   int NExactSample = pow(2,Nsite2);
-  int EleExactCfg[2*Nsite * NExactSample]; /* the number of samples */
-  int EleExactIdx[2*Ne    * NExactSample]; /* the number of samples */
-  int EleExactNum[2*Nsite * NExactSample]; /* the number of samples */
+  int EleExactCfg[2*Nsite * NExactSample]; // the number of samples //
+  int EleExactIdx[2*Ne    * NExactSample]; // the number of samples //
+  int EleExactNum[2*Nsite * NExactSample]; // the number of samples //
 
-  //double complex logIpOld=0.0; /* logarithm of inner product <phi|L|x> */
+  //double complex logIpOld=0.0; // logarithm of inner product <phi|L|x> //
   int TempNumUp[Nsite],TempNumDn[Nsite];
   //int TempEleCfg[Nsite],TempEleIdx[Ne],TempEleNum[Nsite],TempEleProjCnt[Nsite];
   //double x,w;
@@ -917,7 +893,7 @@ void MakeExactSample(MPI_Comm comm) {
   SplitLoop(&sampleStart,&sampleEnd,NExactSample,rank,size);
   for(sample=sampleStart;sample<sampleEnd;sample++) {
     //printf("sample=%d\n",sample);
-    /* save Electron Configuration */
+    // save Electron Configuration //
     TmpEleIdx = EleExactIdx + sample*2*Ne;
     //printf("Tmp=%d,moto=%d\n",TmpEleIdx[0],EleExactIdx[sample*Ne]);
     TmpEleCfg = EleExactCfg + sample*2*Nsite;
@@ -935,11 +911,11 @@ void MakeExactSample(MPI_Comm comm) {
       printf("%d",TmpEleNum[i+Nsite]);
     }
     printf("\n");
-  } /* end of outstep */
+  } // end of outstep //
   TmpEleIdx = moto;
 
   return;
 }
-
+*/
 
 #endif

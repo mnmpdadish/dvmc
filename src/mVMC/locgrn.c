@@ -71,42 +71,6 @@ double complex GreenFunc1(const int ri, const int rj, const int s, const double 
   return conj(z/ip);//TBC
 }
 
-/* Calculate 1-body Green function <CisAjs> */
-/* buffer size = NQPFull */
-double complex GreenFunc1_moments(const int ri, const int rj, const int s, const double complex  ip,
-                  int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
-                  int *projCntNew, double complex *buffer) {
-  double complex z;
-  int mj,msj,rsi,rsj;
-  double complex *pfMNew = buffer; /* NQPFull */
-
-  if(ri==rj) return eleNum[ri+s*Nsite];
-  if(eleNum[ri+s*Nsite]==1 || eleNum[rj+s*Nsite]==0) return 0.0;
-
-  mj = eleCfg[rj+s*Nsite];
-  msj = mj + s*Ne;
-  rsi = ri + s*Nsite;
-  rsj = rj + s*Nsite;
-
-  /* hopping */
-  eleIdx[msj] = ri;
-  eleNum[rsj] = 0;
-  eleNum[rsi] = 1;
-  UpdateProjCnt(rj, ri, s, projCntNew, eleProjCnt, eleNum);
-  z = ProjRatio(projCntNew,eleProjCnt);
-
-  /* calculate Pfaffian */
-  CalculateNewPfM(mj, s, pfMNew, eleIdx, 0, NQPFull);
-  z *= CalculateIP_fcmp(pfMNew, 0, NQPFull, MPI_COMM_SELF);
-
-  /* revert hopping */
-  eleIdx[msj] = rj;
-  eleNum[rsj] = 1;
-  eleNum[rsi] = 0;
-
-  return conj(z/ip);//TBC
-}
-
 /* Calculate 2-body Green function <psi|CisAjsCktAlt|x>/<psi|x> */
 /* buffer size = NQPFull+2*Nsize */
 double complex GreenFunc2(const int ri, const int rj, const int rk, const int rl,

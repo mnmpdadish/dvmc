@@ -1348,68 +1348,7 @@ int CheckKW(
   return iret;
 }
 
-/**
- * @brief Function of Validating value.
- * @param[in] icheckValue value to validate.
- * @param[in] ilowestValue lowest value which icheckValue can be set.
- * @param[in] iHighestValue highest value which icheckValue can be set.
- * @retval 0 value is correct.
- * @retval -1 value is incorrect.
- * @author Kazuyoshi Yoshimi (The University of Tokyo)
- **/
-int ValidateValue(
-    const int icheckValue,
-    const int ilowestValue,
-    const int iHighestValue
-) {
 
-  if (icheckValue < ilowestValue || icheckValue > iHighestValue) {
-    return (-1);
-  }
-  return 0;
-}
-
-/**
- * @brief Function of Getting keyword and it's variable from characters.
- * @param[in] _ctmpLine characters including keyword and it's variable 
- * @param[out] _ctmp keyword
- * @param[out] _itmp variable for a keyword
- * @retval 0 keyword and it's variable are obtained.
- * @retval 1 ctmpLine is a comment line.
- * @retval -1 format of ctmpLine is incorrect.
- * @version 1.0
- * @author Kazuyoshi Yoshimi (The University of Tokyo)
- **/
-int GetKWWithIdx(
-    char *ctmpLine,
-    char *ctmp,
-    int *itmp
-) {
-  char *ctmpRead;
-  char *cerror;
-  char csplit[] = " ,.\t\n";
-  if (*ctmpLine == '\n') return (-1);
-  ctmpRead = strtok(ctmpLine, csplit);
-  if (strncmp(ctmpRead, "=", 1) == 0 || strncmp(ctmpRead, "#", 1) == 0 || ctmpRead == NULL) {
-    return (-1);
-  }
-  strcpy(ctmp, ctmpRead);
-
-  ctmpRead = strtok(NULL, csplit);
-  *itmp = strtol(ctmpRead, &cerror, 0);
-  //if ctmpRead is not integer type
-  if (*cerror != '\0') {
-    fprintf(stderr, "Error: incorrect format= %s. \n", cerror);
-    return (-1);
-  }
-
-  ctmpRead = strtok(NULL, csplit);
-  if (ctmpRead != NULL) {
-    fprintf(stderr, "Error: incorrect format= %s. \n", ctmpRead);
-    return (-1);
-  }
-  return 0;
-}
 
 /**
  * @brief Function of Fitting FileName

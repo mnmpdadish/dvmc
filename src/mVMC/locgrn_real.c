@@ -169,14 +169,14 @@ double GreenFunc2_real(const int ri, const int rj, const int rk, const int rl,
 
 
 
-/* Calculate 1-body Green function <CisAjs> */
-/* buffer size = NQPFull */
+/* //Calculate 1-body Green function <CisAjs> //
+//buffer size = NQPFull 
 double  GreenFunc1_real_AisCjs(const int ri, const int rj, const int s, const double ip,
                   int *eleIdx, const int *eleCfg, int *eleNum, const int *eleProjCnt,
                   int *projCntNew, double *buffer) {
   double  z;
   int mi,msi,rsi,rsj;
-  double  *pfMNew_real = buffer; /* NQPFull */
+  double  *pfMNew_real = buffer; // NQPFull //
   
   rsi = ri + s*Nsite;
   rsj = rj + s*Nsite;
@@ -187,18 +187,18 @@ double  GreenFunc1_real_AisCjs(const int ri, const int rj, const int s, const do
   mi = eleCfg[rsi];
   msi = mi + s*Ne;
   
-  /* hopping */
+  // hopping //
   eleIdx[msi] = rj;
   eleNum[rsi] = 0;
   eleNum[rsj] = 1;
   UpdateProjCnt(ri, rj, s, projCntNew, eleProjCnt, eleNum);
   z = ProjRatio(projCntNew,eleProjCnt);
 
-  /* calculate Pfaffian */
+  // calculate Pfaffian //
   CalculateNewPfM_real(mi, s, pfMNew_real, eleIdx, 0, NQPFull);
   z *= CalculateIP_real(pfMNew_real, 0, NQPFull, MPI_COMM_SELF);
 
-  /* revert hopping */
+  // revert hopping //
   eleIdx[msi] = ri;
   eleNum[rsi] = 1;
   eleNum[rsj] = 0;
@@ -208,7 +208,6 @@ double  GreenFunc1_real_AisCjs(const int ri, const int rj, const int s, const do
   return -z/ip;//TBC
 }
 
-/*
 // buffer size = NQPFull+2*Nsize 
 double GreenFunc2_real_AisCjsAktClt(const int ri, const int rj, const int rk, const int rl,
                   const int s, const int t, const double ip,

@@ -236,28 +236,6 @@ void FlushFile(int step, int rank) {
   return;
 }
 
-void writeConfig(char *xnamefile, char *fileName) {
-  FILE *ofp,*fplist;
-  char defname[D_FileNameMax];
-
-  /* clear configfile */
-  ofp = fopen(fileName, "w");
-
-  fileCopyAdd(xnamefile,ofp);
-
-  fplist = fopen(xnamefile,"r");
-  if(fplist==NULL){
-    fprintf(stderr, "Error writecfg.c");
-  } else {
-    while(fscanf(fplist, "%s\n", defname)!=EOF){
-      fileCopyAdd(defname,ofp);
-    }
-    fclose(fplist);
-  }
-
-  fclose(ofp);
-  return;
-}
 
 int fileCopyAdd(char *inputfileName, FILE *ofp){
   int i;

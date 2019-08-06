@@ -41,8 +41,8 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 void clearPhysQuantity();
 
 void calculateOptTransDiff(double complex *srOptO, const double complex ipAll);
-void calculateOO_matvec(double complex *srOptOO, double complex *srOptHO, const double complex *srOptO,
-                 const double complex w, const double complex e, const int srOptSize);
+//void calculateOO_matvec(double complex *srOptOO, double complex *srOptHO, const double complex *srOptO,
+//                 const double complex w, const double complex e, const int srOptSize);
 void calculateOO(double complex *srOptOO, double complex *srOptHO, const double complex *srOptO,
                  const double  w, const double complex e, const int srOptSize);
 void calculateOO_real(double *srOptOO, double *srOptHO, const double *srOptO,
@@ -337,7 +337,7 @@ void VMCMainCal(MPI_Comm comm) {
             for (ri = 0; ri < Nsite; ri++) {
 //            for (rj = 0; rj < Nsite; rj++) {
               //int dr = find_neighbor_difference(ri,rj);
-              int rj = find_neighbor_difference(ri,dr);
+              int rj = find_neighbor_site2(ri,dr);
               int idx = ri+Nsite*rj;
               
               C_ADD_AxB(&Phys_nACm_averaged[dr*N2], &O_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
@@ -818,21 +818,6 @@ void calculateOO_Store(double complex *srOptOO, double complex *srOptHO, double 
 //
 //  return;
 //}
-
-void calculateOO_matvec(double complex *srOptOO, double complex *srOptHO, const double complex *srOptO,
-                 const double complex w, const double complex e, const int srOptSize) {
-  double complex we=w*e;
-
-  int m,n,incx,incy,lda;
-  m=n=lda=2*srOptSize;
-  incx=incy=1;
-
-//   OO[i][j] += w*O[i]*O[j] 
-  M_ZGERC(&m, &n, &w, srOptO, &incx, srOptO, &incy, srOptOO, &lda);
-//   HO[i] += w*e*O[i] 
-  M_ZAXPY(&n, &we, srOptO, &incx, srOptHO, &incy);
-  return;
-}
 
 void calculateOO(double complex *srOptOO, double complex *srOptHO, const double complex *srOptO,
                  const double w, const double complex e, const int srOptSize){
