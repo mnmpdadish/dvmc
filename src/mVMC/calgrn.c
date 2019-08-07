@@ -245,7 +245,7 @@ int moduloPython(int i,int N){
   return ((i % N) + N) % N;
 }
 
-/*
+//*
 int find_neighbor_difference(int ri,int rj){
   int ri_x = moduloPython(ri,              Excitation_L);
   int ri_y = moduloPython(ri/Excitation_L, Excitation_W);
@@ -255,7 +255,7 @@ int find_neighbor_difference(int ri,int rj){
   int dr_out = moduloPython(rj_x-ri_x,Excitation_L) + Excitation_L*moduloPython(rj_y-ri_y,Excitation_W);
   //int dr_out = moduloPython(moduloPython(rj_x-ri_x,Nsite) + Excitation_L*moduloPython(rj_y-ri_y,Nsite),Nsite);    
   return dr_out;
-}*/
+}//*/
 
 int find_neighbor_site(int r,int dx,int dy){
   int r_x   = moduloPython(r + dx             , Excitation_L);  
@@ -300,27 +300,33 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
   int *myEleIdx, *myEleNum, *myProjCntNew; //, *myEleCfg
   double *myBuffer_real;
   
-  RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
-  RequestWorkSpaceThreadDouble(NQPFull+2*Nsize);
+  //RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
+  //RequestWorkSpaceThreadDouble(NQPFull+2*Nsize);
   
-#pragma omp parallel default(shared)\
-  private(myEleIdx,myEleNum,myProjCntNew,myBuffer_real)
+//#pragma omp parallel default(shared)\
+//  private(myEleIdx,myEleNum,myProjCntNew,myBuffer_real)
   {
-    myEleIdx = GetWorkSpaceThreadInt(Nsize);
-    myEleNum = GetWorkSpaceThreadInt(Nsite2);
-    myProjCntNew   = GetWorkSpaceThreadInt(NProj);
-    myBuffer_real  = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
+
+    myEleIdx = (int*)malloc(sizeof(int) * Nsize );
+    myEleNum = (int*)malloc(sizeof(int) * Nsite2 );
+    myProjCntNew = (int*)malloc(sizeof(int) * NProj );
+    myBuffer_real = (double *)malloc(sizeof(double) * (NQPFull+2*Nsize) );
+
+    //myEleIdx = GetWorkSpaceThreadInt(Nsize);
+    //myEleNum = GetWorkSpaceThreadInt(Nsite2);
+    //myProjCntNew   = GetWorkSpaceThreadInt(NProj);
+    //myBuffer_real  = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
     
-    #pragma loop noalias
+    //#pragma loop noalias
     for(idx=0;idx<Nsize; idx++) myEleIdx[idx] = eleIdx[idx];
-    #pragma loop noalias
+    //#pragma loop noalias
     for(idx=0;idx<Nsite2;idx++) myEleNum[idx] = eleNum[idx];
     
     int rm, rn, u;
     int idx_int, idx_trans;
 
 
-    #pragma omp for private(idx,ri,rj,s) schedule(dynamic) 
+    //#pragma omp for private(idx,ri,rj,s) schedule(dynamic) 
     for(ri=0;ri<Nsite;ri++) {
      for(rj=0;rj<Nsite;rj++) {
       for(s=0;s<2;s++) {
@@ -329,7 +335,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
       }
      }
     }
-    #pragma omp for private(idx,ri,rj,s) schedule(dynamic) nowait
+    //#pragma omp for private(idx,ri,rj,s) schedule(dynamic) nowait
     for(ri=0;ri<Nsite;ri++) {
      for(rj=0;rj<Nsite;rj++) {
       for(s=0;s<2;s++) {
@@ -338,7 +344,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
      }
     }
 
-    #pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) 
+    //#pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) 
     for(ri=0;ri<Nsite;ri++) {
      for(rj=0;rj<Nsite;rj++) {
       s=0;
@@ -355,7 +361,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
      }
     }
     
-    #pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) nowait
+    //#pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) nowait
     for(ri=0;ri<Nsite;ri++) {
      for(rj=0;rj<Nsite;rj++) {
       s=0;
@@ -453,15 +459,15 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
       }
      }
     }//*/
-    //free(myEleIdx);
-    //free(myEleNum);
-    ////free(myEleCfg);
-    //free(myProjCntNew);
-    //free(myBuffer_real);
+    free(myEleIdx);
+    free(myEleNum);
+    //free(myEleCfg);
+    free(myProjCntNew);
+    free(myBuffer_real);
   } //
 
-  ReleaseWorkSpaceThreadInt();
-  ReleaseWorkSpaceThreadComplex();  
+  //ReleaseWorkSpaceThreadInt();
+  //ReleaseWorkSpaceThreadComplex();  
   return;
 }
 
