@@ -24,10 +24,10 @@ from scipy import linalg as la
 import sys, os, re
 #from scipy.linalg import eig
 
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-from mpl_toolkits.mplot3d import Axes3D
+#import matplotlib
+#import matplotlib.pyplot as plt
+#import matplotlib.cm as cm
+#from mpl_toolkits.mplot3d import Axes3D
 
 StdFace = open('StdFace.def').read().replace(' ','')
 U=0.
@@ -53,7 +53,6 @@ def main():
   w_max = 8.0
   eta = 0.2
   Nw = 1000
-  show = 0
   exc_choice = [0,1]
 
   spectrumpara = open('spectrumpara.def').read()
@@ -66,9 +65,6 @@ def main():
       if term[0]=='w_max' : w_max = float(term[1])
       if term[0]=='eta'   :   eta = float(term[1])
       if term[0]=='Nw'    :    Nw = int(term[1])
-      if term[0]=='show'  :  
-        if len(term) == 1: show = 1
-        if len(term) == 2: show = int(term[1])
       if (term[0][:]=='kPath' or term[0][:-1]=='kPath'): 
         if term[1] == 'all':
           kPath = range(W*L)
@@ -79,7 +75,7 @@ def main():
           kPath = ReadRange(term[1])
         
         if term[0][-1] == '1': kPath1 = kPath
-        elif term[0][-1] == '2': kPath1 = kPath
+        elif term[0][-1] == '2': kPath2 = kPath
         else :
           kPath1 = kPath
           kPath2 = kPath
@@ -95,7 +91,11 @@ def main():
           exc_choice = range(int(term[1][6:-1]))
         else: 
           exc_choice = ReadRange(term[1])
+        if exc_choice[0] !=0:
+          print 'error: first excitation must ALWAYS be 0.'
+          exit()
   
+  print kPath1,kPath2
   print 'excitations chosen:'
   print exc_choice
   
@@ -173,36 +173,34 @@ def main():
   #print ''
   exit()
   
-  X,Y = np.meshgrid(w_,np.array(range(0,1+len(kPath1))))
-  Z = np.zeros([len(kPath1),Nw], dtype='float')
+  #X,Y = np.meshgrid(w_,np.array(range(0,1+len(kPath1))))
+  #Z = np.zeros([len(kPath1),Nw], dtype='float')
   
-  for ii in range(len(kPath1)):
-    for jj in range(Nw):
-      Z[ii,jj] = spectrum_hole[ii,jj] + spectrum_elec[ii,jj]
+  #for ii in range(len(kPath1)):
+  #  for jj in range(Nw):
+  #    Z[ii,jj] = spectrum_hole[ii,jj] + spectrum_elec[ii,jj]
   
-  fName = 'figure.pdf'
+  #fName = 'figure.pdf'
   
-  fig= plt.figure(figsize=(5,6))
-  ax= fig.add_axes([0.1,0.1,0.8,0.8])
+  #fig= plt.figure(figsize=(5,6))
+  #ax= fig.add_axes([0.1,0.1,0.8,0.8])
   
-  Z2 = np.log(np.abs(Z))
-  plt.pcolormesh(np.transpose(Y),np.transpose(X),np.transpose(Z2),cmap=cm.afmhot_r)
-  #plt.pcolormesh(np.transpose(Z),cmap=cm.afmhot_r)
-  plt.xticks(np.array([1./33.,32./33.])*len(kPath1), (r'$0$', r'$\pi$'))
-  plt.yticks([-8,-4,0,4,8])
-  plt.clim(-4.0,Z2.max()*1.0);
+  #Z2 = np.log(np.abs(Z))
+  #plt.pcolormesh(np.transpose(Y),np.transpose(X),np.transpose(Z2),cmap=cm.afmhot_r)
+  ##plt.pcolormesh(np.transpose(Z),cmap=cm.afmhot_r)
+  #plt.xticks(np.array([1./33.,32./33.])*len(kPath1), (r'$0$', r'$\pi$'))
+  #plt.yticks([-8,-4,0,4,8])
+  #plt.clim(-4.0,Z2.max()*1.0);
 
-  y0 = np.array(range(0,1+len(kPath1)))
-  x0 = 0*y0
-  ax.plot(y0, x0,'-', color = 'black',lw=1.4)
-  ax.plot(y0, x0,'--', color = 'white',lw=1.5)
-  plt.ylim([w_min,w_max])
-  plt.savefig(fName)
+  #y0 = np.array(range(0,1+len(kPath1)))
+  #x0 = 0*y0
+  #ax.plot(y0, x0,'-', color = 'black',lw=1.4)
+  #ax.plot(y0, x0,'--', color = 'white',lw=1.5)
+  #plt.ylim([w_min,w_max])
+  #plt.savefig(fName)
   
-  plt.show()
-
-
-# paste -d" " <( awk '{printf "% e \n", $7 }' output/zvo_physAC_001.dat) <(awk '{printf "% e \n", $5}' output/zvo_phys_nAHCm_001.dat) > tmp1; head tmp1
+  #plt.show()
+  # paste -d" " <( awk '{printf "% e \n", $7 }' output/zvo_physAC_001.dat) <(awk '{printf "% e \n", $5}' output/zvo_phys_nAHCm_001.dat) > tmp1; head tmp1
   
 #######################################################################
 ######################    SUB ROUTINES    #############################
@@ -217,17 +215,8 @@ def FFT_selection(dataFileName,exc_choice,kPath1,kPath2):
   sys.stdout.flush()
   n_exc_choice = len(exc_choice)
   data_up = np.load(dataFileName)
-  data_chosen  = np.zeros([n_exc_choice,n_exc_choice,W,L], dtype=float)
   
-  for nn in range(0,n_exc_choice):
-    #print nn,' / ',n_exc_choice
-    for mm in range(0,n_exc_choice):
-      for rj_x in range(0,W):
-        for rj_y in range(0,L):
-          data_chosen[nn,mm,rj_x,rj_y]  = data_up[exc_choice[nn],exc_choice[mm],rj_x,rj_y]
-  
-  data_k  = np.zeros([n_exc_choice,n_exc_choice,W,L], dtype=complex)
-  data_k  = np.fft.fft2(data_chosen)
+  data_k  = np.fft.fft2(data_up) # fft2 only on the last 2 indices
   dataListOfMatrices = []
 
   for kk in range(0,len(kPath1)):
@@ -245,9 +234,12 @@ def FFT_selection(dataFileName,exc_choice,kPath1,kPath2):
     kx2 = Xi(kk2)
     ky2 = Yi(kk2)
 
-    for nn in range(0,n_exc_choice):
-      for mm in range(0,n_exc_choice):
-        dataListOfMatrices[kk][nn,mm] = 0.5*(data_k[nn,mm,kx1,ky1]  +  data_k[nn,mm,kx2,ky2])  #averaging 2 paths
+    #for nn in range(0,n_exc_choice):
+    #  for mm in range(0,n_exc_choice):
+    tmp1 = data_k[exc_choice,:,kx1,ky1] + data_k[exc_choice,:,kx2,ky2]
+    tmp2 = 0.5*tmp1[:,exc_choice]
+    #dataListOfMatrices[kk] = 0.5*(data_k[exc_choice,exc_choice,kx1,ky1]  +  data_k[exc_choice,exc_choice,kx2,ky2])  #averaging 2 paths
+    dataListOfMatrices[kk] = tmp2  #averaging 2 paths
   print ''
   return dataListOfMatrices
 
@@ -262,14 +254,25 @@ def ReadRange(inputStr):
     elif len(element) ==2:
       rangeOut += range(int(element[0]),int(element[1])+1)
     else:
-      print 'your definition make no sense'
+      print 'Your definition cannot be interpreted properly.'
       print 'Please input numbers or pairs of numbers'
       print 'sepated by comma. Pairs must contains only one ":"' 
       print 'example:'
       print '0:3,5,6,8:11'
+      print 
+      print 'will be interpreted as'
+      print '[0,1,2,3,5,6,8,9,10,11]'
       exit()
   return rangeOut
 
 
 if __name__ == "__main__":
    main()
+   
+   
+# mergeOutput.py output/zvo_nCHAm_nAHCm_0*
+# print_spectrum.py
+### generate_template_gnuplot.py ###
+# gnuplot plot_singleAkw.gp
+# gnuplot plot_allAkw.gp
+

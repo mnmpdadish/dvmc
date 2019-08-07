@@ -1,0 +1,6 @@
+CC = mpicc
+F90 = gfortran
+CFLAGS = -g -ggdb -fopenmp -Wno-unused-result
+FFLAGS = -g -ggdb -fopenmp -fimplicit-none
+LIBS = -fopenmp -lblacs-openmpi -lscalapack-openmpi -llapack -lblas -lm
+SFMTFLAGS =

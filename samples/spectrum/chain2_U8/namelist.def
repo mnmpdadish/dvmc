@@ -1,4 +1,4 @@
-         ModPara  modpara_G.def
+         ModPara  modpara.def
          LocSpin  locspn.def
            Trans  trans.def
     CoulombIntra  coulombintra.def
@@ -8,3 +8,4 @@
          Jastrow  jastrowidx.def
          Orbital  orbitalidx.def
         TransSym  qptransidx.def
+      Excitation  excitation.def

@@ -1,3 +1,117 @@
+# mVMC: dynamical Green
+
+Author: Maxime Charlebois
+
+This code is based on the original mVMC open source package 
+[source](https://github.com/issp-center-dev/mVMC) 
+and [arXiv:1711.11418](https://arxiv.org/abs/1711.11418).
+Please refer to the documentation in the open source package
+as this will not be covered here.
+
+It implements a new feature where you can calculate the frequency 
+dependent Green function (option NVMCCalMode = 3), hence the
+spectral weight. For now there is a number of condition on this 
+new calculation mode. It is restricted to (for now):
+- 1D or 2D model (easy to generalize to 3D, to be done)
+- real calculation
+- OrbitalAntiParallel (not OrbitalGeneral or OrbitalParallel)
+
+
+# Usage
+
+Detailed usage is not covered here. Instead many examples can be found
+in the "./samples/spectrum/" subdirectory. In summary, the code requires
+a converged ground state obtained by the "NVMCCalMode 0" option. From 
+this the spectral weight can be calculated with option "NVMCCalMode 3".
+
+This mode requires a new input file "excitation.def". This can be generated
+in an automated way from the python code:
+"./tool/dynamicalGreenProcessing/makeExcitation.py"
+together with the input file "spectrumpara.def". In this last file, the
+values "dr1_x, dr1_y, dr2_x, dr2_y", defines the difference in position
+of the charge excitation relatif to site "i" or "j" of the operator 
+"c^dagger_i" or  "c_j" for the Green function <n|c^dagger_i cj|m>. 
+This is technical (may requires more information soon, or reference 
+to the arxiv paper). For example:
+
+"
+dr1_x       -1:1
+dr1_y       -1:1
+dr2_x       -1:2
+dr2_y       -1:2
+"
+
+will generate 244 different charge charge excitations in the file
+"excitation.def". Once the file is generated, the code in this 
+mode can be run through this command:
+
+$ vmc_new.out namelist_aft.def ./output/zqp_opt.dat
+or
+$ mpirun -np $nproc vmc_new.out namelist_aft.def ./output/zqp_opt.dat
+
+for example. The files will be generated in the "./output/" subdirectory
+with names "zvo_nCHAm_nAHCm_###.dat". These can then be treated to produce
+a graph of the density of states with the functions in:
+"./tool/dynamicalGreenProcessing/*"
+
+In order
+
+$ mergeOutput.py output/zvo_nCHAm_nAHCm_0*   # to average the different iterations in 4 numpy data array.
+$ print_spectrum.py                          # to output a matrix of A(k,w) in the files Akw.dat, Akw_e.dat, Akw_h.dat
+
+This last function read the parameter from many files including the frequency
+axis parameters in "spectrumpara.def".
+
+After that, the spectral density A(k,w) can be plotted through 
+the simple gnuplot command:
+> plot 'output/Akw.dat' matrix notitle w image
+
+A better (prettier) version of the same gnuplot graph can be generated
+
+$ generate_template_gnuplot.py
+$ gnuplot plot_singleAkw.gp
+$ gnuplot plot_allAkw.gp
+
+although, some generic parameters might need to be adjusted to obtain a 
+good result. For example, the an offset must be applied on the frequency
+axis so that the Fermi level (omega = 0) is placed manually between the
+electron minimum and hole maximum density of state.  
+
+Gnuplot is the software of choice here because it can embed an image
+of the A(k,w), resulting in smaller file, faster to process and easier
+to scroll by in a PDF file.
+
+
+# Samples description:
+
+"./samples/spectrum/chain2_U8"  -- trivial example for comparison with analytical results
+more to come
+
+
+# Requirements
+
+Have this new mVMC code compiled first (follow original mVMC 
+documentation). Put it in a directory available in the PATH environment 
+variable (usually ~/bin/.). Name this executable "vmc_new.out". 
+Also copy the files contained in 
+./tool/dynamicalGreenProcessing/*
+to a path contained in the PATH environment variable.
+
+The libraries required to compile the code are:
+- mpi
+- lapack or MKL
+- blas or MKL
+
+
+
+
+
+
+############################################################################
+# the rest of the README is the one contained in the original mVMC package #
+############################################################################
+
+
 # mVMC
 
 A numerical solver package for a wide range of quantum lattice models based on many-variable Variational Monte Carlo method

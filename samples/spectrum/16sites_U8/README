@@ -1,7 +1,0 @@
-
-
-To have some result with this example, run:
-
-$ time vmc_new.out namelist_G.def output/zqp_opt.dat 
-$ python plot_density_of_state_1D.py
-

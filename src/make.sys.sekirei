@@ -1,0 +1,7 @@
+CC = mpicc
+F90 = ifort
+CFLAGS = -O3 -no-prec-div -qopenmp -Wno-unknown-pragmas -D_lapack
+FFLAGS = -O3 -implicitnone
+LIBS = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lpthread -lm -qopenmp
+SFMTFLAGS = -no-ansi-alias
+

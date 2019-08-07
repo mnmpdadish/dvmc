@@ -1,0 +1,40 @@
+
+# How to run the example:
+
+In the present directory, type:
+
+$ ./run.sh
+
+This will run the 3 command lines:
+
+python3 analytical_mVMC.py
+vmc_new.out namelist.def output/zqp_opt.dat
+python3 compare.py
+
+
+# Requirements
+
+Have this new mVMC code compiled first. Put it in a directory 
+available in the PATH variable (usually ~/bin/.). Name this
+executable "vmc_new.out".
+
+
+# Result:
+
+If everything works properly you should obtain the difference
+between the exact result (obtained from analytical_mVMC.py)
+and the mVMC result. The last line shoule be:
+
+"
+SUMMARY:
+
+total error = 0.012793
+
+<nCAm> error = 0.001209
+<nACm> error = 0.000829
+<nCHAm> error = 0.002456
+<nAHCm> error = 0.008299
+"
+
+
+

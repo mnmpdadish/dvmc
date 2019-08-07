@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import re
 
 R1x = [0,1,2,3,4,5]
