@@ -1,0 +1,21 @@
+#input for postprocessing of NVMCCalMode == 3
+# '#' are treated as comment
+
+# parameters to generate excitation.def file:
+dr1_x        0:15     # will generate array [0,1,2]
+dr1_y        0        # will generate array [0,1,2]
+dr2_x       -8:8      # will generate array [-2,-1,0,1,2]
+dr2_y        0        # will generate array [-2,-1,0,1,2]
+
+# parameters to generate A(k,w) parameters 
+eta           0.2             # imaginary frequency
+w_min       -10.0             # minimum frequency calculated
+w_max        10.0             # maximum frequency calculated
+Nw           1500             # consider 1500 frequencies
+exc_choice   all              # take all excitations
+kPath        range(72)        # k points chosen in the path to plot
+
+
+# geometry of the sites (both real space and reciprocal k-space):
+#
+#    0    1    2    3    4 ... 140  141  142  143 

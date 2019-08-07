@@ -23,8 +23,8 @@ cp namelist.def namelist_G.def
 cp modpara.def modpara_G.def
 sed -i "s/CDataFileHead  zvo/CDataFileHead  zbo/"           modpara.def
 sed -i "s/NVMCCalMode    0/NVMCCalMode    3/"               modpara_G.def
-sed -i "s/ModPara  modpara.def/ModPara  modpara_G.def/"     modpara_G.def
-
+sed -i "s/ModPara  modpara.def/ModPara  modpara_G.def/"     namelist_G.def
+echo "      Excitation  excitation.def" >> namelist_G.def
 
 #### mVMC groud state calculations:
 date
@@ -33,6 +33,7 @@ mpirun -np 28 vmc_new.out namelist.def
 date
 
 #### mVMC dynamical Green calculations:
+makeExcitation.py
 mpirun -np 28 vmc_new.out namelist_G.def ./output/zqp_opt.dat
 date
 

@@ -1,0 +1,54 @@
+#########################
+# How to run the example:
+
+In the present directory, type:
+
+$ ./run_vmc.sh
+$ mergeOutput.py output/zvo_nCHAm_nAHCm_0*   # to average the different iterations in 4 numpy data array.
+$ print_spectrum.py                          # to output a matrix of A(k,w) in the files Akw.dat, Akw_e.dat, Akw_h.dat
+$ generate_template_gnuplot.py               # to get a pretty template to plot A(k,w) scripts (need to be adjusted)
+$ gnuplot plot_singleAkw.gp                  # generate akw_single.pdf
+$ gnuplot plot_allAkw.gp                     # generate akw_multiple.pdf
+
+On a cluster, instead of typing the first command,
+edit properly the header of "run_vmc.sh" and 
+submit for example with commands:
+
+$ ./qsub run_vmc.sh
+
+It is better to avoid to include the postprocessing
+in the cluster submission as it can take several minutes
+and it is not parallelized.
+
+# Requirements
+
+Have the new mVMC code compiled first. This will generate
+the executables "/src/mVMC/vmcdry.out" and "/src/mVMC/vmc.out"
+Put these in a directory available in the PATH variable 
+(usually ~/bin/.). Name these executables "vmcdry_new.out" and 
+"vmc_new.out" respectively.
+
+The files for postprocessing must also be in a directory
+available in the PATH environment variable. They are all
+located in the subdirectory:
+"/tool/dynamicalGreenProcessing/*"
+
+This example also require gnuplot installed to plot Akw.dat.
+But Akw.dat coule be plot with any software and script at this point.
+
+Although, some generic parameters might need to be adjusted to obtain a 
+good result. For example, the an offset must be applied on the frequency
+axis so that the Fermi level (omega = 0) is placed manually between the
+electron minimum and hole maximum density of state.  
+
+Gnuplot is the software of choice here because it can embed an image
+of the A(k,w), resulting in smaller file, faster to process and easier
+to scroll by in a PDF file.
+
+
+
+# Result:
+
+If everything works, the figure "akw_multiple.pdf" and "akw_single.pdf"
+shown if "expected_output" should be produced in the current directory.
+

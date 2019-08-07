@@ -431,6 +431,8 @@ void SetMemory() {
     double mem3 = 8.*10.*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
     //printf("memory usage: %d times double.\n", 4*Nsite*NExcitation*NExcitation+/*4*Nsite*Nsite*NExcitation*NExcitation +*/ 10*Nsite*Nsite*NExcitation*sampleChunk);
     printf("memory usage per mpi thread: %f Go.\n", mem1+/*mem2*/+mem3);
+    //printf("%d %d\n", Nsite,NExcitation);
+    //exit(0);
     
     Phys_nCAm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
     Phys_nACm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));

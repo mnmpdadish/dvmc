@@ -1,16 +1,16 @@
-#!/bin/bash 
-#$ -S /bin/bash
-#$ -l h_rt=120:00:00
-#$ -j y
-#$ -m n
-#$ -cwd
-#$ -pe openmpi-fill 28
-
-. ~/.bashrc
-module load uge compiler/intel-17.0.4 openmpi/1.10.6/intel-17.0.4.lp mpich/3.2/intel-17.0.4.lp
+#!/bin/sh
+#QSUB -queue L18acc
+#QSUB -node 18
+#QSUB -mpi 216
+#QSUB -omp 2
+#QSUB -place pack
+#QSUB -over false
+#PBS -N run_vmc.sh
+#PBS -l walltime=72:00:00
+cd ${PBS_O_WORKDIR}
 
 export MKL_NUM_THREADS=1
-export OMP_NUM_THREADS=1
+export OMP_NUM_THREADS=2
 
 ####  mVMC preparations :
 vmcdry_new.out StdFace.def 
@@ -28,13 +28,14 @@ echo "      Excitation  excitation.def" >> namelist_G.def
 
 #### mVMC groud state calculations:
 date
-mpirun -np 28 vmc_new.out namelist.def
+#mpirun -np 28 vmc_new.out namelist.def
 #mpirun -np 28 vmc_new.out namelist.def ./output/zqp_opt.dat  # to add some iterations
+mpijob vmc_new.out namelist.def 
 date
 
 #### mVMC dynamical Green calculations:
 makeExcitation.py
-mpirun -np 28 vmc_new.out namelist_G.def ./output/zqp_opt.dat
+mpijob vmc_new.out namelist_G.def ./output/zqp_opt.dat
+#mpirun -np 28 vmc_new.out namelist_G.def ./output/zqp_opt.dat
 date
-
 
