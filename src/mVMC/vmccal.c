@@ -687,10 +687,13 @@ void clearPhysQuantity(){
       }
     }
   } else if(NVMCCalMode==2) {
-    for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0;
+#pragma omp parallel for default(shared) private(i)
     for(i=0;i<Nsite*ONE_SITE_PHYS_QTY;i++)  PhysN1[i] = 0.0;
+#pragma omp parallel for default(shared) private(i)
+    for(i=0;i<NCisAjs*TWO_SITES_PHYS_QTY;i++) PhysN2[i] = 0.0;
   } else if(NVMCCalMode==3) { 
-    for(i=0;i<Nsite*NExcitation*NExcitation; i++){
+#pragma omp parallel for default(shared) private(i)
+    for(i=0; i<Nsite*NExcitation*NExcitation; i++){
       Phys_nCHAm_averaged[i] = 0.0;
       Phys_nAHCm_averaged[i] = 0.0;
       Phys_nCAm_averaged[i]  = 0.0;

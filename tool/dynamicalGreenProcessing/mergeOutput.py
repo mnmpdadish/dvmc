@@ -156,21 +156,5 @@ def main():
   np.save(dirOutput+'nAHCm',nAHCm_up)
   #f.close
 
-def ReadFile(fileName):
-  fileExist = os.path.isfile(fileName)
-  if not fileExist:
-    print '\nerror: file '+fileName+' does not exist.'
-    print 'terminated.'
-    exit()
-
-  f = open(fileName, 'r')
-  file1 = f.readlines()
-  f.close
-
-  file2 = []
-  for lines in file1:
-    file2.append(lines.strip())
-  return file2
-  
 if __name__ == "__main__":
    main()

@@ -20,7 +20,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 import numpy as np
-from scipy import linalg as la
+from numpy import linalg as la
 import sys, os, re
 #from scipy.linalg import eig
 
@@ -122,12 +122,20 @@ def main():
   print u'\n k#/Nk  --   kx/\u03C0   ky/\u03C0 :  sumRule: \u222Bdw A(%s,w)  \u225F  1.00000 ' % k_label
   print u' ------------------------------------------------------------'
   for kk in range(len(kPath1)):#range(0,2*Nsite):
-    
+    k_label = u'%3s' % ('k%d' % kk)
+    print u' %2d/%2d  ' % (kk+1,len(kPath1)),
+    sys.stdout.flush()
     e_ac,u_ac = la.eig(np.dot(H_AC[kk],la.inv(S_AC[kk])))
     e_ca,u_ca = la.eig(np.dot(H_CA[kk],la.inv(S_CA[kk])))
     
+    print u'--  %2d/%2d' % (Xi(kPath1[kk]),W/2),
+    sys.stdout.flush()
+    
     u_ac_m1 = la.inv(u_ac)
     u_ca_m1 = la.inv(u_ca)
+    
+    print u'  %2d/%2d :' % (Yi(kPath1[kk]),L/2),
+    sys.stdout.flush()
     
     us_ac = np.dot(u_ac_m1,S_AC[kk])
     us_ca = np.dot(u_ca_m1,S_CA[kk])
@@ -154,9 +162,8 @@ def main():
       spectrum_elec[kk,ii] = -g_ac.imag/(np.pi)
       sumRule += -dw*tmp.imag/(np.pi)
       
-    k_label = u'%3s' % ('k%d' % kk)
-    print u' %2d/%2d  --  %2d/%2d  %2d/%2d :           \u222Bdw A(%s,w)  = % 5.5f ' \
-                     % (kk+1,len(kPath1), Xi(kk),W/2, Yi(kk),L/2 , k_label, sumRule)
+    print u'           \u222Bdw A(%s,w)  = % 5.5f ' \
+                     % (k_label, sumRule)
   
   file_green_e = open('output/Akw_e.dat','w')
   file_green_h = open('output/Akw_h.dat','w')
@@ -219,9 +226,10 @@ def FFT_selection(dataFileName,exc_choice,kPath1,kPath2):
   data_k  = np.fft.fft2(data_up) # fft2 only on the last 2 indices
   dataListOfMatrices = []
 
-  for kk in range(0,len(kPath1)):
-    dataListOfMatrices.append(np.zeros([n_exc_choice,n_exc_choice], dtype='cfloat'))
+  #for kk in range(0,len(kPath1)):
+  #  dataListOfMatrices.append(np.zeros([n_exc_choice,n_exc_choice], dtype='cfloat'))
 
+  #print kPath1, kPath2
   for kk in range(len(kPath1)):
     if((kk)%(len(kPath1)/5)==0): 
       print '.',
@@ -236,10 +244,10 @@ def FFT_selection(dataFileName,exc_choice,kPath1,kPath2):
 
     #for nn in range(0,n_exc_choice):
     #  for mm in range(0,n_exc_choice):
-    tmp1 = data_k[exc_choice,:,kx1,ky1] + data_k[exc_choice,:,kx2,ky2]
+    tmp1 = data_k[exc_choice,:,kx1,ky1] + data_k[exc_choice,:,kx2,ky2] #slicing is faster than for loops
     tmp2 = 0.5*tmp1[:,exc_choice]
     #dataListOfMatrices[kk] = 0.5*(data_k[exc_choice,exc_choice,kx1,ky1]  +  data_k[exc_choice,exc_choice,kx2,ky2])  #averaging 2 paths
-    dataListOfMatrices[kk] = tmp2  #averaging 2 paths
+    dataListOfMatrices.append(tmp2)  #averaging 2 paths
   print ''
   return dataListOfMatrices
 

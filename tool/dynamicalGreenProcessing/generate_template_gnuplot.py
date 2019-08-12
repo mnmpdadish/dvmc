@@ -20,7 +20,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 import numpy as np
-from scipy import linalg as la
+from numpy import linalg as la
 import sys, os, re
 
 full_path = os.path.realpath(__file__)
