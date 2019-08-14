@@ -17,6 +17,7 @@ make.sys
 *.dvi
 *.log
 *.o
+*.so
 *.optrpt
 *.synctex.gz
 *.toc

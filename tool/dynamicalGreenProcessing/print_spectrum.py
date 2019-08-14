@@ -107,10 +107,12 @@ def main():
   n_exc_choice = len(exc_choice)
   Nsite=W*L
   
-  S_CA = FFT_selection('output/nCAm.npy', exc_choice,kPath1,kPath2)
-  S_AC = FFT_selection('output/nACm.npy', exc_choice,kPath1,kPath2)
-  H_CA = FFT_selection('output/nCHAm.npy',exc_choice,kPath1,kPath2)
-  H_AC = FFT_selection('output/nAHCm.npy',exc_choice,kPath1,kPath2)
+  S_CA = FFT_selection('output/nCAm.npy', exc_choice,kPath1)
+  S_AC = FFT_selection('output/nACm.npy', exc_choice,kPath1)
+  H_CA = FFT_selection('output/nCHAm.npy',exc_choice,kPath1)
+  H_AC = FFT_selection('output/nAHCm.npy',exc_choice,kPath1)
+  
+  #if(kPath2!=kPath1):
   
   np.set_printoptions(precision=9)  
   spectrum_hole = np.zeros([len(kPath1),Nw], dtype='float')
@@ -123,19 +125,16 @@ def main():
   print u' ------------------------------------------------------------'
   for kk in range(len(kPath1)):#range(0,2*Nsite):
     k_label = u'%3s' % ('k%d' % kk)
-    print u' %2d/%2d  ' % (kk+1,len(kPath1)),
+    print u' %2d/%2d ' % (kk+1,len(kPath1)),
     sys.stdout.flush()
     e_ac,u_ac = la.eig(np.dot(H_AC[kk],la.inv(S_AC[kk])))
     e_ca,u_ca = la.eig(np.dot(H_CA[kk],la.inv(S_CA[kk])))
     
-    print u'--  %2d/%2d' % (Xi(kPath1[kk]),W/2),
+    print '--',
     sys.stdout.flush()
     
     u_ac_m1 = la.inv(u_ac)
     u_ca_m1 = la.inv(u_ca)
-    
-    print u'  %2d/%2d :' % (Yi(kPath1[kk]),L/2),
-    sys.stdout.flush()
     
     us_ac = np.dot(u_ac_m1,S_AC[kk])
     us_ca = np.dot(u_ca_m1,S_CA[kk])
@@ -161,9 +160,9 @@ def main():
       spectrum_hole[kk,ii] = -g_ca.imag/(np.pi)
       spectrum_elec[kk,ii] = -g_ac.imag/(np.pi)
       sumRule += -dw*tmp.imag/(np.pi)
-      
-    print u'           \u222Bdw A(%s,w)  = % 5.5f ' \
-                     % (k_label, sumRule)
+    
+    print u' %2d/%2d  %2d/%2d :           \u222Bdw A(%s,w)  = % 5.5f ' \
+                     % (Xi(kPath1[kk]),W/2,Yi(kPath1[kk]),L/2,k_label, sumRule)
   
   file_green_e = open('output/Akw_e.dat','w')
   file_green_h = open('output/Akw_h.dat','w')
@@ -213,11 +212,10 @@ def main():
 ######################    SUB ROUTINES    #############################
 #######################################################################
 
-
 def dotdot(a,b,c):
     return np.dot(np.dot(a,b),c)
 
-def FFT_selection(dataFileName,exc_choice,kPath1,kPath2):
+def FFT_selection(dataFileName,exc_choice,kPath):
   print 'treatement of '+ dataFileName + '.',
   sys.stdout.flush()
   n_exc_choice = len(exc_choice)
@@ -226,28 +224,27 @@ def FFT_selection(dataFileName,exc_choice,kPath1,kPath2):
   data_k  = np.fft.fft2(data_up) # fft2 only on the last 2 indices
   dataListOfMatrices = []
 
-  #for kk in range(0,len(kPath1)):
+  #for kk in range(0,len(kPath)):
   #  dataListOfMatrices.append(np.zeros([n_exc_choice,n_exc_choice], dtype='cfloat'))
 
-  #print kPath1, kPath2
-  for kk in range(len(kPath1)):
-    if((kk)%(len(kPath1)/5)==0): 
+  for kk in range(len(kPath)):
+    if((kk)%(len(kPath)/5)==0): 
       print '.',
       sys.stdout.flush()
-    kk1 = kPath1[kk]
-    kk2 = kPath2[kk]
+    kk1 = kPath[kk]
+    #kk2 = kPath2[kk]
     #print kk, kk1
     kx1 = Xi(kk1)
     ky1 = Yi(kk1)
-    kx2 = Xi(kk2)
-    ky2 = Yi(kk2)
+    #kx2 = Xi(kk2)
+    #ky2 = Yi(kk2)
 
     #for nn in range(0,n_exc_choice):
     #  for mm in range(0,n_exc_choice):
-    tmp1 = data_k[exc_choice,:,kx1,ky1] + data_k[exc_choice,:,kx2,ky2] #slicing is faster than for loops
-    tmp2 = 0.5*tmp1[:,exc_choice]
+    tmp1 = data_k[exc_choice,:,kx1,ky1] #slicing is faster than for loops
+    tmp2 = tmp1[:,exc_choice]
     #dataListOfMatrices[kk] = 0.5*(data_k[exc_choice,exc_choice,kx1,ky1]  +  data_k[exc_choice,exc_choice,kx2,ky2])  #averaging 2 paths
-    dataListOfMatrices.append(tmp2)  #averaging 2 paths
+    dataListOfMatrices.append(tmp2) 
   print ''
   return dataListOfMatrices
 

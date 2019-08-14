@@ -651,6 +651,8 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
         outputData();
         //printf("after output.\n"); fflush(stdout);
         fclose(File_nCHAm);
+        //fclose(File_nCHAm_compact);
+        fclose(FileCisAjs);
         //printf("after close.\n"); fflush(stdout);
       }
     }
@@ -837,7 +839,21 @@ void outputData() {
       }
      
     }
-      
+/*    
+    for (dr = 0; dr < Nsite; dr++) {
+      //printf("\n%d  ", NExcitation);
+      for (nn = 0; nn < NExcitation; nn++) {
+        for (mm = 0; mm < NExcitation; mm++) {
+          //printf("\n%d %d  ", nn,mm);
+          fprintf(File_nCHAm_compact, "% 0.6e   ",  Phys_nCAm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
+          fprintf(File_nCHAm_compact, "% 0.6e   ",  Phys_nACm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
+          fprintf(File_nCHAm_compact, "% 0.6e   ", Phys_nCHAm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
+          fprintf(File_nCHAm_compact, "% 0.6e \n", Phys_nAHCm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
+        }
+      }
+     
+    }
+*/      
 
   }
   return;

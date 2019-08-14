@@ -17,8 +17,8 @@ left = 0.15
 right = 0.85
 bottom = 0.10
 
-set terminal pdf enhanced color size w cm,h cm
-set output 'akw_single.pdf'
+#set terminal pdf enhanced color size w cm,h cm
+#set output 'akw_single.pdf'
 #set terminal epslatex size w cm,h cm color
 #set output 'plot.tex'
 
@@ -29,7 +29,9 @@ set xrange [-0.5:kRange+0.5]
 set yrange [w_min:w_max]
 set cbrange [0.00:0.6]
 
-set palette defined (0 'white',0.016 'white',0.05 '#ffea4a',0.09 '#fdb416',0.16 '#fa3100',0.27 '#c31b00',0.6 'black')
+#set palette defined (0 'white',0.016 'white',0.05 '#ffea4a',0.09 '#fdb416',0.16 '#fa3100',0.27 '#c31b00',0.6 'black')
+#set palette defined (0 'white',0.011 'white', 0.04 '#fff879', 0.08 '#ff9011',0.13 '#ee7e00',0.20 '#c81800', 0.4 '#880000', 0.6 'black')
+set palette defined (0 'white',0.016 'white', 0.04 '#fff879',0.16 '#fe7e00',0.27 '#d81800', 0.4 '#780000', 0.6 'black')
 #set colorbox vertical user origin right+0.02, top-0.4 size .04,.4
 
 set colorbox vertical user origin right+0.02, (top+bottom)/2 size .02,.4
@@ -47,3 +49,4 @@ set lmargin at screen left; set rmargin at screen right
 set tmargin at screen top; set bmargin at screen bottom
 plot 'output/Akw.dat' u 1:($2*w_range_data/Nw_data+w_min_data):3 matrix notitle w image 
 
+pause -1

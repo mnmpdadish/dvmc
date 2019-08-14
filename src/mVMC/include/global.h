@@ -348,14 +348,15 @@ FILE *FileLSCisAjsCktAlt;
 
 FILE *FileN1;
 FILE *FileN2;
-FILE *File_AC;
-FILE *File_ACN;
-FILE *File_NACN;
+//FILE *File_AC;
+//FILE *File_ACN;
+//FILE *File_NACN;
 
-FILE *File_nACm;
-FILE *File_nCAm;
-FILE *File_nAHCm;
+//FILE *File_nACm;
+//FILE *File_nCAm;
+//FILE *File_nAHCm;
 FILE *File_nCHAm;
+FILE *File_nCHAm_compact;
 
 
 /* FILE *FileTimerList; */

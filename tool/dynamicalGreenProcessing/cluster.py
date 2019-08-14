@@ -1,6 +1,12 @@
 
+import sys
 
-NN=12
+if len(sys.argv)!=2:
+  print("example:\n$ python cluster.py 12")
+  sys.exit()
+
+
+NN=int(sys.argv[1])
 
 for ii in range(NN):
   print '#',
