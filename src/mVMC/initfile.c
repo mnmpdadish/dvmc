@@ -170,6 +170,9 @@ void InitFilePhysCal(int i, int rank) {
     sprintf(fileName, "%s_nCHAm_nAHCm_%03d.dat", CDataFileHead, idx);
     File_nCHAm = fopen(fileName, "w");
 
+    sprintf(fileName, "%s_nCHAm_nAHCm_%03d.bin", CDataFileHead, idx);
+    File_nCHAm_bin = fopen(fileName, "wb");
+
     //sprintf(fileName, "%s_nCAm_nACm_nCHAm_nAHCm_%03d.dat", CDataFileHead, idx);
     //File_nCHAm_compact = fopen(fileName, "w");
   }

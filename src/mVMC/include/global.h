@@ -298,6 +298,7 @@ double *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;
 double *Phys_nCAm_averaged, *Phys_nACm_averaged;
 double *Phys_nCHAm_averaged, *Phys_nAHCm_averaged;
 double *Phys_CA, *Local_CA, *Local_AC;
+float *data_float_convert;
 
 double *O_AC_vec1, *O_CA_vec1, AC_tmp, CA_tmp;
 double *O_AC_vec2, *O_CA_vec2;
@@ -356,7 +357,7 @@ FILE *FileN2;
 //FILE *File_nCAm;
 //FILE *File_nAHCm;
 FILE *File_nCHAm;
-FILE *File_nCHAm_compact;
+FILE *File_nCHAm_bin;
 
 
 /* FILE *FileTimerList; */

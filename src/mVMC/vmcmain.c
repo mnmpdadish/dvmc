@@ -651,7 +651,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
         outputData();
         //printf("after output.\n"); fflush(stdout);
         fclose(File_nCHAm);
-        //fclose(File_nCHAm_compact);
+        fclose(File_nCHAm_bin);
         fclose(FileCisAjs);
         //printf("after close.\n"); fflush(stdout);
       }
@@ -820,6 +820,7 @@ void outputData() {
      }
     }*/
     
+    /*
     int NExcitation2 = NExcitation*NExcitation;
     fprintf(File_nCHAm, "#rj-ri  n m   <n|ca|m>   <n|ac|m>   <n|cHa|m>   <n|aHc|m> %d",Nsite);
     int dr;
@@ -837,25 +838,39 @@ void outputData() {
         }
         fprintf(File_nCHAm, " "); 
       }
-     
     }
-/*    
-    for (dr = 0; dr < Nsite; dr++) {
-      //printf("\n%d  ", NExcitation);
-      for (nn = 0; nn < NExcitation; nn++) {
-        for (mm = 0; mm < NExcitation; mm++) {
-          //printf("\n%d %d  ", nn,mm);
-          fprintf(File_nCHAm_compact, "% 0.6e   ",  Phys_nCAm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
-          fprintf(File_nCHAm_compact, "% 0.6e   ",  Phys_nACm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
-          fprintf(File_nCHAm_compact, "% 0.6e   ", Phys_nCHAm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
-          fprintf(File_nCHAm_compact, "% 0.6e \n", Phys_nAHCm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
-        }
-      }
-     
-    }
-*/      
-
+    */
+    
+    //print binary output, will delete text output soon.
+    long int totalSize = NExcitation*NExcitation*Nsite;
+    fwrite(&NExcitation,  sizeof(int), 1, File_nCHAm_bin);    
+    fwrite(&Excitation_L, sizeof(int), 1, File_nCHAm_bin);    
+    fwrite(&Excitation_W, sizeof(int), 1, File_nCHAm_bin);
+    
+    //fwrite(Phys_nCAm_averaged, sizeof(double), totalSize, File_nCHAm_bin);
+    //fwrite(Phys_nACm_averaged, sizeof(double), totalSize, File_nCHAm_bin);
+    //fwrite(Phys_nCHAm_averaged, sizeof(double), totalSize, File_nCHAm_bin);
+    //fwrite(Phys_nAHCm_averaged, sizeof(double), totalSize, File_nCHAm_bin);
+    
+    convert_double2float_fwrite(Phys_nCAm_averaged,  totalSize, File_nCHAm_bin);
+    convert_double2float_fwrite(Phys_nACm_averaged,  totalSize, File_nCHAm_bin);
+    convert_double2float_fwrite(Phys_nCHAm_averaged, totalSize, File_nCHAm_bin);
+    convert_double2float_fwrite(Phys_nAHCm_averaged, totalSize, File_nCHAm_bin);
   }
+  return;
+}
+
+//this function is useful to reduce memory by a factor of two.
+//we could argue that we are loosing precision. But in a Monte Carlo
+//sampling, it is better to keep double for the whole calculation until 
+//the end, in order to minimize the discretization noise addeed at each 
+//sample. But the result at the end still have quite a lot of noise, so
+//it is ok to reduce the final result to a float when saving in a binary file.
+//Maxime Charlebois
+void convert_double2float_fwrite(double *array, long int totalSize, FILE *fp) {
+  long int ii;
+  for(ii=0;ii<totalSize;ii++) data_float_convert[ii] = (float) array[ii];
+  fwrite(data_float_convert, sizeof(float), totalSize, fp);
   return;
 }
 
