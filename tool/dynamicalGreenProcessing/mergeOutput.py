@@ -189,10 +189,10 @@ def main():
             #if NN%10000==0:
             #  print NN#, '/',len(matrix_list)
 
-    print '\nfft_CA';  nCAm_k  = np.fft.fft2(nCAm_up)
-    print '\nfft_AC';  nACm_k  = np.fft.fft2(nACm_up)
-    print '\nfft_CHA'; nCHAm_k = np.fft.fft2(nCHAm_up)
-    print '\nfft_AHC'; nAHCm_k = np.fft.fft2(nAHCm_up)
+    #print '\nfft_CA';  nCAm_k  = np.fft.fft2(nCAm_up)
+    #print '\nfft_AC';  nACm_k  = np.fft.fft2(nACm_up)
+    #print '\nfft_CHA'; nCHAm_k = np.fft.fft2(nCHAm_up)
+    #print '\nfft_AHC'; nAHCm_k = np.fft.fft2(nAHCm_up)
     #print nCAm_up
 
   print dirOutput+'nCAm'

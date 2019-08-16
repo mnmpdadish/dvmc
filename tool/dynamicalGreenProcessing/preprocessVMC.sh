@@ -5,7 +5,7 @@ vmcdry_new.out StdFace.def
 
 date
 sed -i "s/NExUpdatePath  0/NExUpdatePath  1/"     modpara.def
-sed -i "s/NDataQtySmp    1/NDataQtySmp    10/"    modpara.def
+sed -i "s/NDataQtySmp    1/NDataQtySmp    40/"    modpara.def
 
 cp namelist.def namelist_G.def
 cp modpara.def modpara_G.def
