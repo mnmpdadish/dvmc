@@ -860,19 +860,6 @@ void outputData() {
   return;
 }
 
-//this function is useful to reduce memory by a factor of two.
-//we could argue that we are loosing precision. But in a Monte Carlo
-//sampling, it is better to keep double for the whole calculation until 
-//the end, in order to minimize the discretization noise addeed at each 
-//sample. But the result at the end still have quite a lot of noise, so
-//it is ok to reduce the final result to a float when saving in a binary file.
-//Maxime Charlebois
-void convert_double2float_fwrite(double *array, long int totalSize, FILE *fp) {
-  long int ii;
-  for(ii=0;ii<totalSize;ii++) data_float_convert[ii] = (float) array[ii];
-  fwrite(data_float_convert, sizeof(float), totalSize, fp);
-  return;
-}
 
 void printUsageError() {
   fprintf(stderr,"Usage: vmc.out [option] NameListFile [OptParaFile]\n");
