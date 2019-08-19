@@ -1,24 +1,35 @@
 #########################
 # How to run the example:
 
-In the present directory, type:
+In any sub directories (except chain2_U8), generate all the files using the command:
 
-$ ./run_vmc.sh
-$ mergeOutput.py output/zvo_nCHAm_nAHCm_0*   # to average the different iterations in 4 numpy data array.
-$ print_spectrum.py                          # to output a matrix of A(k,w) in the files Akw.dat, Akw_e.dat, Akw_h.dat
-$ generate_template_gnuplot.py               # to get a pretty template to plot A(k,w) scripts (need to be adjusted)
-$ gnuplot plot_singleAkw.gp                  # generate akw_single.pdf
-$ gnuplot plot_allAkw.gp                     # generate akw_multiple.pdf
+$ preprocessVMC.sh
 
-On a cluster, instead of typing the first command,
-edit properly the header of "run_vmc.sh" and 
-submit for example with commands:
+After that, you can submit the job to a supercomputer with command like
 
-$ ./qsub run_vmc.sh
+$ qsub ./run_vmc.sh
+
+This will generate Monte Carlo sampling binary files in the output directory.
+You can merge these output using:
+
+$ mergeOutputBin.py output/zvo_nCHAm_nAHCm_0*   # to average the different iterations in 4 numpy data array.
+
+And you can do the postprocessing of these Monte Carlo sampling with:
+$ mvmc_spectrum_c.py                            # to output a matrix of A(k,w) in the files Akw.dat, Akw_e.dat, Akw_h.dat
+
+To plot the results (Akw*.dat), you can use these commands
+$ generate_template_gnuplot.py                  # to get a pretty template to plot A(k,w) scripts (need to be adjusted)
+$ gnuplot plot_singleAkw.gp                     # generate akw_single.pdf
+$ gnuplot plot_allAkw.gp                        # generate akw_multiple.pdf
+
+On a cluster, you need to edit properly the header 
+of "run_vmc.sh" befor submitting:
 
 It is better to avoid to include the postprocessing
 in the cluster submission as it can take several minutes
 and it is not parallelized.
+
+
 
 # Requirements
 
@@ -32,6 +43,9 @@ The files for postprocessing must also be in a directory
 available in the PATH environment variable. They are all
 located in the subdirectory:
 "/tool/dynamicalGreenProcessing/*"
+In this same directory, some files must be compiled using the
+simple makefile. For this compilation you either need to link
+wit Lapack or MKL.
 
 This example also require gnuplot installed to plot Akw.dat.
 But Akw.dat coule be plot with any software and script at this point.

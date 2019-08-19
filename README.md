@@ -45,12 +45,12 @@ will generate 244 different charge charge excitations in the file
 "excitation.def". Once the file is generated, the code in this 
 mode can be run through this command:
 
-$ vmc_new.out namelist_aft.def ./output/zqp_opt.dat
+$ vmc_new.out namelist_G.def ./output/zqp_opt.dat
 or
-$ mpirun -np $nproc vmc_new.out namelist_aft.def ./output/zqp_opt.dat
+$ mpirun -np $nproc vmc_new.out namelist_G.def ./output/zqp_opt.dat
 
 for example. The files will be generated in the "./output/" subdirectory
-with names "zvo_nCHAm_nAHCm_###.dat". These can then be treated to produce
+with names "zvo_nCHAm_nAHCm_###.bin". These can then be treated to produce
 a graph of the density of states with the functions in:
 "./tool/dynamicalGreenProcessing/*"
 

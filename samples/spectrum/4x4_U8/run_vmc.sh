@@ -12,19 +12,8 @@ module load uge compiler/intel-17.0.4 openmpi/1.10.6/intel-17.0.4.lp mpich/3.2/i
 export MKL_NUM_THREADS=1
 export OMP_NUM_THREADS=1
 
-####  mVMC preparations :
-vmcdry_new.out StdFace.def 
-
-date
-sed -i "s/NExUpdatePath  0/NExUpdatePath  1/"     modpara.def
-sed -i "s/NDataQtySmp    1/NDataQtySmp    10/"    modpara.def
-
-cp namelist.def namelist_G.def
-cp modpara.def modpara_G.def
-sed -i "s/CDataFileHead  zvo/CDataFileHead  zbo/"           modpara.def
-sed -i "s/NVMCCalMode    0/NVMCCalMode    3/"               modpara_G.def
-sed -i "s/ModPara  modpara.def/ModPara  modpara_G.def/"     namelist_G.def
-echo "      Excitation  excitation.def" >> namelist_G.def
+#do the preprocessing typing:
+#$ preprocessVMC.sh
 
 #### mVMC groud state calculations:
 date
