@@ -121,6 +121,7 @@ void OutputOptData() {
       Child_OutputOptData(fp, fileName, "NGutzwillerIdx",
 			  NGutzwillerIdx, NGutzwillerIdx, count_i, n);
       count_i += NGutzwillerIdx;
+      printf("gut = %d \n",NGutzwillerIdx);
     }
 
     if(NJastrowIdx !=0){
@@ -128,6 +129,7 @@ void OutputOptData() {
       Child_OutputOptData(fp, fileName, "NJastrowIdx",
 			  NJastrowIdx, NJastrowIdx, count_i, n);
       count_i += NJastrowIdx;
+      printf("jas = %d \n",NJastrowIdx);
     }
 
     if(NDoublonHolon2siteIdx != 0){
@@ -136,6 +138,7 @@ void OutputOptData() {
 			  NDoublonHolon2siteIdx, NDoublonHolon2siteIdx*2*3, 
 			  count_i, n);
       count_i +=2*3*NDoublonHolon2siteIdx;
+      printf("dh2 = %d \n",2*3*NDoublonHolon2siteIdx);
     }
 
     if(NDoublonHolon4siteIdx != 0){
@@ -144,6 +147,7 @@ void OutputOptData() {
 			  NDoublonHolon4siteIdx, NDoublonHolon4siteIdx*2*5, 
 			  count_i, n);
       count_i +=2*5*NDoublonHolon4siteIdx;
+      printf("dh4 = %d \n",2*5*NDoublonHolon4siteIdx);
     }
 
     if(NSlater != 0){
@@ -152,21 +156,25 @@ void OutputOptData() {
         Child_OutputOptData(fp, fileName, "NOrbitalIdx",
                             NSlater, NSlater, count_i, n);
         count_i +=NSlater;
+        printf("slat= %d \n",NSlater);
       }else{
         if(iNOrbitalParallel !=0){//use OrbitalParallel and Orbital AntiParallel
           sprintf(fileName, "%s_orbitalAntiParallel_opt.dat", CParaFileHead);
           Child_OutputOptData(fp, fileName, "NOrbitalAntiParallelIdx",
                               iNOrbitalAntiParallel, iNOrbitalAntiParallel, count_i, n);
           count_i += iNOrbitalAntiParallel;
+          printf("oAP = %d \n",iNOrbitalAntiParallel);
           sprintf(fileName, "%s_orbitalParallel_opt.dat", CParaFileHead);
           Child_OutputOptData(fp, fileName, "NOrbitalParallelIdx",
                               2*iNOrbitalParallel, 2*iNOrbitalParallel, count_i, n);
           count_i += 2*iNOrbitalParallel;
+          printf("oPar= %d \n",2*iNOrbitalParallel);
         }else{// use OrbitalGeneral
           sprintf(fileName, "%s_orbital_general_opt.dat", CParaFileHead);
           Child_OutputOptData(fp, fileName, "NOrbitalIdx",
                               NSlater, NSlater, count_i, n);
           count_i +=NSlater;
+          printf("oGen= %d \n",NSlater);
         }
       }
     }

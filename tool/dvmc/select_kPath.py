@@ -19,12 +19,10 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
+
 import numpy as np
 from numpy import linalg as la
 import sys, os, re
-
-full_path = os.path.realpath(__file__)
-pythonPathCode, file1 = os.path.split(full_path)
 
 StdFace = open('StdFace.def').read().replace(' ','')
 U=0.
@@ -33,59 +31,60 @@ if(StdFace.find('L=')>=0): L = int(re.compile('L=([0-9]*)').findall(StdFace)[0])
 if(StdFace.find('W=')>=0): W = int(re.compile('W=([0-9]*)').findall(StdFace)[0])
 if(StdFace.find('U=')>=0): U = float(re.compile('U=([0-9.]*)').findall(StdFace)[0])
 
+
+outputDir='output/'
+spectrumparaFileName='spectrumpara.def'
+
+if (len(sys.argv)==1):
+  pass
+  #print ''
+elif (len(sys.argv)==2):
+  spectrumparaFileName=sys.argv[1]
+elif (len(sys.argv)==3):
+  outputDir=sys.argv[2]+'/'
+else:
+  print("example:\n$ vmc_spectrum.py \nor:\n$ vmc_spectrum.py spectrumpara.def\nor:\n$ vmc_spectrum.py spectrumpara.def output/")
+  sys.exit()
+
+
 def main():
 
-  spectrumpara = open('spectrumpara.def').read()
+  spectrumpara = open(spectrumparaFileName).read()
 
   for line in  spectrumpara.split('\n'):
     if len(line)>0:
      if line[0]!='#':
       term = line.split()
-      if term[0]=='w_min' : w_min = float(term[1])
-      if term[0]=='w_max' : w_max = float(term[1])
-      if term[0]=='Nw'    :    Nw = int(term[1])
       if (term[0][:]=='kPath' or term[0][:-1]=='kPath'): 
         if term[1] == 'all':
           kPath = range(W*L)
+          calculateAll = True
         elif term[1][0:6]=='range(':
-          #print 'salut'
           kPath = range(int(term[1][6:-1]))
         else: 
           kPath = ReadRange(term[1])
-        
-        if term[0][-1] == '1': kPath1 = kPath
-        elif term[0][-1] == '2': kPath2 = kPath
-        else :
-          kPath1 = kPath
-          kPath2 = kPath
 
+
+  def select_kPath(fileName,fileOut):
+    Akw_all = open(fileName).read()
+    #print Akw_all
+    Akw = open(fileOut,'w')
+    for line in  Akw_all.split('\n'):
+      if len(line)>0:
+        terms = line.split()
+        lineToPrint = ''
+        for k in kPath:
+          #print terms
+          lineToPrint += terms[int(k)] + '  '
+      Akw.write(lineToPrint+'\n')
+    Akw.close()
   
+  select_kPath(outputDir+'Akw_all.dat',   outputDir+'Akw.dat')
+  select_kPath(outputDir+'Akw_e_all.dat', outputDir+'Akw_e.dat')
+  select_kPath(outputDir+'Akw_h_all.dat', outputDir+'Akw_h.dat')
   
-  def replaceTemplateFileValues(templateFileName):
-  
-    gnuplotString = open(pythonPathCode+'/'+templateFileName).read()
-    #w_mid = 0.5*(w_min+w_max)
-    gnuplotString = gnuplotString.replace('w_min_data = -13.0','w_min_data =% 4.5f'%(w_min))
-    gnuplotString = gnuplotString.replace('w_max_data =  13.0','w_max_data =% 4.5f'%(w_max))
-    gnuplotString = gnuplotString.replace('w_min = -8.0','w_min =% 4.5f'%(w_min))
-    gnuplotString = gnuplotString.replace('w_max =  8.0','w_max =% 4.5f'%(w_max))
-    gnuplotString = gnuplotString.replace('kRange = 32','kRange =% 4.5f'%(len(kPath1)-1))
-    gnuplotString = gnuplotString.replace('Nw = 1500','Nw =% 4.5f'%(Nw))
-    
-    fileOut = open('./'+templateFileName[9:],'w')
-    fileOut.write(gnuplotString)
-    fileOut.close()
-    return;
-  
-  replaceTemplateFileValues('template_plot_allAkw.gp')
-  replaceTemplateFileValues('template_plot_singleAkw.gp')
-  
-    
   exit()
-  
-#######################################################################
-######################    SUB ROUTINES    #############################
-#######################################################################
+
 
 
 

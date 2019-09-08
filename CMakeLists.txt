@@ -61,6 +61,7 @@ add_subdirectory(src/ComplexUHF)
 add_subdirectory(src/pfapack)
 add_subdirectory(src/mVMC)
 add_subdirectory(tool)
+add_subdirectory(tool/dvmc)
 
 # Build and enable tests
 # testing setup

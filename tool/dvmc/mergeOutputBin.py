@@ -1,4 +1,25 @@
 #!/usr/bin/python
+# zlib license:
+
+# Copyright (c) 2019 Maxime Charlebois
+
+# This software is provided 'as-is', without any express or implied
+# warranty. In no event will the authors be held liable for any damages
+# arising from the use of this software.
+
+# Permission is granted to anyone to use this software for any purpose,
+# including commercial applications, and to alter it and redistribute it
+# freely, subject to the following restrictions:
+
+# 1. The origin of this software must not be misrepresented; you must not
+#    claim that you wrote the original software. If you use this software
+#    in a product, an acknowledgment in the product documentation would be
+#    appreciated but is not required.
+# 2. Altered source versions must be plainly marked as such, and must not be
+#    misrepresented as being the original software.
+# 3. This notice may not be removed or altered from any source distribution.
+
+
 import sys, os
 import numpy as np
 import re
@@ -41,8 +62,8 @@ def main():
     
   Nsite = L*W
   #use compiled version if present:
-  if( not os.path.isfile(pythonPathCode+'/c_speedup.so')):
-    print 'Error: the shared object library "c_speedup.so" was not found.\nTo obtain it, go in the original directory of this python code (probably: '+ pythonPathCode+'/) and do make.'
+  if( not os.path.isfile(pythonPathCode+'/libdvmc_speedup.so')):
+    print 'Error: the shared object library "libdvmc_speedup.so" was not found.\nTo obtain it, go in the original directory of this python code (probably: '+ pythonPathCode+'/) and do make.'
     exit(0)
   c_ArrayFloatN = c_float * (n_exc*n_exc*Nsite)
 
@@ -59,7 +80,7 @@ def main():
   argList[:] = fileIn
   
   #Loading and using our home made module:
-  lib1 = cdll.LoadLibrary(pythonPathCode+'/c_speedup.so')
+  lib1 = cdll.LoadLibrary(pythonPathCode+'/libdvmc_speedup.so')
   lib1.mergeOutputBin(len(fileIn), argList, c_NExcitation, c_L, c_W, 
               phys_CA_averaged,phys_AC_averaged,phys_CHA_averaged,phys_AHC_averaged)
   

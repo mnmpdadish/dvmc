@@ -427,19 +427,19 @@ void SetMemory() {
     
   if(NVMCCalMode==3){
     double mem1 = 8.*4.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
-    double mem2 = 4.*1.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
+    double mem2 = 1.*4.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
     double mem3 = 8.*10.*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
     //printf("memory usage: %d times double.\n", 4*Nsite*NExcitation*NExcitation+/*4*Nsite*Nsite*NExcitation*NExcitation +*/ 10*Nsite*Nsite*NExcitation*sampleChunk);
     printf("memory usage per mpi thread is a little above %f Go.\n", mem1+mem2+mem3);
     //printf("%d %d\n", Nsite,NExcitation);
     //exit(0);
     
-    Phys_nCAm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
-    Phys_nACm_averaged  = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
-    Phys_nCHAm_averaged = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
-    Phys_nAHCm_averaged = (double *)calloc((Nsite*NExcitation*NExcitation),sizeof(double));
+    Phys_nCAm_averaged  = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
+    Phys_nACm_averaged  = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
+    Phys_nCHAm_averaged = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
+    Phys_nAHCm_averaged = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
     
-    data_float_convert = (float *)calloc((Nsite*NExcitation*NExcitation),sizeof(float));
+    data_float_convert = (float *)malloc((Nsite*NExcitation*NExcitation)*sizeof(float));
     
     /*
     Phys_nCAm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));

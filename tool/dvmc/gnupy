@@ -1,0 +1,78 @@
+#!/usr/bin/python
+
+# zlib license:
+
+# Copyright (c) 2017 Simon Verret
+
+# This software is provided 'as-is', without any express or implied
+# warranty. In no event will the authors be held liable for any damages
+# arising from the use of this software.
+
+# Permission is granted to anyone to use this software for any purpose,
+# including commercial applications, and to alter it and redistribute it
+# freely, subject to the following restrictions:
+
+# 1. The origin of this software must not be misrepresented; you must not
+#    claim that you wrote the original software. If you use this software
+#    in a product, an acknowledgment in the product documentation would be
+#    appreciated but is not required.
+# 2. Altered source versions must be plainly marked as such, and must not be
+#    misrepresented as being the original software.
+# 3. This notice may not be removed or altered from any source distribution.
+
+# The code has been slightly adapted by Maxime Charlebois
+
+
+import sys
+import time
+import os
+
+print "Gnuplot automated EpsLaTeX plotting"
+f = sys.argv[1]
+try : resolution = sys.argv[2]
+except : resolution = False
+
+#-----------------------------------------------------------------------
+# loop over files
+
+header = "\documentclass[10pt]{article}\n\usepackage{vmargin,graphicx}\n\usepackage{amsmath}\n\usepackage[usenames,dvipsnames]{xcolor}\n\setpapersize[landscape]{USletter}\n"
+
+# FONT
+#header = header+"\usepackage[fullfamily,lf,minionint]{MinionPro}"	# MINION
+#header = header+"\usepackage{newtxtext,newtxmath}\n" 								# TIMES
+header = header+"\usepackage{txfonts}\n" 								# TIMES
+#header = header+"\usepackage{cmbright}\n" 							# SANS-SERIF
+
+if resolution:
+	print 'not implemented yet'
+	
+	#"convert -density "+resolution+" fig.eps fig.png"
+	#"sed -r 's:\\includegraphics\{([^}]+)\}:\\includegraphics[scale=0.25]{\1.png}:g' < plot.tex > plot-png.tex
+	
+else:
+	if f[-3:] == ".gp":
+		stub = f[:-3]
+	else:
+		print "file " + f + " does not have the right suffix!"
+		quit()
+
+	fout = open("fig.tex",'w')
+	fout.writelines(header)
+	fout.writelines("\\begin{document}\n\input plot.tex\n\end{document}\n")
+	fout.close()
+
+	os.system("gnuplot " +  f)
+	os.system("latex fig")
+	os.system("dvips fig")
+	os.system("ps2pdf fig.ps")
+	#os.system("dvips -E fig")
+	
+	#os.system("ps2pdf fig.eps")
+	os.system("pdfcrop --margins 2 fig.pdf " + stub + ".pdf")
+	#os.system("ps2epsi plot.eps " + stub + ".eps")
+	#os.system("epstool --copy --bbox fig.eps " + stub + ".eps")
+	os.system("rm -f fig.tex fig.dvi fig.log fig.ps plot.tex plot.eps fig.eps fig.aux fig.pdf")
+	
+	os.system("pdftops -eps " + stub + ".pdf")
+	
+

@@ -17,45 +17,21 @@
 #    in a product, an acknowledgment in the product documentation would be
 #    appreciated but is not required.
 # 2. Altered source versions must be plainly marked as such, and must not be
-#   misrepresented as being the original software.
+#    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-import numpy as np
-import numpy.linalg as la
+import sys
 
-def main():  
-  np.set_printoptions(precision=3)
+if len(sys.argv)!=2:
+  print("example:\n$ python cluster.py 12")
+  sys.exit()
+
+
+NN=int(sys.argv[1])
+
+for ii in range(NN):
+  print '#',
+  for jj in range(NN):
+    print ' %3d' % (NN*NN - (ii+1)*NN +jj),
+  print ''
   
-#  tc  = np.array([[ 0., -t , -tp, -t ],
-#                  [-t ,  0., -t , -tp],
-#                  [-tp, -t ,  0., -t ],
-#                  [-t , -tp, -t ,  0.]])
-  H = np.array([[1,2,6+5.j],
-                [3,4,0],
-                [1,2,1.]])
-
-  H2 = np.array([[4,1,3],
-                 [4,3,1],
-                 [4,1,2+1.j]])
-
-  e,u = la.eig(H)
-  
- 
-  print
-  print 'H'
-  print H
-  print
-  print 'multiplication'
-  print np.dot(H,H2)
-  print
-  print 'inv'
-  print la.inv(H)
-  print
-  print 'eig'
-  print e
-  print
-  print u
-
-  print u[0,1]
-
-main()

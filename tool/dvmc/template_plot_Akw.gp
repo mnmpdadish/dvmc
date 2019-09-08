@@ -2,7 +2,7 @@
 
 w = 8.5
 h = 12
-offset1 = 0.0
+mu = 0.0
 kRange = 32
 w_min = -8.0
 w_max =  8.0
@@ -18,7 +18,7 @@ right = 0.85
 bottom = 0.10
 
 #set terminal pdf enhanced color size w cm,h cm
-#set output 'akw_single.pdf'
+#set output 'akw.pdf'
 #set terminal epslatex size w cm,h cm color
 #set output 'plot.tex'
 
@@ -35,9 +35,9 @@ set palette defined (0 'white',0.016 'white', 0.04 '#fff879',0.16 '#fe7e00',0.27
 #set colorbox vertical user origin right+0.02, top-0.4 size .04,.4
 
 set colorbox vertical user origin right+0.02, (top+bottom)/2 size .02,.4
-set ytics ('-16' offset1-16,'-12' offset1-12,'-8' offset1-8,'-4' offset1-4, '0' offset1, '4' offset1+4.0, '8' offset1+8.0, '12' offset1+12.0,'-16' offset1+16)
+set ytics ('-16' -16,'-12' -12,'-8' -8,'-4' -4, '0' 0.0, '4' +4.0, '8' +8.0, '12' +12.0,'-16' +16)
 set tics front
-set arrow from -0.5,offset1 to kRange+0.5,offset1 nohead lw 2 dt 2 lc 'black' front
+set arrow from -0.5,0.0 to kRange+0.5,0.0 nohead lw 2 dt 2 lc 'black' front
 #set xtics ('$0$' 0, '$\pi$' 32 )
 set xtics ('0' 0, '{/Symbol p}' kRange)
 
@@ -47,6 +47,6 @@ set label 1 'A(k,{/Symbol w})' at screen 0.5*(left+right), screen top+0.03 front
 
 set lmargin at screen left; set rmargin at screen right
 set tmargin at screen top; set bmargin at screen bottom
-plot 'output/Akw.dat' u 1:($2*w_range_data/Nw_data+w_min_data):3 matrix notitle w image 
+plot 'output/Akw.dat' u 1:($2*w_range_data/Nw_data+w_min_data-mu):3 matrix notitle w image 
 
 pause -1

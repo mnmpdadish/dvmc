@@ -650,7 +650,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       if(rank==0) {
         outputData();
         //printf("after output.\n"); fflush(stdout);
-        fclose(File_nCHAm);
+        //fclose(File_nCHAm);
         fclose(File_nCHAm_bin);
         fclose(FileCisAjs);
         //printf("after close.\n"); fflush(stdout);
@@ -839,7 +839,7 @@ void outputData() {
         fprintf(File_nCHAm, " "); 
       }
     }
-    */
+    //*/
     
     //print binary output, will delete text output soon.
     long int totalSize = NExcitation*NExcitation*Nsite;

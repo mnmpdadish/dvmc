@@ -9,13 +9,13 @@ Please refer to the documentation in the open source package
 as this will not be covered here.
 
 It implements a new feature where you can calculate the frequency 
-dependent Green function (option NVMCCalMode = 3), hence the
-spectral weight. For now there is a number of condition on this 
+dependent Green function (option NVMCCalMode = 3). 
+For now there is a number of condition on this 
 new calculation mode. It is restricted to (for now):
 - 1D or 2D model (easy to generalize to 3D, to be done)
 - real calculation
 - OrbitalAntiParallel (not OrbitalGeneral or OrbitalParallel)
-
+- Hubbard model
 
 # Usage
 
@@ -26,13 +26,12 @@ this the spectral weight can be calculated with option "NVMCCalMode 3".
 
 This mode requires a new input file "excitation.def". This can be generated
 in an automated way from the python code:
-"./tool/dynamicalGreenProcessing/makeExcitation.py"
-together with the input file "spectrumpara.def". In this last file, the
-values "dr1_x, dr1_y, dr2_x, dr2_y", defines the difference in position
-of the charge excitation relatif to site "i" or "j" of the operator 
-"c^dagger_i" or  "c_j" for the Green function <n|c^dagger_i cj|m>. 
-This is technical (may requires more information soon, or reference 
-to the arxiv paper). For example:
+"./tool/dvmc/makeExcitation.py" together with the input file "spectrumpara.def". 
+In this last file, the values "dr1_x, dr1_y, dr2_x, dr2_y", defines the 
+difference in position of the charge excitation relatif to site "i" or 
+"j" of the operator "c^dagger_i" or  "c_j" for the Green function 
+<n|c^dagger_i cj|m>. This is technical (may requires more information soon, 
+or reference to the arxiv paper). For example:
 
 "
 dr1_x       -1:1
@@ -93,9 +92,8 @@ more to come
 Have this new mVMC code compiled first (follow original mVMC 
 documentation). Put it in a directory available in the PATH environment 
 variable (usually ~/bin/.). Name this executable "vmc_new.out". 
-Also copy the files contained in 
-./tool/dynamicalGreenProcessing/*
-to a path contained in the PATH environment variable.
+Also compile (with "make") copy all the files contained in 
+./tool/dvmc/* to a path contained in the PATH environment variable.
 
 The libraries required to compile the code are:
 - mpi

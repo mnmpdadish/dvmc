@@ -375,7 +375,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
      }
     }
     
-    #pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) nowait
+    #pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) 
     for(ri=0;ri<Nsite;ri++) {
      for(rj=0;rj<Nsite;rj++) {
       s=0;

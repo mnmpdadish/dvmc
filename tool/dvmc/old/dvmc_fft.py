@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 # zlib license:
 
 # Copyright (c) 2019 Maxime Charlebois
@@ -17,45 +16,45 @@
 #    in a product, an acknowledgment in the product documentation would be
 #    appreciated but is not required.
 # 2. Altered source versions must be plainly marked as such, and must not be
-#   misrepresented as being the original software.
+#    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
 import numpy as np
-import numpy.linalg as la
+from numpy import linalg as la
+import sys, os, re
 
-def main():  
-  np.set_printoptions(precision=3)
+def main():
   
-#  tc  = np.array([[ 0., -t , -tp, -t ],
-#                  [-t ,  0., -t , -tp],
-#                  [-tp, -t ,  0., -t ],
-#                  [-t , -tp, -t ,  0.]])
-  H = np.array([[1,2,6],
-                [3,4,0],
-                [1,2,1.]])
-
-  H2 = np.array([[4,1,3],
-                 [4,3,1],
-                 [4,1,2.]])
-
-  e,u = la.eig(H)
+  S_CA_k = FFT('output/nCAm.npy')
+  S_AC_k = FFT('output/nACm.npy')
+  H_CA_k = FFT('output/nCHAm.npy')
+  H_AC_k = FFT('output/nAHCm.npy')
+  np.save('output/nCAm_k.npy',S_CA_k)
+  np.save('output/nACm_k.npy',S_AC_k)
+  np.save('output/nCHAm_k.npy',H_CA_k)
+  np.save('output/nAHCm_k.npy',H_AC_k)
   
- 
-  print
-  print 'H'
-  print H
-  print
-  print 'multiplication'
-  print np.dot(H,H2)
-  print
-  print 'inv'
-  print la.inv(H)
-  print
-  print 'eig'
-  print e
-  print
-  print u
+  exit()
 
-  print u[0,1]
 
-main()
+def FFT(dataFileName):
+  print 'fft of '+ dataFileName + '.'
+  sys.stdout.flush()
+  data_up = np.load(dataFileName)
+  
+  
+  #print data_up
+  data_k  = np.fft.fft2(data_up) # fft2 only on the last 2 indices
+  
+  print data_k
+  print 
+  for ii in range(3):
+   for jj in range(3):
+    for kk in range(3):
+     print '% 3.5f '% data_up[ii,jj,0,kk]
+  return data_k
+
+
+if __name__ == "__main__":
+   main()
+
