@@ -20,87 +20,58 @@ new calculation mode. It is restricted to (for now):
 # Usage
 
 Detailed usage is not covered here. Instead many examples can be found
-in the "./samples/spectrum/" subdirectory. In summary, the code requires
-a converged ground state obtained by the "NVMCCalMode 0" option. From 
-this the spectral weight can be calculated with option "NVMCCalMode 3".
+in the "./samples/spectrum/" subdirectory. The easiest way to understand
+how to use it is to run these examples. Go there to read the README
+and run the few examples. However, the code must be installed first
+(see next section)
 
-This mode requires a new input file "excitation.def". This can be generated
-in an automated way from the python code:
-"./tool/dvmc/makeExcitation.py" together with the input file "spectrumpara.def". 
-In this last file, the values "dr1_x, dr1_y, dr2_x, dr2_y", defines the 
-difference in position of the charge excitation relatif to site "i" or 
-"j" of the operator "c^dagger_i" or  "c_j" for the Green function 
-<n|c^dagger_i cj|m>. This is technical (may requires more information soon, 
-or reference to the arxiv paper). For example:
+# Installation:
 
-"
-dr1_x       -1:1
-dr1_y       -1:1
-dr2_x       -1:2
-dr2_y       -1:2
-"
+To install everything, this new version of mVMC must be compiled. 
+This can be done using cmake. In the currect (root) directory, do:
 
-will generate 244 different charge charge excitations in the file
-"excitation.def". Once the file is generated, the code in this 
-mode can be run through this command:
+$ mkdir build && cd build
+$ cmake -DCONFIG=intel -DCMAKE_INSTALL_PREFIX:PATH=~ ..
+$ make 
+$ make install
 
-$ vmc_new.out namelist_G.def ./output/zqp_opt.dat
-or
-$ mpirun -np $nproc vmc_new.out namelist_G.def ./output/zqp_opt.dat
+This should install everything with correct linking in the bin directory 
+in your home directory. We use a custom binary directory because on a 
+remote cluster, it might be impossible or prohibited to install using 
+sudo. For this to work, you need to create the ~/bin/ and make this 
+directory execuable by adding this line to the ~/.bashrc 
+(if this file does not exist, create it):
 
-for example. The files will be generated in the "./output/" subdirectory
-with names "zvo_nCHAm_nAHCm_###.bin". These can then be treated to produce
-a graph of the density of states with the functions in:
-"./tool/dynamicalGreenProcessing/*"
+export PATH=$PATH:$HOME/bin/
 
-In order
+after that, type the command line:
 
-$ mergeOutput.py output/zvo_nCHAm_nAHCm_0*   # to average the different iterations in 4 numpy data array.
-$ print_spectrum.py                          # to output a matrix of A(k,w) in the files Akw.dat, Akw_e.dat, Akw_h.dat
+$ source ~/.bashrc 
 
-This last function read the parameter from many files including the frequency
-axis parameters in "spectrumpara.def".
-
-After that, the spectral density A(k,w) can be plotted through 
-the simple gnuplot command:
-> plot 'output/Akw.dat' matrix notitle w image
-
-A better (prettier) version of the same gnuplot graph can be generated
-
-$ generate_template_gnuplot.py
-$ gnuplot plot_singleAkw.gp
-$ gnuplot plot_allAkw.gp
-
-although, some generic parameters might need to be adjusted to obtain a 
-good result. For example, the an offset must be applied on the frequency
-axis so that the Fermi level (omega = 0) is placed manually between the
-electron minimum and hole maximum density of state.  
-
-Gnuplot is the software of choice here because it can embed an image
-of the A(k,w), resulting in smaller file, faster to process and easier
-to scroll by in a PDF file.
-
-
-# Samples description:
-
-"./samples/spectrum/chain2_U8"  -- trivial example for comparison with analytical results
-more to come
-
+Note, the -DCONFIG=intel option requires that you have icc, ifort, etc.
+If you want to use gcc, gfortran, etc. instead, use the line instead:
+$ cmake -DCONFIG=gcc -DCMAKE_INSTALL_PREFIX:PATH=~ ..
 
 # Requirements
-
-Have this new mVMC code compiled first (follow original mVMC 
-documentation). Put it in a directory available in the PATH environment 
-variable (usually ~/bin/.). Name this executable "vmc_new.out". 
-Also compile (with "make") copy all the files contained in 
-./tool/dvmc/* to a path contained in the PATH environment variable.
 
 The libraries required to compile the code are:
 - mpi
 - lapack or MKL
 - blas or MKL
 
+It is recommended to consult the original mVMC documentation to learn
+more about dependencies and parameters names and idea. Note however that
+not all the case in mVMC are covered by the present code, as stated above.
 
+
+# Details:
+
+Two more README are encourage to read after this one:
+
+"./samples/spectrum/README" - to learn about the code usage (with functionnal examples).
+"./tool/dvmc/README"        - to learn about the tools that can be used to analyse the data.
+
+This complete the documentation for now. 
 
 
 

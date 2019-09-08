@@ -1,0 +1,24 @@
+# input for postprocessing dvmc (vmc_new.out with NVMCCalMode == 3)
+# '#' are treated as comment
+
+# parameters to generate excitation.def file (used by makeExcitation.py):
+dr1_x        0:15     # will generate array [0,1,2,3,4,...,14,15]
+dr1_y        0        # will generage array [0]
+dr2_x        0:15     # ...
+dr2_y        0
+
+# parameters to generate A(k,w) parameters:
+eta           0.2             # imaginary frequency
+w_min        -6.0             # minimum frequency plotted
+w_max        11.0             # maximum frequency plotted
+w_min_data  -15.0             # minimum frequency calculated
+w_max_data   15.0             # maximum frequency calculated
+Nw           1500             # calculate 1500 frequencies
+exc_choice   all              # take all excitations
+kPath        range(9)         # k points chosen in the path to plot
+
+
+# geometry of the sites (both real space and reciprocal k-space):
+#
+#    0    1    2    3    4 ... 14  15
+

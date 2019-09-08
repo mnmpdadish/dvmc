@@ -70,7 +70,7 @@ double complex CalculateHamiltonian_fsz(const double complex ip, int *eleIdx, co
   */
 #pragma omp parallel default(none)                                      \
   private(myEleIdx,myEleSpn,myEleNum,myProjCntNew,myBuffer,myEnergy, idx, ri, rj, rk, rl, s, t,u,v) \
-  firstprivate(ip, Nsize, Nsite2, NProj, NQPFull, NCoulombIntra, CoulombIntra, ParaCoulombIntra, \
+  firstprivate(Nsize, Nsite2, NProj, NQPFull, NCoulombIntra, CoulombIntra, ParaCoulombIntra, \
                NCoulombInter, CoulombInter, ParaCoulombInter, NHundCoupling, HundCoupling, ParaHundCoupling, \
                NTransfer, Transfer, ParaTransfer, NPairHopping, PairHopping, ParaPairHopping, \
                NExchangeCoupling, ExchangeCoupling, ParaExchangeCoupling, NInterAll, InterAll, ParaInterAll, n0, n1) \
