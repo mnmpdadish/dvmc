@@ -71,9 +71,7 @@ Two more README are encourage to read after this one:
 "./samples/spectrum/README" - to learn about the code usage (with functionnal examples).
 "./tool/dvmc/README"        - to learn about the tools that can be used to analyse the data.
 
-This complete the documentation for now. 
-
-
+This complete the documentation.
 
 
 ############################################################################

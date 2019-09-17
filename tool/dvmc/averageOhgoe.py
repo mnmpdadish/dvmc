@@ -248,7 +248,7 @@ Ntime=1
 #fileList = GetFileList(sys.argv[1])
 
 # read def files
-paraList = ReadPara("../modpara_aft.def")
+paraList = ReadPara("../modpara_CA.def")
 
 f= open('../greenone.def','r')
 data = f.readline()
@@ -472,7 +472,8 @@ for num in numList:
     # Super Conducting Correlation Pd(ro)
     print num, "dsc"
     ofile = open(pre2+'_dsc_'+num+'.dat','w')
-    ofile.write("# r  max|Pd(r)| \n")
+    ofile.write("# qx/pi qy/pi dSC(q).real  dSC(q).imag\n")
+    #ofile.write("# r  max|Pd(r)| \n")
     ofile2 = open(pre2+'_dsc2_'+num+'.dat','w')
     ofile2.write("# isub  rx   ry   P_dsc  \n")
     ofile3 = open(pre2+'_dsc3_'+num+'.dat','w') # summed in terms of isub and (Lx-rx,Ly-ry)
@@ -532,22 +533,36 @@ for num in numList:
          #mat[rx][ry] = scAll/(4.0)
          #mat[rx][ry] += scAll/(4.0*Nsub)
          mat[rx][ry] += scAll/(4.0*Nsite)
-      maxP = {}
-      for rx in xrange(Lx):
-        for ry in xrange(Ly):
-          r = distance((rx,ry))
-          if not r in maxP:
-            maxP[r] = 0.0
-          if fabs(mat[rx][ry]) > fabs(maxP[r]):
-            maxP[r] = fabs(mat[rx][ry])
-      numLine = 0
-      for rx in xrange(Lx):
-        for ry in xrange(Ly):
-          r = distance((rx,ry))
-          val = maxP[r]
-          if(r <= sqrt(2.0)*float(Lx)*0.5):
-            ofile.write("{0: .10e}\t{1: .10e}\t{2: .10e}\n".format(r,val.real,val.imag))
-            numLine = numLine + 1
+
+      dscq = np.fft.fft2(mat)
+      for mx in xrange(Lx+1):
+        qx = 2.0*pi*float(mx)/float(Lx)
+        for my in xrange(Ly+1):
+            qy = 2.0*pi*float(my)/float(Ly)
+
+            dscqReal = dscq[mx%Lx][my%Ly].real / float(Nsite)
+            dscqImag = dscq[mx%Lx][my%Ly].imag / float(Nsite)
+            ofile.write("{0: .10f}\t{1: .10f}\t{2: .18e}\t{3: .18e}\n".\
+                            format(qx/pi,qy/pi,dscqReal,dscqImag))
+        ofile.write("\n")
+          
+
+#      maxP = {}
+#      for rx in xrange(Lx):
+#        for ry in xrange(Ly):
+#          r = distance((rx,ry))
+#          if not r in maxP:
+#            maxP[r] = 0.0
+#          if fabs(mat[rx][ry]) > fabs(maxP[r]):
+#            maxP[r] = fabs(mat[rx][ry])
+#      numLine = 0
+#      for rx in xrange(Lx):
+#        for ry in xrange(Ly):
+#          r = distance((rx,ry))
+#          val = maxP[r]
+#          if(r <= sqrt(2.0)*float(Lx)*0.5):
+#            ofile.write("{0: .10e}\t{1: .10e}\t{2: .10e}\n".format(r,val.real,val.imag))
+#            numLine = numLine + 1
 
       SCmat2 = [[[0.0 for isub in xrange(Nsub)] for ry in xrange(Ly)] for rx in xrange(Lx)]
       for ix in xrange(Lx):
@@ -572,6 +587,7 @@ for num in numList:
                   rminus = indexToPosition( positionToIndex( (Lx-rx, Ly-ry) ) )
                   ave += SCmat2[rminus[0]][rminus[1]][isub]
               ofile3.write(" {0}\t{1}\t{2: .10e}\n".format(rx, ry, ave/float(Nsite*2)))
+      
       
 
     ofile.close()
@@ -959,6 +975,44 @@ for i in xrange(nNum):
 ofile.close()
 ofile2.close()
 
+
+
+
+# charge structure factor ver. dc
+print "ave", "dscq"
+for i in xrange(nNum):
+    ifile[i] = open(pre2+"_dsc_"+numList[i]+".dat",'r')
+    data = ifile[i].readline()
+ofile = open(pre3+"_dscq.dat",'w')
+ofile.write("# qx/pi qy/pi dSC(q).real sigma  dSC(q).imag sigma\n")
+for k in xrange(Ntime):
+  for mx in xrange(Lx+1):
+    for my in xrange(Ly+1):
+        sum = [0.0, 0.0, 0.0, 0.0]
+        for i in xrange(nNum):
+            data = ifile[i].readline().split()
+            dtmpx = float(data[0])
+            dtmpy = float(data[1])
+            dtmp1 = float(data[2])
+            dtmp2 = float(data[3])
+            sum[0] += dtmp1
+            sum[1] += dtmp1*dtmp1
+            sum[2] += dtmp2
+            sum[3] += dtmp2*dtmp2
+        ave1 = sum[0]/float(nNum)
+        var1 = sum[1]/float(nNum) - ave1*ave1
+        sigma1 = sqrt(abs(var1/float(nNum)))
+        ave2 = sum[2]/float(nNum)
+        var2 = sum[3]/float(nNum) - ave2*ave2
+        sigma2 = sqrt(abs(var2/float(nNum)))
+        ofile.write("{0:.10f}\t{1:.10f}\t{2: .10e}\t{3: .10e}\t{4: .10e}\t{5: .10e}\n"\
+                        .format(dtmpx,dtmpy,ave1,sigma1,ave2,sigma2))
+    for i in xrange(nNum):
+        ifile[i].readline()
+    ofile.write("\n")
+for i in xrange(nNum):
+    ifile[i].close()
+ofile.close()
 
 # double occupancy
 print "ave", "do"

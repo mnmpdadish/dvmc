@@ -6,7 +6,6 @@ endif(${CMAKE_PROJECT_NAME} STREQUAL "Project")
 
 add_executable(dvmc_gnuplot src/dvmc_gnuplot.c)
 add_library(dvmc_speedup SHARED src/dvmc_speedup.c)
-target_link_libraries(dvmc_speedup ${LAPACK_LIBRARIES})
 set_property(TARGET dvmc_speedup PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 install(TARGETS dvmc_gnuplot RUNTIME DESTINATION bin)

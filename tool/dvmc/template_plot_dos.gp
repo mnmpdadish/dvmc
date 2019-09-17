@@ -12,6 +12,10 @@ w_min_data = -13.0
 w_max_data =  13.0
 w_range_data = w_max_data - w_min_data
 
+
+#set terminal x11 size 600,800
+
+
 set yrange [w_min:w_max]
 set ytics ('-16' -16,'-12' -12,'-8' -8,'-4' -4, '0' 0.0, '4' +4.0, '8' +8.0, '12' +12.0,'-16' +16)
 

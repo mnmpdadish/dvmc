@@ -18,6 +18,7 @@ left = 0.09
 right = 0.90
 bottom = 0.14
 
+#set terminal x11 size 1200,800
 #set terminal pdf enhanced color size w cm,h cm
 #set output 'akw_all.pdf'
 #set terminal epslatex size w cm,h cm color

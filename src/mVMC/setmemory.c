@@ -462,12 +462,12 @@ void SetMemory() {
     O0_vec1   = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
     O0_vec2   = (double *)calloc(Nsite*Nsite*NExcitation*sampleChunk,sizeof(double) );
 
-    Local_CisAjsCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
+    Local_CisAjsCmuAnu = (double *)calloc(NTransfer*Nsite*Nsite, sizeof(double));
     //Local_AisCjsCmuAnu = (double **)malloc(sizeof(double*)*NTransfer);
-    for(i=0;i<NTransfer;i++) {
-      Local_CisAjsCmuAnu[i] = (double *)calloc(Nsite*Nsite,sizeof(double));
-      //Local_AisCjsCmuAnu[i] = (double *)calloc(Nsite*Nsite,sizeof(double));
-    }
+    //for(i=0;i<NTransfer;i++) {
+    //  Local_CisAjsCmuAnu[i] = (double *)calloc(Nsite*Nsite,sizeof(double));
+    //  //Local_AisCjsCmuAnu[i] = (double *)calloc(Nsite*Nsite,sizeof(double));
+    //}
   }
   
   initializeWorkSpaceAll();
@@ -526,11 +526,11 @@ void FreeMemory() {
     free(Phys_CA);
     free(Local_CA);
     //free(Local_AC);
-    int i;    
-    for(i=0;i<NTransfer;i++) {
-      free(Local_CisAjsCmuAnu[i]);
-      //free(Local_AisCjsCmuAnu[i]);
-    }
+    //int i;    
+    //for(i=0;i<NTransfer;i++) {
+    //  free(Local_CisAjsCmuAnu[i]);
+    //  //free(Local_AisCjsCmuAnu[i]);
+    //}
     free(Local_CisAjsCmuAnu);
     //free(Local_AisCjsCmuAnu);
   }

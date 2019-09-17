@@ -330,7 +330,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew   = GetWorkSpaceThreadInt(NProj);
     myBuffer_real  = GetWorkSpaceThreadDouble(NQPFull+2*Nsize);
-    
+
     #pragma loop noalias
     for(idx=0;idx<Nsize; idx++) myEleIdx[idx] = eleIdx[idx];
     #pragma loop noalias
@@ -339,9 +339,11 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
     int rm, rn, u;
     int idx_int, idx_trans;
 
-
+    //printf("\n");
+    //printf("\n");
     #pragma omp for private(idx,ri,rj,s) schedule(dynamic) 
     for(ri=0;ri<Nsite;ri++) {
+     //printf("%d ",ri);
      for(rj=0;rj<Nsite;rj++) {
       for(s=0;s<2;s++) {
        Local_CA[ri+Nsite*rj+Nsite*Nsite*s] = GreenFunc1_real(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
@@ -358,8 +360,10 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
      }
     }
 
+    //printf("\n");
     #pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) 
     for(ri=0;ri<Nsite;ri++) {
+     //printf("%d ",ri);
      for(rj=0;rj<Nsite;rj++) {
       s=0;
 
@@ -369,14 +373,16 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
         rn = Transfer[idx_trans][2];
         u  = Transfer[idx_trans][3];
         
-        Local_CisAjsCmuAnu[idx_trans][ri+Nsite*rj] = GreenFunc2_real(ri,rj,rm,rn,s,u,ip,
+        Local_CisAjsCmuAnu[idx_trans + NTransfer*(ri+Nsite*rj)] = GreenFunc2_real(ri,rj,rm,rn,s,u,ip,
                         myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer_real);
       }
      }
     }
     
+    //printf("\n");
     #pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) 
     for(ri=0;ri<Nsite;ri++) {
+     //printf("%d ",ri);
      for(rj=0;rj<Nsite;rj++) {
       s=0;
       int idx1 = ri+Nsite*rj;
@@ -453,7 +459,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
           
           int idx_green0 = ri+Nsite*rn;
           double tmp = -1.0 * ParaTransfer[idx_trans] 
-                     * (Local_CisAjsCmuAnu[idx_trans][idx1] 
+                     * (Local_CisAjsCmuAnu[idx_trans + NTransfer*idx1] 
                         - del(rm,rj) * del(s,u) * Local_CA[idx_green0] ) 
                      * Commute_Nat_(with_CisCmuAnuAjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum) ;
           H_CA_vec1[idx_vector1] += tmp;
@@ -463,7 +469,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
           int idx_green2 = rm+Nsite*rn+Nsite*Nsite*u;
           int idx_green3 = rm+Nsite*ri;
           tmp = -1.0 * ParaTransfer[idx_trans]
-                     * ( - Local_CisAjsCmuAnu[idx_trans][idx_green1] 
+                     * ( - Local_CisAjsCmuAnu[idx_trans + NTransfer*idx_green1] 
                          + del(ri,rj) * Local_CA[idx_green2] 
                          + del(rn,rj) * del(s,u) * ( del(rm,ri) - Local_CA[idx_green3] ))
                      * Commute_Nat_(with_AisCmuAnuCjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum) ;
@@ -481,7 +487,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
   } //
 
   ReleaseWorkSpaceThreadInt();
-  ReleaseWorkSpaceThreadComplex();  
+  ReleaseWorkSpaceThreadDouble();  
   return;
 }
 

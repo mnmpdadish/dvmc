@@ -309,9 +309,9 @@ double *H_AC_vec2, *H_CA_vec2;
 int StdFace_L=1;
 int StdFace_W=1;
   
-int **ijst_to_idx; /*[2*Nsite][2*Nsite]*/
-double **Local_CisAjsCmuAnu; /* [NCisAjs][NTransfer] */
-double **Local_AisCjsCmuAnu; /* [NCisAjs][NTransfer] */
+//int **ijst_to_idx; /*[2*Nsite][2*Nsite]*/
+double *Local_CisAjsCmuAnu; /* [NCisAjs*NTransfer] */
+//double **Local_AisCjsCmuAnu; /* [NCisAjs][NTransfer] */
 
 
 //// MC end /////
