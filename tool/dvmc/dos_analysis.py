@@ -27,6 +27,7 @@ from ctypes import cdll, c_int, c_double
 #import matplotlib
 #import matplotlib.pyplot as plt
 
+
 StdFace = open('StdFace.def').read().replace(' ','')
 U=0.
 L=W=1
@@ -39,31 +40,32 @@ N = W*L
 
 w_min_p=0.0
 w_max_p=0.0
+outputDir='output/'
 
 if (len(sys.argv)==1):
   print 'no energy window.'
+elif (len(sys.argv)==2):
+  print 'no energy window.'
+  outputDir=sys.argv[1]+'/'
 elif (len(sys.argv)==3):
   w_min_p=float(sys.argv[1])
   w_max_p=float(sys.argv[2])
 else: 
   #print("example (w_min = 1.2, w_max = 1.4):\n$ dos_partial.py 1.2 1.4")
   #print("example (w_window_min=1.2, w_window_max=1.3):\n$ dos_partial.py 1.2 1.3")
-  print("example:\n$ dos_partial.py\nor\n$ dos_partial.py 1.2 1.3\nIn the last example, the two values are frequencies that define an energy windows (to calculate and plot partial dos)")
+  print("example:\n$ dos_partial.py\nor\n$ dos_partial.py output3\nor\n$ dos_partial.py 1.2 1.3\nIn the last example, the two values are frequencies that define an energy windows (to calculate and plot partial dos)")
   sys.exit()
 
 def main():
 
-  file_dos   = open('output/dos.dat').read()
-  file_dos_p = open('output/dos_p.dat','w')
-  file_dos_uhb = open('output/dos_uhb.dat','w')
-  file_dos_lhb = open('output/dos_lhb.dat','w')
+  file_dos   = open(outputDir+'dos.dat').read()
+  file_dos_p = open(outputDir+'dos_p.dat','w')
+  file_dos_uhb = open(outputDir+'dos_uhb.dat','w')
+  file_dos_lhb = open(outputDir+'dos_lhb.dat','w')
   
   spectrumpara = open('spectrumpara.def').read()
-
   
-  
-  NN = 0
-
+  NN   = 0
   norm = 0.0  
   sum8 = np.zeros(8,np.double)
   
@@ -92,11 +94,30 @@ def main():
       cumulative_dos[iw] = cumulated_dos
       cumulated_dos += float(term[1])/norm
       iw+=1
+  
+  print frequencies
+  print (frequencies[-1]-frequencies[0])/len(frequencies)
       
   mu = np.interp(0.5*(float(Ne)/float(N)),cumulative_dos,frequencies)
-
-
-  file_dos_p.write('% 7.6f   % 7.6f  \n'%(w_min_p, 0.0))
+  
+  N_mu = np.interp(mu,frequencies,range(len(frequencies)))
+  
+  freq_min =-1000.0
+  freq_min =-1000.0
+  for freq in frequencies:
+    if len(line)>0:
+      term = line.split()
+      freq = float(term[0])
+      
+      if(freq<(w_min_p+mu)) :
+        freq_min = freq      
+      if(freq<=(w_max_p+mu)) :
+        freq_max = freq
+         
+        
+      #else:
+  
+  file_dos_p.write('% 7.6f   % 7.6f  \n'%((w_min_p+mu), 0.0))
   file_dos_uhb.write('% 7.6f   % 7.6f  \n'%(mu, 0.0))
   file_dos_lhb.write('% 7.6f   % 7.6f  \n'%(-1000.0, 0.0))
   
@@ -105,7 +126,7 @@ def main():
       term = line.split()
       freq = float(term[0])
       
-      if(freq>=w_min_p and freq<=w_max_p):
+      if(freq>=(w_min_p+mu) and freq<=(w_max_p+mu) ):
         #print freq
         #file_dos_p.write(line+'\n')
         file_dos_p.write('% 7.6f   % 7.6f \n'%(freq, float(term[1])/norm))
@@ -122,7 +143,7 @@ def main():
         #file_dos_uhb.write(line+'\n')
         file_dos_uhb.write('% 7.6f   % 7.6f \n'%(freq, float(term[1])/norm))
     
-  file_dos_p.write('% 7.6f   % 7.6f  \n'%(w_max_p, 0.0))
+  file_dos_p.write('% 7.6f   % 7.6f  \n'%((w_max_p+mu), 0.0))
   file_dos_lhb.write('% 7.6f   % 7.6f  \n'%(mu, 0.0))
   file_dos_uhb.write('% 7.6f   % 7.6f  \n'%(1000.0,0.0))
         
@@ -130,8 +151,10 @@ def main():
   print 'LHB ~= % 4.5f' %(LHB)
   print 'UHB ~= % 4.5f' %(UHB)
   print 'window_states = % 4.5f' %(window)
-  print
+  print 
+  print 'chemical potential is at frame% 3.2f in dvmc_gnuplot' % N_mu
   print 'chemical potential (precise interpolation) = % 4.5f' %(mu)
+  
   
   file_dos_p.close()
   file_dos_lhb.close()

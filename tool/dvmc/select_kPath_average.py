@@ -22,9 +22,7 @@
 import numpy as np
 from numpy import linalg as la
 import sys, os, re
-
-full_path = os.path.realpath(__file__)
-pythonPathCode, file1 = os.path.split(full_path)
+from copy import deepcopy
 
 StdFace = open('StdFace.def').read().replace(' ','')
 U=0.
@@ -33,78 +31,76 @@ if(StdFace.find('L=')>=0): L = int(re.compile('L=([0-9]*)').findall(StdFace)[0])
 if(StdFace.find('W=')>=0): W = int(re.compile('W=([0-9]*)').findall(StdFace)[0])
 if(StdFace.find('U=')>=0): U = float(re.compile('U=([0-9.]*)').findall(StdFace)[0])
 
+outputDir='output/'
 spectrumparaFileName='spectrumpara.def'
 
 if (len(sys.argv)==1):
-  print ''
+  pass
+  #print ''
 elif (len(sys.argv)==2):
   spectrumparaFileName=sys.argv[1]
+elif (len(sys.argv)==3):
+  outputDir=sys.argv[2]+'/'
 else:
-  print("example:\n$ vmc_spectrum.py \nor:\n$ vmc_spectrum.py spectrumpara.def")
+  print("example:\n$ select_kPath.py \nor:\n$ select_kPath.py  spectrumpara.def\nor:\n$ select_kPath.py spectrumpara.def output/")
   sys.exit()
 
 
 def main():
 
-  w_min_data =-15.0
-  w_max_data = 15.0
-  w_min =-8.0
-  w_max = 8.0
-
   spectrumpara = open(spectrumparaFileName).read()
+  Nelem = 0
+  kPath_dic = {}
 
   for line in  spectrumpara.split('\n'):
+    #print line
+    #print len(line)
     if len(line)>0:
      if line[0]!='#':
       term = line.split()
-      if len(term)>0:
-       if term[0]=='w_min_data' : w_min_data = float(term[1])
-       if term[0]=='w_max_data' : w_max_data = float(term[1])
-       if term[0]=='w_min' : w_min = float(term[1])
-       if term[0]=='w_max' : w_max = float(term[1])
-       if term[0]=='Nw'    :    Nw = int(term[1])
+      #print term
+      if len(term) > 0:
        if (term[0][:]=='kPath' or term[0][:-1]=='kPath'): 
         if term[1] == 'all':
-          kPath = range(W*L)
+          kPath_tmp = range(W*L)
+          calculateAll = True
         elif term[1][0:6]=='range(':
-          #print 'salut'
-          kPath = range(int(term[1][6:-1]))
+          kPath_tmp = range(int(term[1][6:-1]))
         else: 
-          kPath = ReadRange(term[1])
-        
-        if term[0][-1] == '1': kPath1 = kPath
-        elif term[0][-1] == '2': kPath2 = kPath
-        else :
-          kPath1 = kPath
-          kPath2 = kPath
+          kPath_tmp = ReadRange(term[1])
+        kPath_dic[term[0][-1]] = deepcopy(kPath_tmp)
+        Nkelem = len(kPath_tmp)
+
   
+  Nelem = len(kPath_dic)
+  print Nelem
+  print kPath_dic['h']
+  print ((kPath_dic['h'])[0])
   
-  def replaceTemplateFileValues(templateFileName):
+  def select_kPath(fileName,fileOut):
+    Akw_all = open(fileName).read()
+    #print Akw_all
+    Akw = open(fileOut,'w')
+    for line in  Akw_all.split('\n'):
+      if len(line)>0:
+        terms = line.split()
+        lineToPrint = ''
+        for i_elem in range(Nkelem):# for k in kPath:
+          #print 'i_elem', i_elem
+          val = 0.0
+          for keys in kPath_dic:
+            #print terms
+            #print '((kPath_dic[keys])[i_elem])', ((kPath_dic[keys])[i_elem])
+            val += float(terms[((kPath_dic[keys])[i_elem])])
+            #print terms
+          lineToPrint += '%4.6f  ' % (val*(1./Nelem)) 
+      Akw.write(lineToPrint+'\n')
+    Akw.close()
   
-    gnuplotString = open(pythonPathCode+'/'+templateFileName).read()
-    #w_mid = 0.5*(w_min+w_max)
-    gnuplotString = gnuplotString.replace('w_min_data = -13.0','w_min_data =% 4.5f'%(w_min_data))
-    gnuplotString = gnuplotString.replace('w_max_data =  13.0','w_max_data =% 4.5f'%(w_max_data))
-    gnuplotString = gnuplotString.replace('w_min = -8.0','w_min =% 4.5f'%(w_min))
-    gnuplotString = gnuplotString.replace('w_max =  8.0','w_max =% 4.5f'%(w_max))
-    gnuplotString = gnuplotString.replace('kRange = 32','kRange =% 4.5f'%(len(kPath1)-1))
-    gnuplotString = gnuplotString.replace('Nw = 1500','Nw =% 4.5f'%(Nw))
-    
-    fileOut = open('./'+templateFileName[9:],'w')
-    fileOut.write(gnuplotString)
-    fileOut.close()
-    return;
+  select_kPath(outputDir+'Akw_all.dat',   outputDir+'Akw_ave.dat')
   
-  replaceTemplateFileValues('template_plot_allAkw.gp')
-  replaceTemplateFileValues('template_plot_Akw.gp')
-  replaceTemplateFileValues('template_plot_dos.gp')
-  
-    
   exit()
-  
-#######################################################################
-######################    SUB ROUTINES    #############################
-#######################################################################
+
 
 
 

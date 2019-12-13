@@ -43,7 +43,7 @@ elif (len(sys.argv)==2):
 elif (len(sys.argv)==3):
   outputDir=sys.argv[2]+'/'
 else:
-  print("example:\n$ vmc_spectrum.py \nor:\n$ vmc_spectrum.py spectrumpara.def\nor:\n$ vmc_spectrum.py spectrumpara.def output/")
+  print("example:\n$ select_kPath.py \nor:\n$ select_kPath.py  spectrumpara.def\nor:\n$ select_kPath.py spectrumpara.def output/")
   sys.exit()
 
 
@@ -55,7 +55,8 @@ def main():
     if len(line)>0:
      if line[0]!='#':
       term = line.split()
-      if (term[0][:]=='kPath' or term[0][:-1]=='kPath'): 
+      if len(term) > 0:
+       if (term[0][:]=='kPath' or term[0][:-1]=='kPath'): 
         if term[1] == 'all':
           kPath = range(W*L)
           calculateAll = True

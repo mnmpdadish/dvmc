@@ -128,19 +128,26 @@ void gpc_close (FILE *pipe)
 
 
 int main(int argc, char* argv[]) {
-    if(argc !=4)
+    if((argc <5) || (argc >6))
     {
-        printf("usage example (Nx=8,Ny=8,Nw=1500):\n$ vmc_gnuplot 8 8 1500\n");
+        printf("usage example (Nx=8,Ny=8,Nw=1500,NFermi=645,cbar_max=0.6):\n$ vmc_gnuplot 8 8 1500 645 0.6\n");
         exit(0);
     }
-    int Nw = atoi(argv[3]);
     int Nx = atoi(argv[1]);
     int Ny = atoi(argv[2]);
+    int Nw = atoi(argv[3]);
+    int freq = Nw/2;
+    float cbar_max = 0.6;
+    if(argc >=5) freq = atoi(argv[4]);
+    if(argc >=6) cbar_max = atof(argv[5]);
+    
+    printf("w=%d    \n",freq);
     
     printf("Nx=%d,Ny=%d,Nw=%d\n",Nx,Ny,Nw);
     printf("First give focus to the command line and second press and hold z or x to change the frame\n");
         
     FILE *hImage;
+    
     hImage = gpc_init_image ();
     
     FILE *dataAkw = fopen("output/Akw_all.dat","r");
@@ -168,10 +175,7 @@ int main(int argc, char* argv[]) {
     
     
     fclose(dataAkw);
-
-    int freq = Nw/2;
-    printf("w=%d    \n",freq);
-    gpc_plot_image(hImage,dataCube,freq,Nx,Ny,0.0,0.6,Nw); 
+    gpc_plot_image(hImage,dataCube,freq,Nx,Ny,0.0,cbar_max,Nw); 
     
     //exit(0);
 
@@ -195,16 +199,29 @@ int main(int argc, char* argv[]) {
             char ch[2561];
             if (read( fileno( stdin ), &ch, 2561 )==1){
                 c=ch[0];
+                int step=1;
                 if(c=='x') {
-                 if(freq<Nw-5) {
-                   freq+=5; printf("            \rw=%d    ",freq); fflush(stdout); gpc_plot_image(hImage,dataCube,freq,Nx,Ny,0.0,0.6,Nw);}
+                 if(freq<Nw-step) {
+                   freq+=step; printf("            \rw=%d    ",freq); fflush(stdout); gpc_plot_image(hImage,dataCube,freq,Nx,Ny,0.0,cbar_max,Nw);}
                  }
                 else if(c=='z') { 
-                 if(freq>=5) {
-                   freq-=5; printf("            \rw=%d    ",freq); fflush(stdout); gpc_plot_image(hImage,dataCube,freq,Nx,Ny,0.0,0.6,Nw);}
+                 if(freq>=step) {
+                   freq-=step; printf("            \rw=%d    ",freq); fflush(stdout); gpc_plot_image(hImage,dataCube,freq,Nx,Ny,0.0,cbar_max,Nw);}
                  }
                 
-                if(c==' ') {printf("\n"); fflush(stdout); gpc_plot_image(hImage,dataCube,freq,Nx,Ny,0.0,0.6,Nw);  }
+                else if(c=='p') {
+                  FILE *tmpSlice = fopen("output/tmpSlice.dat","w");
+                  for (j = 0; j < (Ny+1); j++)                 // For every row
+                  {
+                    for (i = 0; i < (Nx+1); i++)               // For every pixel in the row
+                    {
+                      fprintf (tmpSlice,"%f ", dataCube[freq*Nx*Ny+ (((i+Nx/2)%Nx)* Ny) + ((j+Ny/2)%Ny)]);
+                    }
+                    fprintf (tmpSlice,"\n");
+                  }
+                  fclose(tmpSlice);
+                }
+                if(c==' ') {printf("\n"); fflush(stdout); gpc_plot_image(hImage,dataCube,freq,Nx,Ny,0.0,cbar_max,Nw);  }
             }
         }
         else if( res < 0 )

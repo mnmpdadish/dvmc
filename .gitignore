@@ -48,3 +48,12 @@ doc/fourier/en/_build/
 *.bak
 cmake-build-debug
 latex/
+dvmc_gnuplot
+dvmc_spectrum_2.py
+dvmc_spectrum_parallel.py
+dvmc_spectrum.py
+initOhgoe.py
+initOhgoe2.py
+initOhgoe4.py
+dvmc_speedup0.c
+

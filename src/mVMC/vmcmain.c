@@ -652,7 +652,7 @@ int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
         //printf("after output.\n"); fflush(stdout);
         //fclose(File_nCHAm);
         fclose(File_nCHAm_bin);
-        fclose(FileCisAjs);
+        //fclose(FileCisAjs);
         //printf("after close.\n"); fflush(stdout);
       }
     }
@@ -779,16 +779,14 @@ void outputData() {
   else if (NVMCCalMode==3) {
     printf("trying to print files.\n"); fflush(stdout);
 
+/*
     fprintf(FileCisAjs, "#orbitalIdx   <ca>  %d\n", Nsite*Nsite);
     int ii;
     for (ii = 0; ii < Nsite*Nsite; ii++) {      
        fprintf(FileCisAjs, "%d    % 0.4e \n", ii, Phys_CA[ii]);
     }
+*/
 
-// cdef
-// 89ab
-// 4567
-// 0123    
     int nn,mm;//,ri,rj;
     /*
     for (ri = 0; ri < Nsite; ri++) {

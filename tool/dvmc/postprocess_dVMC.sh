@@ -43,7 +43,7 @@ select_kPath.py spectrumpara.def
 #you can also visualize the Fermi surface in real time
 #by using the program (you need to have gnuplot installed):
 #
-#$ vmc_gnuplot
+#$ dvmc_gnuplot
 #
 #instructions are shown upon typing this command. Only make 
 #sense in 2D

@@ -479,11 +479,6 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
       }
      }
     }//*/
-    //free(myEleIdx);
-    //free(myEleNum);
-    //free(myEleCfg);
-    //free(myProjCntNew);
-    //free(myBuffer_real);
   } //
 
   ReleaseWorkSpaceThreadInt();
