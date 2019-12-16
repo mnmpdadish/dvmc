@@ -11,7 +11,7 @@ set_property(TARGET dvmc_speedup PROPERTY POSITION_INDEPENDENT_CODE ON)
 install(TARGETS dvmc_gnuplot RUNTIME DESTINATION bin)
 install(TARGETS dvmc_speedup DESTINATION bin)
 
-set(SCRIPTS averageOhgoe.py cluster.py dos_analysis.py dvmc_spectrum.py generate_template_gnuplot.py initHFB.py makeDH4.py makeExcitation.py mergeOutputBin.py postprocess_dVMC.sh preprocess_dVMC.sh selectExcitation.py select_kPath.py template_plot_Akw.gp template_plot_allAkw.gp template_plot_dos.gp)
+set(SCRIPTS averageOhgoe.py cluster.py dos_analysis.py dvmc_spectrum.py generate_template_gnuplot.py init_groundstate makeDH4.py makeExcitation.py mergeOutputBin.py postprocess_dVMC.sh preprocess_dVMC.sh selectExcitation.py select_kPath.py template_plot_Akw.gp template_plot_allAkw.gp template_plot_dos.gp)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${SCRIPTS} DESTINATION .)
 

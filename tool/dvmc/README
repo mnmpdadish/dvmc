@@ -38,8 +38,8 @@ generate_template_gnuplot.py
 gnupy
   --> tool to make pretty figure from gnuplot and latex
 
-initHFB.py
-  --> tool created by Takahiro Ohgoe to find a starting ground state in 2D lattice Hubbard model
+init_groundstate.py
+  --> tool to find a starting ground state in 2D lattice Hubbard model
 
 makeDH4.py
   --> tool created by Takafumi Suzuki to find the input file for DH4 files 
@@ -51,7 +51,7 @@ selectExcitation.py
   --> tool to select a subset of excitation. This generate a string that can be inputed in spectrumpara.def
     
 dvmc_gnuplot
-  --> tool to visualize in real time the Akw_all.dat file. This file must be computed with dvmc_spectrum.py with the option
+  --> tool to visualize in real time the Akw_all.dat file. This file must be computed with dvmc_spectrum.py before.
 
 
 LICENSE: 
