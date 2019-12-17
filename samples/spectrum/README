@@ -158,11 +158,12 @@ to process and easier to scroll by in a PDF file.
 
 # Samples description:
 
-"./16x1_U8_Ne16" -- chain lattice (1D) Hubbard model, t=1, U=8, Ne=16 electrons, N=16 sites periodic boundary condition.
-"./16x1_U8_Ne14" -- chain lattice (1D) Hubbard model, t=1, U=8, Ne=14 electrons, N=16 sites periodic boundary condition.
-"./4x4_U8_Ne16" -- 2d Hubbard model, t=1, U=8, Ne=16 electrons, N=16 sites, periodic-periodic boundary conditions.
-"./4x4_U8_Ne14" -- 2d Hubbard model, t=1, U=8, Ne=14 electrons, N=16 sites, periodic-periodic boundary conditions.
+"./16x1_U8_Ne16" -- chain lattice (1D) Hubbard model, t=1, U=8, Ne=16 electrons, N=16 sites periodic boundary condition. (~10 minutes)
+"./16x1_U8_Ne14" -- chain lattice (1D) Hubbard model, t=1, U=8, Ne=14 electrons, N=16 sites periodic boundary condition.  (~10 minutes)
+"./4x4_U8_Ne16" -- 2d Hubbard model, t=1, U=8, Ne=16 electrons, N=16 sites, periodic-periodic boundary conditions. (~10 minutes)
+"./4x4_U8_Ne14" -- 2d Hubbard model, t=1, U=8, Ne=14 electrons, N=16 sites, periodic-periodic boundary conditions. (~10 minutes)
 "./chain2_U8"  -- trivial example for comparison with analytical results
+"./12x12_U8_Ne126" -- 2d Hubbard model, t=1, U=8, Ne=126 electrons, N=144 sites, periodic-periodic boundary conditions. (~24 hours)
 
 
 

@@ -1,0 +1,27 @@
+This example is a little bit more extreme. It is a 12x12 cluster.
+For bigger cluster it is necessary to do two additional things:
+1. prepares the input to help find the correct ground state.
+
+here the ground state is provided, in order to simplify things. But
+to generate it you can simply type:
+
+init_groundstate.py opt.in
+mkdir output
+mv zqp_opt.dat output/.
+
+and start from there.
+
+2. check every iteration zvo_nCHAm_nAHCm_0**.bin before averaging using.
+
+mergeOutputBin.py output/zvo_nCHAm_nAHCm_001.bin; dvmc_spectrum.py spectrumpara.def output
+mergeOutputBin.py output/zvo_nCHAm_nAHCm_002.bin; dvmc_spectrum.py spectrumpara.def output
+mergeOutputBin.py output/zvo_nCHAm_nAHCm_003.bin; dvmc_spectrum.py spectrumpara.def output
+mergeOutputBin.py output/zvo_nCHAm_nAHCm_004.bin; dvmc_spectrum.py spectrumpara.def output
+mergeOutputBin.py output/zvo_nCHAm_nAHCm_005.bin; dvmc_spectrum.py spectrumpara.def output
+mergeOutputBin.py output/zvo_nCHAm_nAHCm_006.bin; dvmc_spectrum.py spectrumpara.def output
+...
+and so on, in order to check that "int dw A( k*,w)  =  0.99160" or close to 1.0. It is
+important to filter (remove) any zvo_nCHAm_nAHCm_0**.bin files that does not produce this
+sum rule. It will give a much better statistic in the end. This probably need to be 
+addressed in the future for better understanding.
+

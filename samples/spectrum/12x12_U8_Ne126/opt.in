@@ -1,0 +1,21 @@
+# input parameters for initHFB.py
+# APFlag=1  -> Apply the anti-periodic boundary condition
+# CDWFlag=1 -> Make a CDW order.
+# PhFlag=1  -> PHONON mode
+# SymSc = s, 2s, 2d, or 3s
+Lx      12
+Ly      12
+Sx      2
+Sy      2
+Ne      126
+APFlag  0
+CDWFlag 0
+PhFlag  0
+SymSc   2d
+GapSc   12.0
+GapAF   1.0
+t1      1.000
+t2      0.000
+t3      0.000
+t4      0.000
+t5      0.000
