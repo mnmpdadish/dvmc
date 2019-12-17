@@ -748,7 +748,7 @@ void outputData() {
   }
   
   else if (NVMCCalMode==2) {
-    printf("trying to print files.\n"); fflush(stdout);
+    //printf("trying to print files.\n"); fflush(stdout);
     if (NCisAjs > 0) {
       for (i = 0; i < NCisAjs; i++) {
           fprintf(FileCisAjs, "%d %d %d %d % .18e  % .18e \n", CisAjsIdx[i][0], CisAjsIdx[i][1], CisAjsIdx[i][2],
@@ -777,78 +777,13 @@ void outputData() {
     printf("ending of print files.\n"); fflush(stdout);
   }
   else if (NVMCCalMode==3) {
-    printf("trying to print files.\n"); fflush(stdout);
-
-/*
-    fprintf(FileCisAjs, "#orbitalIdx   <ca>  %d\n", Nsite*Nsite);
-    int ii;
-    for (ii = 0; ii < Nsite*Nsite; ii++) {      
-       fprintf(FileCisAjs, "%d    % 0.4e \n", ii, Phys_CA[ii]);
-    }
-*/
-
     int nn,mm;//,ri,rj;
-    /*
-    for (ri = 0; ri < Nsite; ri++) {
-     for (rj = 0; rj < Nsite; rj++) {
-      printf("\n%d %d  %d", ri,rj,find_neighbor_difference(ri, rj));
-     }
-    }*/
-    /*
-    for(ii=0;ii<Nsite*NExcitation*NExcitation; ii++){
-      Phys_nCHAm_averaged[ii] = 0.0;
-      Phys_nAHCm_averaged[ii] = 0.0;
-      Phys_nCAm_averaged[ii]  = 0.0;
-      Phys_nACm_averaged[ii]  = 0.0;
-    }
-    
-    double factor = 1.0/((double)Nsite);
-    for (rj = 0; rj < Nsite; rj++) {
-     for (ri = 0; ri < Nsite; ri++) {
-      int dr = find_neighbor_difference(ri,rj);
-      int idx = ri+Nsite*rj;
-      for (nn = 0; nn < NExcitation; nn++) {
-        for (mm = 0; mm < NExcitation; mm++) {
-          Phys_nCAm_averaged[nn+NExcitation*mm + dr*NExcitation2]  += factor* Phys_nCAm[nn+NExcitation*mm + idx*NExcitation2];
-          Phys_nACm_averaged[nn+NExcitation*mm + dr*NExcitation2]  += factor* Phys_nACm[nn+NExcitation*mm + idx*NExcitation2];
-          Phys_nCHAm_averaged[nn+NExcitation*mm + dr*NExcitation2] += factor* Phys_nCHAm[nn+NExcitation*mm + idx*NExcitation2];
-          Phys_nAHCm_averaged[nn+NExcitation*mm + dr*NExcitation2] += factor* Phys_nAHCm[nn+NExcitation*mm + idx*NExcitation2];
-        }
-      }
-     }
-    }*/
-    
-    /*
-    int NExcitation2 = NExcitation*NExcitation;
-    fprintf(File_nCHAm, "#rj-ri  n m   <n|ca|m>   <n|ac|m>   <n|cHa|m>   <n|aHc|m> %d",Nsite);
-    int dr;
-    for (dr = 0; dr < Nsite; dr++) {
-      //printf("\n%d  ", NExcitation);
-      for (nn = 0; nn < NExcitation; nn++) {
-        for (mm = 0; mm < NExcitation; mm++) {
-          //printf("\n%d %d  ", nn,mm);
-          fprintf(File_nCHAm, "\n %d  ", dr);
-          fprintf(File_nCHAm, "%d %d  ", nn,mm);
-          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nCAm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
-          fprintf(File_nCHAm, "% 0.4e   ",  Phys_nACm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
-          fprintf(File_nCHAm, "% 0.4e   ", Phys_nCHAm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
-          fprintf(File_nCHAm, "% 0.4e   ", Phys_nAHCm_averaged[nn+NExcitation*mm + dr*NExcitation2] );
-        }
-        fprintf(File_nCHAm, " "); 
-      }
-    }
-    //*/
     
     //print binary output, will delete text output soon.
     long int totalSize = NExcitation*NExcitation*Nsite;
     fwrite(&NExcitation,  sizeof(int), 1, File_nCHAm_bin);    
     fwrite(&Excitation_L, sizeof(int), 1, File_nCHAm_bin);    
     fwrite(&Excitation_W, sizeof(int), 1, File_nCHAm_bin);
-    
-    //fwrite(Phys_nCAm_averaged, sizeof(double), totalSize, File_nCHAm_bin);
-    //fwrite(Phys_nACm_averaged, sizeof(double), totalSize, File_nCHAm_bin);
-    //fwrite(Phys_nCHAm_averaged, sizeof(double), totalSize, File_nCHAm_bin);
-    //fwrite(Phys_nAHCm_averaged, sizeof(double), totalSize, File_nCHAm_bin);
     
     convert_double2float_fwrite(Phys_nCAm_averaged,  totalSize, File_nCHAm_bin);
     convert_double2float_fwrite(Phys_nACm_averaged,  totalSize, File_nCHAm_bin);

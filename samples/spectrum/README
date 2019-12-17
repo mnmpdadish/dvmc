@@ -119,12 +119,15 @@ this sum rule should be exactly one (if your frequency integration
 was done from -inf < w < inf. But the fact that the range is not
 exactly one is not only due to an integration imprecision, it is a
 good indicator of the convergence of the method. If this number is 
-significantly (more than ~±5 percent) different than 1.000, 
+significantly (more than ~2 percent) different than 1.000, 
 probably that the parameter chosen are wrong (energy window or 
 number of Monte Carlo sampling or bad ground state found). There is a
 lot of different cause that can make this sum rule wrong. Having 
 a result around 0.99 is a necessary (but not always sufficient) to 
-obtain a converged result.
+obtain a converged result. In some cases, for big clusters, this 
+need to be checked at every iteration, and keep the number of sample
+per iteration relativly low, as some sample seems to create
+bad statistic.
 
 2. Some examples shown in this directory start from a random guess for
 the ground state determination. This may be sufficient or good for small
@@ -143,8 +146,8 @@ of "run_vmc.sh" befor submitting:
 in the cluster submission as it can take several minutes
 and it is not parallelized.
 
-6. This example also require gnuplot installed to plot Akw.dat.
-But Akw.dat could be plot with any software and script at this point.
+6. This example also require gnuplot installed to plot Akw_all.dat.
+But Akw_all.dat could be plot with any software and script at this point.
 
 7. Although, some generic parameters might need to be adjusted to obtain a 
 good result (axis label). Gnuplot is the software of choice here because 

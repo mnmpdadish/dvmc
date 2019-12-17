@@ -4,7 +4,7 @@
 #$ ./release.sh
 
 cd ..
-tar -cvzf dvmc.tar.gz dvmc --exclude-vcs-ignores --exclude-vcs --exclude='release.sh' --exclude='tool/dvmc/old/*'
+tar -cvzf dvmc.tar.gz dvmc --exclude-ignore=.release-ignore --exclude-vcs --exclude='release.sh' --exclude='tool/dvmc/old/*'
 mv dvmc.tar.gz dvmc/.
 
 #options used:

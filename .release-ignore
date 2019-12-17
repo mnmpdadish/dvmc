@@ -1,7 +1,6 @@
 src/mVMC/bak/*
 src/make_back1.sys
 *.out
-sample_maxime/
 Makefile
 make.sys
 *backup*
@@ -50,9 +49,7 @@ latex/
 dvmc_gnuplot
 dvmc_spectrum_2.py
 dvmc_spectrum_parallel.py
-initOhgoe.py
-initOhgoe2.py
-initOhgoe4.py
+initOhgoe*
 dvmc_speedup0.c
 dvmc.tar.gz
-tool/dvmc/old/dvmc_spectrum.py
+

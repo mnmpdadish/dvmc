@@ -5,7 +5,8 @@ Author: Maxime Charlebois
 This code is based on the original mVMC open source package 
 [source](https://github.com/issp-center-dev/mVMC) 
 and [arXiv:1711.11418](https://arxiv.org/abs/1711.11418).
-Please refer to the documentation in the open source package
+It reuse most of the previous source code. Please refer to 
+the documentation in the open source package
 as this will not be covered here.
 
 It implements a new feature where you can calculate the frequency 
@@ -22,8 +23,8 @@ new calculation mode. It is restricted to (for now):
 Detailed usage is not covered here. Instead many examples can be found
 in the "./samples/spectrum/" subdirectory. The easiest way to understand
 how to use it is to run these examples. Go there to read the README
-and run the few examples. However, the code must be installed first
-(see next section)
+and run the few examples. However, the code must be installed first,
+see next section.
 
 # Installation:
 
@@ -31,14 +32,23 @@ To install everything, this new version of mVMC must be compiled.
 This can be done using cmake. In the currect (root) directory, do:
 
 $ mkdir build && cd build
-$ cmake -DCONFIG=intel -DCMAKE_INSTALL_PREFIX:PATH=~ ..
+$ cmake ..
 $ make 
 $ make install
 
 This should install everything with correct linking in the bin directory 
-in your home directory. We use a custom binary directory because on a 
-remote cluster, it might be impossible or prohibited to install using 
-sudo. For this to work, you need to create the ~/bin/ and make this 
+in your home directory. 
+
+If you have access to intel compilers (icc and ifort), you can impose 
+using the option -DCONFIG=intel in cmake.
+
+It is possible that you do not have the permission to
+execute the command "make install" on your cluster.
+In that case, change the default install directory
+to your home (it will create a bin directory there)
+with the option -DCMAKE_INSTALL_PREFIX:PATH=$HOME in cmake.
+
+With this custom path, you need to create the ~/bin/ and make this 
 directory execuable by adding this line to the ~/.bashrc 
 (if this file does not exist, create it):
 
@@ -68,7 +78,7 @@ not all the case in mVMC are covered by the present code, as stated above.
 
 Two more README are encourage to read after this one:
 
-"./samples/spectrum/README" - to learn about the code usage (with functionnal examples).
+"./samples/spectrum/README" - to learn about the code usage (with working examples).
 "./tool/dvmc/README"        - to learn about the tools that can be used to analyse the data.
 
 This complete the documentation.
