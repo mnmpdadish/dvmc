@@ -171,10 +171,11 @@ def main():
     
     sumRule = 0.0
 
+    # lib1.greenFrom_e_U_Uinv_S compute Charlebois and Imada 2019, arxiv v1 (equation A4) in two parts.
     lib1.greenFrom_e_U_Uinv_S( 1, Nw, w_, n_exc_choice, e_ac, u_ac, us_ac, Omega, U/2., eta, g_ac)
     lib1.greenFrom_e_U_Uinv_S(-1, Nw, w_, n_exc_choice, e_ca, u_ca, us_ca, Omega, U/2., eta, g_ca)
     
-    g_tot = g_ac + g_ca
+    g_tot = g_ac + g_ca # Charlebois and Imada 2019, arxiv v1 (equation A3)
     spectrum_hole[kk,:] = -g_ca[:].imag/(np.pi)
     spectrum_elec[kk,:] = -g_ac[:].imag/(np.pi)
     sumRule = -dw*(g_tot.imag).sum()/(np.pi)

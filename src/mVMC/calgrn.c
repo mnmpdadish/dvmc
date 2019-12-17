@@ -95,6 +95,7 @@ int del(int i,int j){
 // anticommutation with different combination of creation operator (C)
 // and annihilation operator (A)
 
+// Charlebois and Imada 2019, arxiv v1 (equation B5)
 int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj, int s, int rm, int rn, int u, int *eleNum) {
   int sign;
   if((commuting==with_CisCmuAnuAjs) || (commuting==with_AisCmuAnuCjs)) {
@@ -137,10 +138,6 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
             *(eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s))
             *(eleNum[rb+   s *Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s)    + sign * (del(rb,ri)-del(rb,rj)) )   ;
     }
-//    else if(t==5){
-//      return (eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s)) * (eleNum[ra+s*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,s) + sign * (del(ra,ri)-del(ra,rj)))
-//            *(eleNum[rb+(1-s)*Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,1-s)) * (eleNum[rb+s*Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s) + sign * (del(rb,ri)-del(rb,rj)));
-//    }
     else{
       printf("oups, error %d\n", t);
       exit(1);
@@ -189,10 +186,6 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
             *(eleNum[ra+(1-s)*Nsite] )
             *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );
     }
-//    else if(t==5){ 
-//      return (eleNum[ra+s*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) ) * (eleNum[ra+(1-s)*Nsite])
-//            *(eleNum[rb+s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) ) * (eleNum[rb+(1-s)*Nsite]);      
-//    }
     else{
       printf("oups, error %d\n", t);
       exit(1);
@@ -227,9 +220,6 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return (eleNum[ri+(1-s)*Nsite])
             *(eleNum[ra+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
     }
-//    else if(t==5){ 
-//      return (eleNum[ra+(1-s)*Nsite]*eleNum[ra+s*Nsite]) * (eleNum[rb+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
-//    }
     else{
       printf("oups, error %d\n", t);
       exit(1);
@@ -320,12 +310,6 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
 #pragma omp parallel default(shared)\
   private(myEleIdx,myEleNum,myProjCntNew,myBuffer_real)
   {
-
-    //myEleIdx = (int*)malloc(sizeof(int) * Nsize );
-    //myEleNum = (int*)malloc(sizeof(int) * Nsite2 );
-    //myProjCntNew = (int*)malloc(sizeof(int) * NProj );
-    //myBuffer_real = (double *)malloc(sizeof(double) * (NQPFull+2*Nsize) );
-
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
     myProjCntNew   = GetWorkSpaceThreadInt(NProj);
@@ -346,6 +330,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
      //printf("%d ",ri);
      for(rj=0;rj<Nsite;rj++) {
       for(s=0;s<2;s++) {
+       // Charlebois and Imada 2019, arxiv v1 (equation B1)         
        Local_CA[ri+Nsite*rj+Nsite*Nsite*s] = GreenFunc1_real(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
                                                               myProjCntNew,myBuffer_real); 
       }
@@ -373,6 +358,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
         rn = Transfer[idx_trans][2];
         u  = Transfer[idx_trans][3];
         
+        // Charlebois and Imada 2019, arxiv v1 (equation B2)
         Local_CisAjsCmuAnu[idx_trans + NTransfer*(ri+Nsite*rj)] = GreenFunc2_real(ri,rj,rm,rn,s,u,ip,
                         myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer_real);
       }
@@ -412,21 +398,23 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
         //printf("%d %d %d \n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2]);
         
         // <phi|ca|x> / <phi|x>
+        // Charlebois and Imada 2019, arxiv v1 (equation B7)
         double CA_tmp = Local_CA[idx1] * Commute_Nat_(with_CisAjs,  ra1, ra2, t, ri, rj, s, 0,0,0, myEleNum);        
         O_CA_vec1[idx_vector1] = CA_tmp;        
-        O_CA_vec2[idx_vector2] = CA_tmp;//conj(CA_tmp);        
+        O_CA_vec2[idx_vector2] = CA_tmp;//conj(CA_tmp);  // (equation B10)      
 
         // <phi|ac|x> / <phi|x> = delta_{ri,rj} * <phi|x> / <phi|x> - <phi|ca|x> / <phi|x>           <-- need to reverse indices
+        // Charlebois and Imada 2019, arxiv v1 (equation B6)
         double AC_tmp  = del(ri,rj);
         AC_tmp -= Local_CA[idx2];
         AC_tmp *= Commute_Nat_(with_AisCjs, ra1, ra2, t, ri, rj, s, 0,0,0, myEleNum);
         //AC_tmp = Local_AC[idx] * Commute_Nat_(with_AisCjs,  ra1, ra2, t, ri, rj, s, 0,0,0, myEleNum);        
         O_AC_vec1[idx_vector1] = AC_tmp;
-        O_AC_vec2[idx_vector2] = AC_tmp;//conj(AC_tmp);
+        O_AC_vec2[idx_vector2] = AC_tmp;//conj(AC_tmp);  // (equation B10)
         
         // <phi|x>
         O0_vec1[idx_vector1]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  rj, ri, s, 0,0,0, myEleNum)));
-        O0_vec2[idx_vector2]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  rj, ri, s, 0,0,0, myEleNum)));
+        O0_vec2[idx_vector2]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  rj, ri, s, 0,0,0, myEleNum))); // (equation B10)
         //
         // <phi|H_U|x> 
         double tmp_int_AHC=0.0;
@@ -458,23 +446,25 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
           u  = Transfer[idx_trans][3];
           
           int idx_green0 = ri+Nsite*rn;
+          // Charlebois and Imada 2019, arxiv v1 (equation B9)
           double tmp = -1.0 * ParaTransfer[idx_trans] 
                      * (Local_CisAjsCmuAnu[idx_trans + NTransfer*idx1] 
                         - del(rm,rj) * del(s,u) * Local_CA[idx_green0] ) 
                      * Commute_Nat_(with_CisCmuAnuAjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum) ;
           H_CA_vec1[idx_vector1] += tmp;
-          H_CA_vec2[idx_vector2] += tmp;//conj(tmp);
+          H_CA_vec2[idx_vector2] += tmp;//conj(tmp); // (equation B11)
           
           int idx_green1 = rj+Nsite*ri;
           int idx_green2 = rm+Nsite*rn+Nsite*Nsite*u;
           int idx_green3 = rm+Nsite*ri;
+          // Charlebois and Imada 2019, arxiv v1 (equation B8)
           tmp = -1.0 * ParaTransfer[idx_trans]
                      * ( - Local_CisAjsCmuAnu[idx_trans + NTransfer*idx_green1] 
                          + del(ri,rj) * Local_CA[idx_green2] 
                          + del(rn,rj) * del(s,u) * ( del(rm,ri) - Local_CA[idx_green3] ))
                      * Commute_Nat_(with_AisCmuAnuCjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum) ;
           H_AC_vec1[idx_vector1] += tmp;
-          H_AC_vec2[idx_vector2] += tmp;//conj(tmp);
+          H_AC_vec2[idx_vector2] += tmp;//conj(tmp); // (equation B11)
         }
       }
      }
