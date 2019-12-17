@@ -51,7 +51,7 @@ set palette defined (0 'white',0.016 'white', 0.04 '#fff879',0.16 '#fe7e00',0.27
 set colorbox vertical user origin right+0.02, (top+bottom)/2 size .02,.4
 set ytics ('-16' -16,'-12' -12,'-8' -8,'-4' -4, '0' 0.0, '4' +4.0, '8' +8.0, '12' +12.0,'-16' +16)
 set tics front
-set arrow from -0.5,0.0 to kRange+0.5,0.0 nohead lw 2 dt 2 lc 'black' front
+set arrow from -0.5,0.0 to kRange+0.5,0.0 nohead lw 1 lc 'black' front
 #set xtics ('$0$' 0, '$\pi$' 32 )
 set xtics ('0' 0, '{/Symbol p}' kRange)
 
@@ -72,7 +72,7 @@ set lmargin at screen leftB; set rmargin at screen rightB
 set tmargin at screen top; set bmargin at screen bottom
 plot 'output/Akw_e.dat' u 1:($2*w_range_data/Nw_data+w_min_data-mu):3 matrix notitle w image 
 
-set arrow from -0.5,0.0 to kRange+0.5,0.0 nohead lw 2 dt 2 lc 'black' front
+set arrow from -0.5,0.0 to kRange+0.5,0.0 nohead lw 1 lc 'black' front
 set lmargin at screen leftC; set rmargin at screen right
 set tmargin at screen top; set bmargin at screen bottom
 plot 'output/Akw_h.dat' u 1:($2*w_range_data/Nw_data+w_min_data-mu):3 matrix notitle w image 

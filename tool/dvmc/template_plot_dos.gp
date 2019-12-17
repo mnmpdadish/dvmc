@@ -25,7 +25,7 @@ plot 'output/dos_uhb.dat' u ($2):($1-mu) with filledcurves notitle lc '#bb6666',
 
 #MAX=GPVAL_X_MAX
 #MIN=GPVAL_X_MIN
-#set arrow from MIN,0.0 to MAX,0.0 nohead lw 2 dt 2 lc 'black' front
+#set arrow from MIN,0.0 to MAX,0.0 nohead lw 1 lc 'black' front
 
 #plot 'output/dos_uhb.dat' u ($2):($1-mu) with filledcurves notitle lc '#bb6666',\
 #     'output/dos_p.dat'   u ($2):($1-mu) with filledcurves notitle lc '#ffaaaa',\
