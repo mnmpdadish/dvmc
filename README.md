@@ -39,7 +39,7 @@ $ make install
 This should install everything with correct linking in the bin directory 
 in your home directory. 
 
-If you have access to intel compilers (icc and ifort), you can impose 
+If you have access to intel compilers (icc and ifort), you can impose them 
 using the option -DCONFIG=intel in cmake.
 
 It is possible that you do not have the permission to
@@ -58,9 +58,6 @@ after that, type the command line:
 
 $ source ~/.bashrc 
 
-Note, the -DCONFIG=intel option requires that you have icc, ifort, etc.
-If you want to use gcc, gfortran, etc. instead, use the line instead:
-$ cmake -DCONFIG=gcc -DCMAKE_INSTALL_PREFIX:PATH=~ ..
 
 # Requirements
 
@@ -68,6 +65,7 @@ The libraries required to compile the code are:
 - mpi
 - lapack or MKL
 - blas or MKL
+- cmake
 
 It is recommended to consult the original mVMC documentation to learn
 more about dependencies and parameters names and idea. Note however that
