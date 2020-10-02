@@ -358,8 +358,8 @@ void SetMemory() {
   double mem02 = sizeof(int) *((double) NCisAjsCktAltDC) /(1024.*1024.*1024.);
   double mem03 = sizeof(double complex) *((double) NSROptItrSmp*(2+NPara)) /(1024.*1024.*1024.);
 
-  double mem1 = sizeof(double).*5.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
-  double mem3 = sizeof(double).*10.*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
+  double mem1 = 5*sizeof(double)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
+  double mem3 = 10*sizeof(double)*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
 
 
   /***** Stocastic Reconfiguration *****/
