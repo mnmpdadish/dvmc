@@ -58,9 +58,9 @@ def main():
     if len(line)>0:
      if line[0]!='#':
       term = line.split()
-      #print term
       if len(term) > 0:
        if (term[0][:]=='kPath' or term[0][:-1]=='kPath'): 
+        print term
         if term[1] == 'all':
           kPath_tmp = range(W*L)
           calculateAll = True
@@ -74,8 +74,8 @@ def main():
   
   Nelem = len(kPath_dic)
   print Nelem
-  print kPath_dic['h']
-  print ((kPath_dic['h'])[0])
+  #print kPath_dic['h']
+  #print ((kPath_dic['h'])[0])
   
   def select_kPath(fileName,fileOut):
     Akw_all = open(fileName).read()

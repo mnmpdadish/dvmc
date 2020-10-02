@@ -99,14 +99,14 @@ all :
 	cd ../pfapack; $(MAKE) -f makefile_pfapack
 	cd ../sfmt; $(MAKE) -f makefile_sfmt
 	cd ../StdFace; $(MAKE) -f makefile_StdFace libStdFace.a
-	make -f makefile_src vmc.out
-	make -f makefile_src vmcdry.out
+	make -f makefile_src dvmc.out
+	make -f makefile_src dvmcdry.out
 	cd ../ComplexUHF; $(MAKE) -f makefile_uhf
 
-vmc.out : $(OBJS)
+dvmc.out : $(OBJS)
 	$(CC) -o $@ $(OBJS) $(OPTION) $(CFLAGS) $(LIBS)
 
-vmcdry.out : vmcdry.o $(STDFACE)
+dvmcdry.out : vmcdry.o $(STDFACE)
 	$(CC) -o $@ $^ $(OPTION) $(CFLAGS) $(LIBS)
 
 SUFFIXES: .o .c
@@ -115,7 +115,7 @@ SUFFIXES: .o .c
 	$(CC) $(OPTION) $(CFLAGS) -I ./include -c $<
 
 clean :
-	rm -f *.o vmc.out vmcdry.out
+	rm -f *.o dvmc.out dvmcdry.out
 	cd ../sfmt; $(MAKE) -f makefile_sfmt clean
 	cd ../pfapack; $(MAKE) -f makefile_pfapack clean
 	cd ../StdFace; $(MAKE) -f makefile_StdFace clean

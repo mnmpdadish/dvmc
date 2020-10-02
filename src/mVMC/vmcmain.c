@@ -795,8 +795,8 @@ void outputData() {
 
 
 void printUsageError() {
-  fprintf(stderr,"Usage: vmc.out [option] NameListFile [OptParaFile]\n");
-  fprintf(stderr,"       vmc.out -m N [option] [--] DirListFile NameListFile [OptParaFile]\n");
+  fprintf(stderr,"Usage: dvmc.out [option] NameListFile [OptParaFile]\n");
+  fprintf(stderr,"       dvmc.out -m N [option] [--] DirListFile NameListFile [OptParaFile]\n");
   return;
 }
 

@@ -1,4 +1,4 @@
-# mVMC: dynamical Green
+# dVMC
 
 Author: Maxime Charlebois
 
@@ -6,17 +6,40 @@ This code is based on the original mVMC open source package
 [source](https://github.com/issp-center-dev/mVMC) 
 and [arXiv:1711.11418](https://arxiv.org/abs/1711.11418).
 It reuse most of the previous source code. Please refer to 
-the documentation in the open source package
-as this will not be covered here.
+the documentation of mVMC in the open source package
+as most will not be covered here. Herew, we will only cover the 
+difference and new functions not contained in the original mVMC.
 
-It implements a new feature where you can calculate the frequency 
-dependent Green function (option NVMCCalMode = 3). 
+This package is not as complete as the mVMC package.
+It is only a prototype used to calculate the "dvmc" method implemented
+and published in [arxiv:1912.09960](https://arxiv.org/abs/1912.09960).
+However, it is very useful and easy to reproduce some date in this
+publication.
+
+This code implements a new feature where you can calculate the 
+frequency dependent Green function (option NVMCCalMode = 3). 
 For now there is a number of condition on this 
-new calculation mode. It is restricted to (for now):
+new calculation mode. It is restricted to:
 - 1D or 2D model (easy to generalize to 3D, to be done)
-- real calculation
+- real number calculation
 - OrbitalAntiParallel (not OrbitalGeneral or OrbitalParallel)
 - Hubbard model
+
+The present author (Maxime Charlebois) only work on these changes
+and not on the original mVMC package. You can find the original README
+and authors of mVMC in the second part of this README file. 
+
+# Citation
+
+You are free to use this code as long as you respect the License terms.
+If you use it or learn from it, we ask that you cite the following paper:
+
+[dVMC]()
+[mVMC](https://doi.org/10.1016/j.cpc.2018.08.014)
+
+Here are the associted arxiv:
+[arxiv:1912.09960](https://arxiv.org/abs/1912.09960)
+[arXiv:1711.11418](https://arxiv.org/abs/1711.11418)
 
 # Usage
 
@@ -74,12 +97,15 @@ not all the case in mVMC are covered by the present code, as stated above.
 
 # Details:
 
-Two more README are encourage to read after this one:
+Two more README are encouraged to read after this one:
 
-"./samples/spectrum/README" - to learn about the code usage (with working examples).
+"./samples/spectrum/README" - to learn about the code usage (with few working examples).
 "./tool/dvmc/README"        - to learn about the tools that can be used to analyse the data.
 
-This complete the documentation.
+Please email me at "maxime.charlebois@usherbrooke.ca" or "maxime.charlebois@uqtr.ca" 
+if you have any question on the code. 
+
+This complete the documentation of dVMC.
 
 
 ############################################################################

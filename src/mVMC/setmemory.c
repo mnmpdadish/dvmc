@@ -354,8 +354,18 @@ void SetMemory() {
   SPGLCosCos = SPGLCos + 3*NSPGaussLeg;
   SPGLSinSin = SPGLCos + 4*NSPGaussLeg;
 
+  double mem01 = sizeof(double) *((double) NVMCSample*NQPFull*(2*Nsite)*(2*Nsite)) /(1024.*1024.*1024.);
+  double mem02 = sizeof(int) *((double) NCisAjsCktAltDC) /(1024.*1024.*1024.);
+  double mem03 = sizeof(double complex) *((double) NSROptItrSmp*(2+NPara)) /(1024.*1024.*1024.);
+
+  double mem1 = sizeof(double).*5.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
+  double mem3 = sizeof(double).*10.*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
+
+
   /***** Stocastic Reconfiguration *****/
   if(NVMCCalMode==0){
+
+    printf("This mpi thread will require a little above %f Go for the dvmc calculatin (NVMCCalMode==3).\n", mem1+mem3+mem01+mem02+mem03);
     //SR components are described by real and complex components of O
     if(NSRCG==0){
       SROptOO = (double complex*)malloc( sizeof(double complex)*((2*SROptSize)*(2*SROptSize+2))) ; //TBC
@@ -426,13 +436,8 @@ void SetMemory() {
   }
     
   if(NVMCCalMode==3){
-    double mem1 = 8.*4.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
-    double mem2 = 1.*4.*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
-    double mem3 = 8.*10.*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
-    //printf("memory usage: %d times double.\n", 4*Nsite*NExcitation*NExcitation+/*4*Nsite*Nsite*NExcitation*NExcitation +*/ 10*Nsite*Nsite*NExcitation*sampleChunk);
-    printf("memory usage per mpi thread is a little above %f Go.\n", mem1+mem2+mem3);
-    //printf("%d %d\n", Nsite,NExcitation);
-    //exit(0);
+
+    printf("This mpi thread requires is a little above %f Go for this task.\n", mem1+mem3+mem01+mem02+mem03);
     
     Phys_nCAm_averaged  = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
     Phys_nACm_averaged  = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
