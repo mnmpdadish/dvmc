@@ -8,7 +8,7 @@ $ ./run.sh
 This will run the 3 command lines:
 
 python3 analytical_mVMC.py
-vmc_new.out namelist.def output/zqp_opt.dat
+dvmc.out namelist.def output/zqp_opt.dat
 python3 compare.py
 
 
@@ -16,7 +16,7 @@ python3 compare.py
 
 Have this new mVMC code compiled first. Put it in a directory 
 available in the PATH variable (usually ~/bin/.). Name this
-executable "vmc_new.out".
+executable "dvmc.out".
 
 
 # Result:

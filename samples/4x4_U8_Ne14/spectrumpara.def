@@ -1,4 +1,4 @@
-# input for postprocessing dvmc (vmc_new.out with NVMCCalMode == 3)
+# input for postprocessing dvmc (dvmc.out with NVMCCalMode == 3)
 # '#' are treated as comment
 
 # parameters to generate excitation.def file:

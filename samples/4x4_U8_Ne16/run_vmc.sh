@@ -22,11 +22,11 @@ module add gnuplot/5.2.3 intel/16.0.4.258 intel-mpi/5.1.3.258 intel-mkl/16.0.4.2
 
 #### mVMC groud state calculations:
 date
-mpijob vmc_new.out namelist.def
+mpijob dvmc.out namelist.def
 date
 
 #### mVMC dynamical Green calculations:
-mpijob vmc_new.out namelist_G.def ./output/zqp_opt.dat
+mpijob dvmc.out namelist_G.def ./output/zqp_opt.dat
 date
 
 #to generate the graph, type:

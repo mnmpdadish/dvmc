@@ -43,6 +43,6 @@ veryclean:
 	rm -f src/make.sys makefile
 
 install:
-	cp src/mVMC/vmc.out ~/bin/vmc_new.out
-	cp src/mVMC/vmcdry.out ~/bin/vmcdry_new.out
+	cp src/mVMC/vmc.out ~/bin/dvmc.out
+	cp src/mVMC/vmcdry.out ~/bin/dvmcdry.out
 

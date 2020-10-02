@@ -37,7 +37,7 @@ the details of the implementation. Here is a short description:
 # preprocess_dVMC.sh:
 
 Generate all the input files for the Monte Carlo sampling procedure to run.
-The main task added to the already present vmcdry_new.out is a function
+The main task added to the already present dvmcdry.out is a function
 that generate the excitation.def file, called makeExcitation.py. This
 python function takes the definitions in spectrumpara.def to define the
 neighbor charge positions. In "spectrumpara.def" this last file, 

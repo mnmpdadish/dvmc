@@ -1,11 +1,11 @@
 ## README
 
 Most of the program provided here are stand alone tools necessary to 
-prepare the inputs or analyse the output of vmc_new.out code. The most
+prepare the inputs or analyse the output of dvmc.out code. The most
 important are:
 
-preprocess_dVMC.sh           can be called before running vmc_new.out
-postprocess_dVMC.sh          can be called after running vmc_new.out
+preprocess_dVMC.sh           can be called before running dvmc.out
+postprocess_dVMC.sh          can be called after running dvmc.out
 
 They both contain all the other tool to be called in order to prepare
 and process the examples provided in samples/spectrum subdirectories.
@@ -20,7 +20,7 @@ lapack or mkl linking.
 in preprocess_dVMC.sh:
 ######################
 makeExcitation.py
-  --> tool to generate excitation.def used by vmc_new.out with NVMCCalMode == 3 (dVMC mode)
+  --> tool to generate excitation.def used by dvmc.out with NVMCCalMode == 3 (dVMC mode)
 
 
 #######################

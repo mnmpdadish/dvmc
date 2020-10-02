@@ -19,11 +19,11 @@ export OMP_NUM_THREADS=32
 
 #### mVMC groud state calculations:
 date
-mpirun -np 32 vmc_new.out namelist.def
+mpirun -np 32 dvmc.out namelist.def
 date
 
 #### mVMC dynamical Green calculations:
-mpirun -np 32 vmc_new.out namelist_G.def ./output/zqp_opt.dat
+mpirun -np 32 dvmc.out namelist_G.def ./output/zqp_opt.dat
 date
 
 #to generate the graph, type:

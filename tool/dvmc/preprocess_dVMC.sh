@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ####  mVMC preparations :
-vmcdry_new.out StdFace.def
+dvmcdry.out StdFace.def
 
 date
 sed -i "s/NExUpdatePath  0/NExUpdatePath  1/"     modpara.def

@@ -18,9 +18,9 @@ export OMP_NUM_THREADS=24
 
 #### mVMC groud state calculations:
 date
-mpijob vmc_new.out namelist.def ./output/zqp_opt.dat
+mpijob dvmc.out namelist.def ./output/zqp_opt.dat
 date
-mpijob vmc_new.out namelist_G.def ./output/zqp_opt.dat
+mpijob dvmc.out namelist_G.def ./output/zqp_opt.dat
 date
 
 # careful with the postprocessing.sh. This cannot be 
