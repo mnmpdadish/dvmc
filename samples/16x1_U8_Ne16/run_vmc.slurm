@@ -2,7 +2,7 @@
 #SBATCH --job-name=run_vmc
 #SBATCH --time=00:29:00
 #SBATCH --account=def-charleb1
-#SBATCH -n 1
+#SBATCH -n 8
 #SBATCH -c 32
 #SBATCH --mem-per-cpu=2000MB
 
@@ -28,7 +28,7 @@ srun --cpu_bind=cores dvmc.out namelist_G.def ./output/zqp_opt.dat
 date
 
 #to generate the graph, type:
-#$ preprocess_dVMC.sh
+#$ postprocess_dVMC.sh
 
 #to generate the data and gnuplot files:
 #$ gnuplot plot_Akw.gp

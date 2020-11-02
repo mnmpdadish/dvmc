@@ -58,6 +58,7 @@ double complex CalculateHamiltonian_fsz(const double complex ip, int *eleIdx, co
   int *myEleIdx, *myEleNum, *myProjCntNew,*myEleSpn;
   double complex *myBuffer;
   double complex myEnergy;
+  double ip_copy = ip; // quick fix so that we can compile on gcc version 9 and pre-9
 
   RequestWorkSpaceThreadInt(Nsize+Nsize+Nsite2+NProj);
   RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
@@ -74,7 +75,7 @@ double complex CalculateHamiltonian_fsz(const double complex ip, int *eleIdx, co
                NCoulombInter, CoulombInter, ParaCoulombInter, NHundCoupling, HundCoupling, ParaHundCoupling, \
                NTransfer, Transfer, ParaTransfer, NPairHopping, PairHopping, ParaPairHopping, \
                NExchangeCoupling, ExchangeCoupling, ParaExchangeCoupling, NInterAll, InterAll, ParaInterAll, n0, n1) \
-  shared(eleCfg, eleProjCnt, eleIdx, eleNum,eleSpn) reduction(+:e)
+  shared(ip_copy, eleCfg, eleProjCnt, eleIdx, eleNum,eleSpn) reduction(+:e)
   {
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleSpn = GetWorkSpaceThreadInt(Nsize);
@@ -131,10 +132,10 @@ double complex CalculateHamiltonian_fsz(const double complex ip, int *eleIdx, co
       t  = Transfer[idx][3];
       if(s==t){
         myEnergy -= ParaTransfer[idx]
-         * GreenFunc1_fsz(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
+         * GreenFunc1_fsz(ri,rj,s,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
       }else{ 
         myEnergy -= ParaTransfer[idx]
-        * GreenFunc1_fsz2(ri,rj,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
+        * GreenFunc1_fsz2(ri,rj,s,t,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
       }
       /* Caution: negative sign */
     }
@@ -149,7 +150,7 @@ double complex CalculateHamiltonian_fsz(const double complex ip, int *eleIdx, co
       rj = PairHopping[idx][1];
     
       myEnergy += ParaPairHopping[idx]
-        * GreenFunc2_fsz(ri,rj,ri,rj,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
+        * GreenFunc2_fsz(ri,rj,ri,rj,0,1,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
     }
 
     /* Exchange Coupling */
@@ -158,9 +159,9 @@ double complex CalculateHamiltonian_fsz(const double complex ip, int *eleIdx, co
       ri = ExchangeCoupling[idx][0];
       rj = ExchangeCoupling[idx][1];
     
-      tmp =  GreenFunc2_fsz(ri,rj,rj,ri,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
+      tmp =  GreenFunc2_fsz(ri,rj,rj,ri,0,1,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
       //printf("idx=%d ri=%d rj=%d:  tmp=%lf \n",idx,ri,rj,creal(tmp));
-      tmp += GreenFunc2_fsz(ri,rj,rj,ri,1,0,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
+      tmp += GreenFunc2_fsz(ri,rj,rj,ri,1,0,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
       //tmp =  GreenFunc2_fsz2(ri,rj,rj,ri,0,0,1,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
       //tmp += GreenFunc2_fsz2(ri,rj,rj,ri,1,1,0,0,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
       myEnergy += ParaExchangeCoupling[idx] * tmp;
@@ -180,10 +181,10 @@ double complex CalculateHamiltonian_fsz(const double complex ip, int *eleIdx, co
       
       if(s==t && u==v){
         myEnergy += ParaInterAll[idx]
-          * GreenFunc2_fsz(ri,rj,rk,rl,s,u,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
+          * GreenFunc2_fsz(ri,rj,rk,rl,s,u,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
       }else{
         myEnergy += ParaInterAll[idx]
-          * GreenFunc2_fsz2(ri,rj,rk,rl,s,t,u,v,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
+          * GreenFunc2_fsz2(ri,rj,rk,rl,s,t,u,v,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myEleSpn,myProjCntNew,myBuffer);
       } 
     }
 

@@ -27,6 +27,8 @@ from ctypes import cdll, c_int, c_double
 full_path = os.path.realpath(__file__)
 pythonPathCode, file1 = os.path.split(full_path)
 
+
+
 StdFace = open('StdFace.def').read().replace(' ','')
 U=0.
 L=W=1
@@ -42,19 +44,33 @@ def Yi(ri):
 
 outputDir='output/'
 spectrumparaFileName='spectrumpara.def'
+verbose_read = 1
 
-if (len(sys.argv)==1):
-  print ''
-elif (len(sys.argv)==2):
+sum_rule_max_ok = 1.01
+sum_rule_min_ok = 0.96
+
+if (len(sys.argv)>=2):
   spectrumparaFileName=sys.argv[1]
-elif (len(sys.argv)==3):
+if (len(sys.argv)>=3):
   outputDir=sys.argv[2]+'/'
-else:
+if (len(sys.argv)>=4):
+  verbose_read=int(sys.argv[3])
+if (len(sys.argv)>=5):
+  sum_rule_min_ok=float(sys.argv[4])
+if (len(sys.argv)>=6):
+  sum_rule_max_ok=float(sys.argv[5])
+if (len(sys.argv)>=7):
   print("example:\n$ vmc_spectrum.py \nor:\n$ vmc_spectrum.py spectrumpara.def\nor:\n$ vmc_spectrum.py spectrumpara.def output/")
   sys.exit()
 
 
-def main():
+
+
+def dvmc_spectrum(verbose=1):
+
+  sum_rule_max = sum_rule_max_ok
+  sum_rule_min = sum_rule_min_ok
+#def main():
   zqp_opt_dat = open(outputDir+'zqp_opt.dat').read()
   Omega = float((zqp_opt_dat.split())[0])
 
@@ -107,13 +123,14 @@ def main():
           print 'error: first excitation must ALWAYS be 0.'
           exit()
   
-  print 'excitations chosen:'
-  print exc_choice
-  
-  print '\nOmega=', Omega
-  print 'U=', U
-  print 'W=', W
-  print 'L=', L
+  if(verbose):
+    print 'excitations chosen:'
+    print exc_choice
+    
+    print '\nOmega=', Omega
+    print 'U=', U
+    print 'W=', W
+    print 'L=', L
   
   n_exc_choice = len(exc_choice)
   Nsite=W*L
@@ -134,10 +151,10 @@ def main():
 
   
   
-  S_CA = FFT_selection(outputDir+'nCAm.npy', exc_choice,kPath)
-  S_AC = FFT_selection(outputDir+'nACm.npy', exc_choice,kPath)
-  H_CA = FFT_selection(outputDir+'nCHAm.npy',exc_choice,kPath)
-  H_AC = FFT_selection(outputDir+'nAHCm.npy',exc_choice,kPath)
+  S_CA = FFT_selection(outputDir+'nCAm.npy', exc_choice,kPath,verbose)
+  S_AC = FFT_selection(outputDir+'nACm.npy', exc_choice,kPath,verbose)
+  H_CA = FFT_selection(outputDir+'nCHAm.npy',exc_choice,kPath,verbose)
+  H_AC = FFT_selection(outputDir+'nAHCm.npy',exc_choice,kPath,verbose)
   
   np.set_printoptions(precision=9)  
   spectrum_hole = np.zeros([len(kPath),Nw], dtype='float')
@@ -146,13 +163,15 @@ def main():
   total_sum = 0.0
   partial_sum = 0.0
   k_label = u'%3s' % 'k#'
-  print u'\n k#/Nk  --   kx/pi  ky/pi:  sumRule: int dw A(%s,w)  == 1.00000 ' % k_label
-  print u' ------------------------------------------------------------'
+  if(verbose):
+    print u'\n k#/Nk  --   kx/pi  ky/pi:  sumRule: int dw A(%s,w)  == 1.00000 ' % k_label
+    print u' ------------------------------------------------------------'
 
   for kk in range(len(kPath)):#range(0,2*Nsite):
     k_label = u'%3s' % ('k%d' % kk)
-    print u' %2d/%2d ' % (kk+1,len(kPath)),
-    sys.stdout.flush()
+    if(verbose): 
+      print u' %2d/%2d ' % (kk+1,len(kPath)),
+      sys.stdout.flush()
 
     #lib1.greenFrom_H_and_S( 1, Nw, w_, n_exc_choice, H_AC[kk], S_AC[kk], Omega, U/2., eta, g_ac)
     #lib1.greenFrom_H_and_S(-1, Nw, w_, n_exc_choice, H_CA[kk], S_CA[kk], Omega, U/2., eta, g_ca)
@@ -160,7 +179,7 @@ def main():
     e_ac,u_ac = la.eig(np.dot(H_AC[kk],la.inv(S_AC[kk])))
     e_ca,u_ca = la.eig(np.dot(H_CA[kk],la.inv(S_CA[kk])))
     
-    print '--',
+    if(verbose): print '--',
     sys.stdout.flush()
     
     u_ac_m1 = la.inv(u_ac)
@@ -181,21 +200,34 @@ def main():
     sumRule = -dw*(g_tot.imag).sum()/(np.pi)
 
     total_sum += sumRule/float(len(kPath))
-        
-    print u' %2d/%2d  %2d/%2d :           int dw A(%s,w)  = % 5.5f ' \
-                     % (Xi(kPath[kk]),W/2,Yi(kPath[kk]),L/2,k_label, sumRule)
 
-  
+    flag = False
+    if(sum_rule_min_ok > sumRule):
+      flag=True
+    if(sum_rule_max_ok < sumRule):
+      flag=True
+    suffix = ' '  #+ str(sum_rule_min) + ' ' + str(sum_rule_max)
+    if(flag): suffix = '   <-- check sum rule' #+ str(sum_rule_min) + ' ' + str(sum_rule_max)
+    
+    if(verbose): print (u' %2d/%2d  %2d/%2d :           int dw A(%s,w)  = % 5.5f ' \
+                     % (Xi(kPath[kk]),W/2,Yi(kPath[kk]),L/2,k_label, sumRule)) +suffix
+
+    if(sum_rule_min > sumRule):
+      sum_rule_min = sumRule
+    if(sum_rule_max < sumRule):
+      sum_rule_max = sumRule
+    
   #outputting dos:
   suffix = ''
   totalAkw = spectrum_hole + spectrum_elec
   if calculateAll:
     suffix = '_all'
   
-    #print u'\n\n                          int dw dk A(k,w)  = % 5.5f ' % (total_sum)
-    ##print u'\n\n                                    \u222Bint dw dk A(k,w)  = % 5.5f ' % (total_sum)
-    print u'\n\ndos printing'
-    print u'\n  correction factor:                int dw dk A(k,w) = % 5.5f ' % (total_sum)
+    if(verbose):
+      #print u'\n\n                          int dw dk A(k,w)  = % 5.5f ' % (total_sum)
+      ##print u'\n\n                                    \u222Bint dw dk A(k,w)  = % 5.5f ' % (total_sum)
+      print u'\n\ndos printing'
+      print u'\n  correction factor:                int dw dk A(k,w) = % 5.5f ' % (total_sum)
     
     dos = np.zeros([3,Nw], dtype='float')
     dos[0,:] = totalAkw.sum(axis=0)
@@ -222,8 +254,19 @@ def main():
    file_green_h.write('\n')
    file_green.write('\n')
 
+
+  if((sum_rule_min < sum_rule_min_ok) or (sum_rule_max > sum_rule_max_ok)):
+  
+    print '\nThe sum rule is not within the range: 0.96 < int dw A(k,w) < 1.00.'
+    print 'check range of integration (w_min_data and w_max_data)'
+    print 'or increase the number of sampling'
+    print 'or exclude this ".bin" file of the analysis.\n'
+  else:
+  
+    print 'OK\n'
   #print ''
-  exit()
+  #exit()
+  #return sum_rule_min, sum_rule_max
   
   
 #######################################################################
@@ -233,8 +276,8 @@ def main():
 def dotdot(a,b,c):
     return np.dot(np.dot(a,b),c)
 
-def FFT_selection(dataFileName,exc_choice,kPath):
-  print 'treatement of '+ dataFileName + '.',
+def FFT_selection(dataFileName,exc_choice,kPath, verbose = 1):
+  if(verbose): print 'treatment of '+ dataFileName + '.',
   sys.stdout.flush()
   n_exc_choice = len(exc_choice)
   data_up = np.load(dataFileName)
@@ -243,9 +286,9 @@ def FFT_selection(dataFileName,exc_choice,kPath):
   dataListOfMatrices = []
 
   for kk in range(len(kPath)):
-    if(kk==len(kPath)-1): 
-      print '.',
-      sys.stdout.flush()
+    if((kk==len(kPath)-1) and(verbose)): 
+        print '.',
+        sys.stdout.flush()
     kk1 = kPath[kk]
     kx1 = Xi(kk1)
     ky1 = Yi(kk1)
@@ -253,7 +296,7 @@ def FFT_selection(dataFileName,exc_choice,kPath):
     tmp1 = data_k[exc_choice,:,kx1,ky1] #slicing is faster than for loops
     tmp2 = tmp1[:,exc_choice]
     dataListOfMatrices.append(tmp2) 
-  print ''
+  if(verbose): print ''
   return dataListOfMatrices
 
 def ReadRange(inputStr):
@@ -282,7 +325,7 @@ def ReadRange(inputStr):
 
 
 if __name__ == "__main__":
-   main()
+   dvmc_spectrum(verbose_read)
 
 
 

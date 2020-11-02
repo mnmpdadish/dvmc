@@ -34,12 +34,8 @@ and authors of mVMC in the second part of this README file.
 You are free to use this code as long as you respect the License terms.
 If you use it or learn from it, we ask that you cite the following paper:
 
-[dVMC]()
+[dVMC](https://arxiv.org/abs/1912.09960) or its PRX associated when published.
 [mVMC](https://doi.org/10.1016/j.cpc.2018.08.014)
-
-Here are the associted arxiv:
-[arxiv:1912.09960](https://arxiv.org/abs/1912.09960)
-[arXiv:1711.11418](https://arxiv.org/abs/1711.11418)
 
 # Usage
 

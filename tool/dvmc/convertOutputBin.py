@@ -34,7 +34,7 @@ Excitation =  open('excitation.def').read().replace(' ','')
 n_exc = int(re.compile('NExcitation([0-9]*)').findall(Excitation)[0])
 L = int(re.compile('L([0-9]*)').findall(Excitation)[0])
 W = int(re.compile('W([0-9]*)').findall(Excitation)[0])
-print n_exc, L, W
+#print n_exc, L, W
 
 def X(ri):
   return ri%W
@@ -44,20 +44,9 @@ def Y(ri):
 
 def main():
   dirOutput = './output/'
-  
-  fileIn = []
-  n_file = len(sys.argv[:])-1
-  n_file2 = 0
-  print sys.argv[:]
-  print n_file
-  
-  for nn in range(0,n_file):
-    n_file2 +=1
-    fileIn.append(sys.argv[1+nn])
-  
-  print fileIn
-  if (n_file <1):
-    print 'error: no input files.\nexample\n$ mergeOutputBin.py output/zvo_nCHAm_nAHCm_00*\n'
+
+  if len(sys.argv)!=2:  
+    print 'error: no input files.\nexample\n$ convertOutputBin.py output/zvo_nCHAm_nAHCm_001.bin\n'
     exit()
     
   Nsite = L*W
@@ -76,15 +65,17 @@ def main():
   c_L = c_int(L)
   c_ncomp = c_int(n_exc*n_exc*Nsite*4)
 
+  fileIn = []
+  fileIn.append(sys.argv[1])
   argList = (c_char_p * len(fileIn))()
   argList[:] = fileIn
   
   #Loading and using our home made module:
   lib1 = cdll.LoadLibrary(pythonPathCode+'/libdvmc_speedup.so')
   lib1.mergeOutputBin(len(fileIn), argList, c_NExcitation, c_L, c_W, 
-              phys_CA_averaged,phys_AC_averaged,phys_CHA_averaged,phys_AHC_averaged, 1)
+              phys_CA_averaged,phys_AC_averaged,phys_CHA_averaged,phys_AHC_averaged, 0)
   
-  print 'after read'
+  #print 'after read'
   def convert_c2numpy(phys_averaged):
     numpy_averaged = np.zeros(n_exc*n_exc*Nsite)
     numpy_averaged[:] = phys_averaged[:]
@@ -102,12 +93,12 @@ def main():
   nCHAm_up = convert_c2numpy(phys_CHA_averaged)
   nAHCm_up = convert_c2numpy(phys_AHC_averaged)
 
-  print 'after reshape'
+  #print 'after reshape'
     
-  print dirOutput+'nCAm'
-  print dirOutput+'nACm'
-  print dirOutput+'nCHAm'
-  print dirOutput+'nAHCm'
+  #print dirOutput+'nCAm'
+  #print dirOutput+'nACm'
+  #print dirOutput+'nCHAm'
+  #print dirOutput+'nAHCm'
   np.save(dirOutput+'nCAm',nCAm_up)
   np.save(dirOutput+'nACm',nACm_up)
   np.save(dirOutput+'nCHAm',nCHAm_up)

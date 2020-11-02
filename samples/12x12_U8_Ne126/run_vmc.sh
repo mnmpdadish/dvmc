@@ -23,5 +23,11 @@ date
 mpijob dvmc.out namelist_G.def ./output/zqp_opt.dat
 date
 
-# careful with the postprocessing.sh. This cannot be 
-# applied automatically, this example requires more attention. 
+# careful with the postprocessing.sh. This cannot be
+# applied automatically, this example requires more attention.
+# use function filter_bin.sh to show which file does not respect
+# the sum rule. Keep only the file that respect the sum rule
+# (0.96 < int A(k,w) < 1.01), i.e. keep only the file that does
+# not produce a warning by the function filter_bin.py.
+# This process need to be refined at some point.
+

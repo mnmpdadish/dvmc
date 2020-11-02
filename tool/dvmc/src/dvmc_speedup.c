@@ -13,7 +13,7 @@ void interrupt_handler(int sig) {exit(0);}
 
 //simpler, faster than function above (require binary output (*.bin)
 int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L, int *exc_W, 
-                   float *phys_nCAm_averaged, float *phys_nACm_averaged, float *phys_nCHAm_averaged, float *phys_nAHCm_averaged) {
+                   float *phys_nCAm_averaged, float *phys_nACm_averaged, float *phys_nCHAm_averaged, float *phys_nAHCm_averaged, int verbose) {
            
   // to be able to use ctrl-c
   signal(SIGINT, interrupt_handler); 
@@ -56,9 +56,9 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
   
   //fread(data_read, sizeof(double), 4*size, fp);
   
-  fprintf(stdout, "\n\n%d sites to read per file\n\n",Nsite);
+  if(verbose) fprintf(stdout, "\n\n%d sites to read per file\n\n",Nsite);
   for(ii = 0; ii<n_file; ii++){
-    fprintf(stdout, "reading file '%s'\n",string_list[ii]);
+    if(verbose) fprintf(stdout, "reading file '%s'\n",string_list[ii]);
     fp = fopen(string_list[ii], "rb");
     if (fp == NULL) {
       fprintf(stdout, "error: no '%s' found.\n",string_list[ii]); 
@@ -100,9 +100,11 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
   }
   free(data_read);
 
-  printf("\nData read:\n");
-  for(ii=0;ii<10;ii++) printf("% 4.5f % 4.5f % 4.5f % 4.5f \n",phys_nCAm_averaged[ii], phys_nACm_averaged[ii], phys_nCHAm_averaged[ii], phys_nAHCm_averaged[ii]);
-  printf("...\n");
+  if(verbose) {
+    printf("\nData read:\n");
+    for(ii=0;ii<10;ii++) printf("% 4.5f % 4.5f % 4.5f % 4.5f \n",phys_nCAm_averaged[ii], phys_nACm_averaged[ii], phys_nCHAm_averaged[ii], phys_nAHCm_averaged[ii]);
+    printf("...\n");
+  }
   
   return 0;
 }

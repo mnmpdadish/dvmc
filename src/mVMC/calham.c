@@ -61,6 +61,7 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
   int *myEleIdx, *myEleNum, *myProjCntNew;
   double complex *myBuffer;
   double complex myEnergy;
+  double ip_copy = ip; // quick fix so that we can compile on gcc version 9 and pre-9
 
   RequestWorkSpaceThreadInt(Nsize+Nsite2+NProj);
   RequestWorkSpaceThreadComplex(NQPFull+2*Nsize);
@@ -77,7 +78,7 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
                NCoulombInter, CoulombInter, ParaCoulombInter, NHundCoupling, HundCoupling, ParaHundCoupling, \
                NTransfer, Transfer, ParaTransfer, NPairHopping, PairHopping, ParaPairHopping, \
                NExchangeCoupling, ExchangeCoupling, ParaExchangeCoupling, NInterAll, InterAll, ParaInterAll, n0, n1) \
-  shared(eleCfg, eleProjCnt, eleIdx, eleNum) reduction(+:e)
+  shared(ip_copy, eleCfg, eleProjCnt, eleIdx, eleNum) reduction(+:e)
   {
     myEleIdx = GetWorkSpaceThreadInt(Nsize);
     myEleNum = GetWorkSpaceThreadInt(Nsite2);
@@ -130,7 +131,7 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
       s  = Transfer[idx][3];
       
       myEnergy -= ParaTransfer[idx]
-        * GreenFunc1(ri,rj,s,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
+        * GreenFunc1(ri,rj,s,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
       /* Caution: negative sign */
     }
 
@@ -144,7 +145,7 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
       rj = PairHopping[idx][1];
     
       myEnergy += ParaPairHopping[idx]
-        * GreenFunc2(ri,rj,ri,rj,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
+        * GreenFunc2(ri,rj,ri,rj,0,1,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
     }
 
     /* Exchange Coupling */
@@ -153,8 +154,8 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
       ri = ExchangeCoupling[idx][0];
       rj = ExchangeCoupling[idx][1];
     
-      tmp =  GreenFunc2(ri,rj,rj,ri,0,1,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
-      tmp += GreenFunc2(ri,rj,rj,ri,1,0,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
+      tmp =  GreenFunc2(ri,rj,rj,ri,0,1,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
+      tmp += GreenFunc2(ri,rj,rj,ri,1,0,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
       myEnergy += ParaExchangeCoupling[idx] * tmp;
     }
 
@@ -169,7 +170,7 @@ double complex CalculateHamiltonian(const double complex ip, int *eleIdx, const 
       t  = InterAll[idx][7];
       
       myEnergy += ParaInterAll[idx]
-        * GreenFunc2(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
+        * GreenFunc2(ri,rj,rk,rl,s,t,ip_copy,myEleIdx,eleCfg,myEleNum,eleProjCnt,myProjCntNew,myBuffer);
     }
 
     #pragma omp master

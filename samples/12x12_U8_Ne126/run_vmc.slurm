@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=run_vmc
-#SBATCH --time=00:29:00
+#SBATCH --time=23:59:00
 #SBATCH --account=def-charleb1
-#SBATCH -n 1
+#SBATCH -n 108
 #SBATCH -c 32
 #SBATCH --mem-per-cpu=2000MB
 
@@ -27,11 +27,10 @@ date
 srun --cpu_bind=cores dvmc.out namelist_G.def ./output/zqp_opt.dat
 date
 
-#to generate the graph, type:
-#$ preprocess_dVMC.sh
-
-#to generate the data and gnuplot files:
-#$ gnuplot plot_Akw.gp
-#$ gnuplot plot_allAkw.gp
-#$ gnuplot plot_dos.gp
-
+# careful with the postprocessing.sh. This cannot be 
+# applied automatically, this example requires more attention.
+# use function filter_bin.sh to show which file does not respect
+# the sum rule. Keep only the file that respect the sum rule 
+# (0.96 < int A(k,w) < 1.01), i.e. keep only the file that does 
+# not produce a warning by the function filter_bin.py.
+# This process need to be refined at some point. 

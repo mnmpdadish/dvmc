@@ -139,7 +139,7 @@ dos printing
 
   correction factor:                ∫∫dw dk A(k,w) =  0.99022 
 
-Not here that the number on the right is the sum rule. In theory
+Note here that the number on the right is the sum rule. In theory
 this sum rule should be exactly one (if your frequency integration
 was done from -inf < w < inf). But the fact that this integral is not
 exactly one is not only due to an integration imprecision and
@@ -151,15 +151,15 @@ number of Monte Carlo sampling or bad ground state found). There is a
 lot of different cause that can make this sum rule wrong. Having 
 a result around 0.99 is a necessary (but not always sufficient) to 
 obtain a converged result. In some cases, for big clusters (8x8 or
-12x12), this need to be checked at every iteration, and keep the 
-number of sample per iteration relativly low, as some sample seems 
+12x12), this need to be checked at every iteration (for every bin file), and 
+keep the number of sample per iteration relativly low, as some sample seems 
 to create bad statistic. For now, no automatic processing of this 
-statistic is included in the code, and it must be checked by hand.
+statistic is included in the code, and it must be checked with the function
+filter_bin.sh. This will print on screen which bin file does not
+respect a sumrule 0.96 < int dw A(k,w) 1.01 for every k points. 
 For this reason, care must be take if you run the example in the
 directory "12x12_U8_Ne126", or any big cluster. It is simple to 
-exclude any file where ∫∫dw dk A(k,w) is smaller than 0.97 or bigger 
-1.00.
-
+exclude any file where the sum rule is not respected. 
 
 2. Some examples shown in this directory start from a random guess for
 the ground state determination. This may be sufficient or good for small
