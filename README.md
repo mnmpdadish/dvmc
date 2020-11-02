@@ -51,7 +51,7 @@ To install everything, this new version of mVMC must be compiled.
 This can be done using cmake. In the currect (root) directory, do:
 
 $ mkdir build && cd build
-$ cmake ..
+$ cmake .. -DCMAKE_INSTALL_PREFIX:PATH=$HOME
 $ make 
 $ make install
 
@@ -63,12 +63,12 @@ using the option -DCONFIG=intel in cmake.
 
 It is possible that you do not have the permission to
 execute the command "make install" on your cluster.
-In that case, change the default install directory
-to your home (it will create a bin directory there)
-with the option -DCMAKE_INSTALL_PREFIX:PATH=$HOME in cmake.
+In that case, make sure you choose an install directory
+for which you have permission, in the example above,
+we chose $HOME/bin to be the directory of installation.
 
-With this custom path, you need to create the ~/bin/ and make this 
-directory execuable by adding this line to the ~/.bashrc 
+With this custom path, you need to create the ~/bin/ directory 
+and make it execuable by adding this line to the ~/.bashrc 
 (if this file does not exist, create it):
 
 export PATH=$PATH:$HOME/bin/
