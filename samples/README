@@ -68,13 +68,9 @@ define a commutation relation with c^dagger and c. To
 preprocessing wil generate all the necessary files and configuration.
 However, make sure that you have enough memory for the calculation. 
 Running the program print you an estimate of the memory necessary for
-the calculation of dvmc (NVMCCalMode==3). For example:
+the calculation. For example:
 
-"This mpi thread will require a little above 3.2847 Go for the dvmc calculatin (NVMCCalMode==3)." 
-
-imply that that the memory bottleneck of the calculation (here dvmc)
-will require ~3.3 Gigabyte per mpi process. This is printed even
-if this is not the task NVMCCalMode==3 that is running.  
+"This mpi thread requires a little above 3.2847 Go." 
 
 On many multi-cpu core, you have the choice to use your
 CPUs with either OpenMP or mpi. Note that using every CPU with MPI

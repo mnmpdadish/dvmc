@@ -365,7 +365,7 @@ void SetMemory() {
   /***** Stocastic Reconfiguration *****/
   if(NVMCCalMode==0){
 
-    printf("This mpi thread will require a little above %f Go for the dvmc calculatin (NVMCCalMode==3).\n", mem1+mem3+mem01+mem02+mem03);
+    printf("This mpi thread requires a little above %f Go.\n", mem1+mem3+mem01+mem02+mem03);
     //SR components are described by real and complex components of O
     if(NSRCG==0){
       SROptOO = (double complex*)malloc( sizeof(double complex)*((2*SROptSize)*(2*SROptSize+2))) ; //TBC
