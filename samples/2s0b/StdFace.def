@@ -1,0 +1,11 @@
+L = 2
+model = "FermionHubbard"
+lattice = "chain"
+t = 1.0
+U = 0.000
+nelec = 2
+NSROptItrStep = 2000
+NVMCWarmUp = 100
+NVMCSample = 10000
+2Sz = 0
+NStore = 1
