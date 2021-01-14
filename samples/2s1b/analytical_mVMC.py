@@ -124,20 +124,18 @@ class qState:
    def string(self):
       s1 = ""
       for ii in range(self.N):
+       if(abs(self.ket[ii])>0.000001):
+         
          s1 += bin(ii)[2:].zfill(self.Nsites*2) + " "
-         #s1 += bin(ii)[2:].zfill(self.Nsites*2) + "\n"                                                                                                                                                                                                         
-      #s1 += '\n'                                                                                                                                                                                                                                               
-      #for ii in range(self.N):                                                                                                                                                                                                                                 
          if(abs(self.ket[ii].real)>0.000001):
-            s1 += "% 2.1f "%(self.ket[ii].real)
+            s1 += "% 6.2f "%(self.ket[ii].real)
          else:
-            s1 += "  .  "
-      #s1+="\n"                                                                                                                                                                                                                                                 
-      #for ii in range(self.N):                                                                                                                                                                                                                                 
+            s1 += "   .  "
+      
          if(abs(self.ket[ii].imag)>0.000001):
-            s1 += "% 2.1f "%(self.ket[ii].imag)
+            s1 += "% 6.2f "%(self.ket[ii].imag)
          else:
-            s1 += "  .  "
+            s1 += " "
          s1+="\n"
       return s1
 
@@ -255,18 +253,13 @@ def ReadFile(fileName):
 
 # This only check for small 1D clusters
 
-#analytical: -6.40907240
-#vmc:        -3.918293248878202961e-01
-
 nSites = 3
 Read = 1
-Write = 0
-Symmetrize = 0
 
 # defining an Hamiltonian:
-H_T = np.array([[   0,  -2,    0],
-                [  -2,   0,    0],
-                [   0,   0,    0]])
+H_T = np.array([[   0.,  -1.,    0.],
+                [  -1.,   0.,    0.],
+                [   0.,   0.,    0.]])
 
 H_U = np.array([  8.,  8.,  0.])
 
@@ -274,7 +267,6 @@ print('\nH_T =')
 for ii in range(nSites):
   for jj in range(nSites):
     print(ii,jj,H_T[ii][jj])
-
 
 # assigning the f_ij:
 f_ = np.zeros((nSites,nSites), dtype=complex)
@@ -298,7 +290,7 @@ else:
 print('\ni j  f_ij')
 for ii in range(nSites):
   for jj in range(nSites):
-    print(ii,jj,'% 4.3f' % f_[ii][jj].real) # limited to real f_ij for now
+    print(ii,jj,'% 4.4e' % f_[ii][jj].real) # limited to real f_ij for now
 
 #exit()
 
@@ -316,15 +308,7 @@ phi_pair = qState(nSites, 0.0)
 # | phi >  = sum_{ij} f_{ij} c_{i down} c_{j up} | phi_0 >  :
 for ii in range(0,nSites):
  for jj in range(0,nSites):
-  phi_tmp += f_[ii][jj] * (c_(nSites+ii) * (c_(jj) * phi_0))
-
-print('\n| phi tmp >  = ')
-print(phi_tmp)
-
-
-for ii in range(0,nSites):
- for jj in range(0,nSites):
-  phi_pair += f_[ii][jj] * (c_(nSites+ii) * (c_(jj) * phi_tmp))
+  phi_pair += f_[ii][jj] * (c_(nSites+ii) * (c_(jj) * phi_0))
 
 print('\n| phi_pair >  = ')
 print(phi_pair)
@@ -345,8 +329,9 @@ print('\n| psi >  = H |phi>')
 print(psi)
 
 # ground state energy: E = <phi| H |phi> / <phi | phi>
-E = psi.scalarProd(phi_pair)/phi_pair.squareNorm()
+print(psi.scalarProd(phi_pair), phi_pair.squareNorm())
 
+E = psi.scalarProd(phi_pair)/phi_pair.squareNorm()
 print('\nE = <phi| H |phi> / <phi | phi> = % 4.8f' % E.real) # E is supposed to be purely real
 
 

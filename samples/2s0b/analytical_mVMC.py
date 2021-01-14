@@ -252,32 +252,12 @@ def ReadFile(fileName):
 
 nSites = 2
 Read = 1
-Write = 0
-Symmetrize = 0
-
-t = -1.0
-U = 8.0
 
 # defining an Hamiltonian:
-H_T = np.zeros((nSites,nSites), dtype=float)
-H_U = np.zeros((nSites), dtype=float)
+H_T = np.array([[   0.,  -1.],
+                [  -1.,   0.]])
 
-for ii in range(nSites):
-  for jj in range(nSites):
-    if((ii-jj)%nSites==1 or (ii-jj)%nSites==3):
-      if(nSites==2):
-        H_T[ii][jj] += 2*t  # because it is periodic
-      else:
-        H_T[ii][jj] += t  
-
-for ii in range(nSites):
-  H_U[ii] += U
-
-print('\nH_T =')
-for ii in range(nSites):
-  for jj in range(nSites):
-    print(ii,jj,H_T[ii][jj])
-
+H_U = np.array([  8.,  8.])
 
 # assigning the f_ij:
 f_ = np.zeros((nSites,nSites), dtype=complex)
@@ -318,9 +298,8 @@ phi_pair = qState(nSites, 0.0)
 
 # | phi >  = sum_{ij} f_{ij} c_{i down} c_{j up} | phi_0 >  :
 for ii in range(0,nSites):
-  for jj in range(0,nSites):
-    #print("ii,jj= ",ii,jj)
-    phi_pair += f_[ii][jj] * (c_(nSites+ii) * (c_(jj) * phi_0))
+ for jj in range(0,nSites):
+  phi_pair += f_[ii][jj] * (c_(nSites+ii) * (c_(jj) * phi_0))
 print('\n| phi >  = sum_{ij} f_{ij} c_{i down} c_{j up} | phi_0 >')
 print(phi_pair)
 
