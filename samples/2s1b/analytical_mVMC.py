@@ -245,6 +245,8 @@ def ReadFile(fileName):
   return file2
 
 
+
+
       
       
 ################################################
@@ -255,6 +257,8 @@ def ReadFile(fileName):
 
 nSites = 3
 Read = 1
+Symmetrize = 1
+
 
 # defining an Hamiltonian:
 H_T = np.array([[   0.,  -1.,    0.],
@@ -287,12 +291,32 @@ else:
   print("nope.")
   exit()
   
+  
+ftmp_ = np.zeros((nSites,nSites), dtype=complex)
+if(Symmetrize):
+  for ii in range(nSites):
+    for jj in range(nSites):
+      diff = (jj-ii)%nSites
+      ftmp_[0][diff] += (1./nSites)*f_[ii][jj]
+  for ii in range(nSites):
+    for jj in range(nSites):
+      diff = (jj-ii)%nSites
+      ftmp_[ii][jj] = ftmp_[0][diff]
+  
+  f_ = ftmp_
+  print('symmm!')
+  for ii in range(nSites):
+    for jj in range(nSites):
+      print(f_[ii][jj])
+
+#exit()
+  
+  
 print('\ni j  f_ij')
 for ii in range(nSites):
   for jj in range(nSites):
     print(ii,jj,'% 4.4e' % f_[ii][jj].real) # limited to real f_ij for now
 
-#exit()
 
 
 
