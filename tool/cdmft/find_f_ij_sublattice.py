@@ -13,8 +13,9 @@ def main():
    
    for ii in range(16):
     for jj in range(16):
-     (fold_x,fold_y) = fold_vector(ii,2,2,4,4)
-     print '%2d %2d  - %2d %2d         - %2d %2d' %(ii,jj,fold(ii,(fold_x,fold_y),2,2,4,4), fold(jj,(fold_x,fold_y),2,2,4,4),  fold_x, fold_y)
+     (x,y)   = xy(ii, (W, L))
+     (fold_x,fold_y) = fold_vector((x,y), (Wsub, Lsub))
+     print '%2d %2d  - %2d %2d ' %(ii,jj,fold(ii,(fold_x,fold_y),(W,L)), fold(jj,(fold_x,fold_y),(W,L)))
    
    exit()
    
@@ -22,25 +23,24 @@ def main():
 #####################################  END OF THE PROGRAM - ###############################################
 ###########################################################################################################
 
-def xy(i, W, L):
+def xy(i, (W, L)):
    x = i % W
    y = i // W
    return (x, y)
 
-def fold_vector(index, Wsub, Lsub, W, L):
-   (x,y) = xy(index, W, L)
+def fold_vector((x,y), (Wsub, Lsub)):
    
    fold_x = (x//Wsub)*Wsub
    fold_y = (y//Lsub)*Lsub
    
-   return (fold_x,fold_y)
+   return (fold_x, fold_y)
 
-def fold(index, (fold_x, fold_y), Wsub, Lsub, W, L):
-   (x,y) = xy(index, W, L)
+def fold(index, (fold_x, fold_y), (W, L)):
+   (x,y) = xy(index, (W, L))
    
-   x2 = (x - fold_x) % W
-   y2 = (y - fold_y) % L
-   new_index = x2 + y2*W
+   new_x = (x - fold_x) % W
+   new_y = (y - fold_y) % L
+   new_index = new_x + new_y*W
    return new_index
 
 
