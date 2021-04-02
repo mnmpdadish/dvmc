@@ -660,9 +660,10 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   DSROptStepDt = bufDouble[IdxSROptStepDt];
   DSROptCGTol = bufDouble[IdxSROptCGTol];
   TwoSz = bufInt[Idx2Sz];
-  NExcitation = bufInt[IdxNExcitation];
+  NExcitation = bufInt[IdxNExcitation]; 
   Excitation_L = bufInt[IdxExcitation_L];
   Excitation_W = bufInt[IdxExcitation_W];
+  NExcitation_tot = NExcitation * Excitation_L * Excitation_W;
 //  NDynamicalGIdx = bufInt[IdxNDynamicalG];
   
   if (NMPTrans < 0) {
@@ -721,7 +722,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
                  + Nsite * NQPTrans /* QPTrans */
                  + Nsite * NQPTrans /* QPTransInv */
                  + Nsite * NQPTrans /* QPTransSgn */
-                 + 5 * NExcitation /* ChargeExcitation */
+                 + 4 * NExcitation_tot /* ChargeExcitation */
 //                 + Nsite*Nsite /* DynamicalGIdx */
                  + 4 * NCisAjs /* CisAjs */
                  + 8 * NCisAjsCktAlt /* CisAjsCktAlt */
@@ -820,7 +821,7 @@ int ReadDefFileIdxPara(char *xNameListFile, MPI_Comm comm) {
           break;
 
         case KWExcitation:
-          if (GetInfoExcitation(fp, ChargeExcitationIdx, Nsite, NExcitation, defname) != 0) info = 1;
+          if (GetInfoExcitation(fp, ChargeExcitationIdx, Nsite, NExcitation_tot, defname) != 0) info = 1;
           break;
           
         case KWGutzwiller: /*gutzwilleridx.def---------------------------------*/
@@ -1906,16 +1907,17 @@ int
 GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname) {
   char ctmp2[256];
   int idx = 0, info = 0;
-  int x0=0, x1=0, x2=0, x3=0, x4=0;
+  int x0=0, x1=0, x2=0, x3=0;
   if (NArray == 0) return 0;
   while (fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp) != NULL) {
-    sscanf(ctmp2, "%d %d %d %d %d\n", &x0, &x1, &x2, &x3, &x4);
-    //printf("%d %d %d %d %d\n", x0, x1, x2, x3, x4);
+    sscanf(ctmp2, "%d %d %d %d %d\n", &x0, &x1, &x2, &x3);
+    //sscanf(ctmp2, "%d %d %d %d %d\n", &x0, &x1, &x2, &x3, &x4);
+    printf("%d %d %d %d %d\n", x0, x1, x2, x3);
     ArrayIdx[idx][0] = x0;
     ArrayIdx[idx][1] = x1;
     ArrayIdx[idx][2] = x2;
     ArrayIdx[idx][3] = x3;
-    ArrayIdx[idx][4] = x4;
+    //ArrayIdx[idx][4] = x4;
     idx++;
   }
   

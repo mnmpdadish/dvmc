@@ -34,9 +34,17 @@ L=W=1
 if(StdFace.find('L=')>=0): L = int(re.compile('L=([0-9]*)').findall(StdFace)[0])
 if(StdFace.find('W=')>=0): W = int(re.compile('W=([0-9]*)').findall(StdFace)[0])
 
+nSites = L*W
+
+def find_neighbor_site(r, dx, dy):
+  r_x   = (r+dx) % L;  
+  r_y   = (r/L+dy) % W;  
+  r_out = (r_x + L*r_y) % nSites;    
+  return r_out;
 
 def WriteExcitation():
 
+  # BEWARE: number of excitation per lattice site must be the same for every sites.
   spectrumpara = open('spectrumpara.def').read()
   for line in  spectrumpara.split('\n'):
     if len(line)>0:
@@ -46,30 +54,42 @@ def WriteExcitation():
       if(term[0][:]=='dr1_y'):  dr1_y = ReadRange(term[1])
       if(term[0][:]=='dr2_x'):  dr2_x = ReadRange(term[1])
       if(term[0][:]=='dr2_y'):  dr2_y = ReadRange(term[1])
-  
-  s = ''
-  s+= '%5d %6d %2d %6d %2d \n' % (0,0,0,0,0) 
-  s+= '%5d %6d %2d %6d %2d \n' % (1,0,0,0,0) 
-  NN=2
-  s4= ''
-  s3= ''
+
+  s0= ''
+  s1= ''
   s2= ''
-  pairList_s3 = []
-  pairList_s4 = []
-  for r1_x in dr1_x:
-   for r1_y in dr1_y:
-    for r2_x in dr2_x:
-     for r2_y in dr2_y:
-      if ((r2_x%L!=0) or (r2_y%W!=0)):  #condition to prevent unallowed excitation
-       if ((r1_x%L,r1_y%W,r2_x%L,r2_y%W) not in pairList_s4):   #condition to prevent redundant excitation
-        NN+=1
-        s4+= '%5d %6d %2d %6d %2d \n' % (4,r1_x%L,r1_y%W,r2_x%L,r2_y%W)
-        pairList_s4.append((r1_x%L,r1_y%W,r2_x%L,r2_y%W))
-        if ((r2_x%L,r2_y%W,r1_x%L,r1_y%W) not in pairList_s3):   #condition to prevent redundant excitation
-         NN+=1#2
-         s3+= '%5d %6d %2d %6d %2d \n' % (3,r1_x%L,r1_y%W,r2_x%L,r2_y%W)
-         #s2+= '%5d %6d %2d %6d %2d \n' % (2,r1_x%L,r1_y%W,r2_x%L,r2_y%W)   # careful, if you restore this line, also restore NN+=2 line
-         pairList_s3.append((r1_x%L,r1_y%W,r2_x%L,r2_y%W))
+  s3= ''
+  s4= ''
+  
+  NExcitation = 0
+  for r1 in range(nSites):
+    s0+= '%5d %4d %3d %3d \n' % (0,r1,0,0)   # last two do not matter for type 0
+    s1+= '%5d %4d %3d %3d \n' % (1,r1,r1,r1) # last one does not matter for type 1
+    NN=2
+    pairList_s3 = []
+    pairList_s4 = []
+    for dr1x in dr1_x:
+     for dr1y in dr1_y:
+      for dr2x in dr2_x:
+       for dr2y in dr2_y:
+        if ((dr2x%L!=0) or (dr2y%W!=0)):  #condition to prevent unallowed excitation
+          ra = find_neighbor_site(r1, dr1x, dr1y)
+          rb = find_neighbor_site(r1, dr2x, dr2y)
+          if ((r1,ra,rb) not in pairList_s4): #condition to prevent redundant excitation
+           NN+=1
+           s4+= '%5d %4d %3d %3d \n' % (4,r1,ra,rb) # everything matters for type 4
+           pairList_s4.append((r1,ra,rb))
+           if ((r1,rb,ra) not in pairList_s3): #condition to prevent redundant excitation
+            NN+=1
+            s3+= '%5d %4d %3d %3d \n' % (3,r1,ra,rb) # everything matters for type 4
+            pairList_s3.append((r1,ra,rb))
+    
+    #print NN
+    # BEWARE: number of excitation per lattice site must be the same for every sites.
+    if r1 == 0:
+      NExcitation = NN
+    else:
+      assert(NN == NExcitation)
          
   f = open('excitation.def','w')
   f.write(
@@ -77,10 +97,10 @@ def WriteExcitation():
     "NExcitation       "+str(NN)+"\n"+
     "L                 "+str(L)+"\n"+
     "W                 "+str(W)+"\n"+
-    "==================Excitations==\n"
+    "----t---ri--ra--rb-------------\n"
     )
   
-  f.write(s+s4+s3) 
+  f.write(s0+s1+s4+s3) 
   f.close()
 
 def ReadRange(inputStr):

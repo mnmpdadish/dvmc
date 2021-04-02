@@ -288,7 +288,8 @@ double complex Sztot,Sztot2; /* <Sz>,<Sz^2> */
 
 typedef enum {with_nothing, with_CisAjs, with_AisCjs,with_CisCmuAnuAjs,with_AisCmuAnuCjs} commuting_with; 
 
-int NExcitation = 0, Excitation_W=1, Excitation_L=1;
+int NExcitation = 0, Excitation_W=1, Excitation_L=1; // Beware, NExcitation is the number of excitation per site, but now the file contains the excitations for each sites. NExcitation must be the same for each site
+int NExcitation_tot = 0;
 //int ChargeExcitationIdx[1024][3];
 int **ChargeExcitationIdx;
 int sampleChunk = 10;

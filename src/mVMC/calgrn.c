@@ -123,21 +123,6 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return (eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s))
             *(eleNum[rb+   s *Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s)    + sign * (del(rb,ri)-del(rb,rj)) )   ;
     }
-    else if(t==5){
-      return (eleNum[ri+(1-s)*Nsite] + del((1-s),u) * (del(ri,rm)-del(ri,rn)))
-            *(eleNum[ra+   s *Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,s)    + sign * (del(ra,ri)-del(ra,rj)) )
-            *(eleNum[rb+   s *Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s)    + sign * (del(rb,ri)-del(rb,rj)) );
-    }
-    else if(t==6){
-      return (eleNum[ri+(1-s)*Nsite] + del((1-s),u) * (del(ri,rm)-del(ri,rn)))
-            *(eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s))
-            *(eleNum[rb+(1-s)*Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,1-s));
-    }
-    else if(t==7){
-      return (eleNum[ri+(1-s)*Nsite] + del((1-s),u) * (del(ri,rm)-del(ri,rn)))
-            *(eleNum[ra+(1-s)*Nsite] + (del(ra,rm)-del(ra,rn)) * del(u,1-s))
-            *(eleNum[rb+   s *Nsite] + (del(rb,rm)-del(rb,rn)) * del(u,s)    + sign * (del(rb,ri)-del(rb,rj)) )   ;
-    }
     else{
       printf("oups, error %d\n", t);
       exit(1);
@@ -171,21 +156,6 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
       return (eleNum[ra+(1-s)*Nsite] )
             *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );
     }
-    else if(t==5){ 
-      return (eleNum[ri+(1-s)*Nsite])
-            *(eleNum[ra+    s*Nsite] + sign * (del(ra,ri)-del(ra,rj) ) )
-            *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );      
-    }
-    else if(t==6){ 
-      return (eleNum[ri+(1-s)*Nsite])
-            *(eleNum[ra+(1-s)*Nsite] )
-            *(eleNum[rb+(1-s)*Nsite] );
-    }
-    else if(t==7){ 
-      return (eleNum[ri+(1-s)*Nsite])
-            *(eleNum[ra+(1-s)*Nsite] )
-            *(eleNum[rb+    s*Nsite] + sign * (del(rb,ri)-del(rb,rj) ) );
-    }
     else{
       printf("oups, error %d\n", t);
       exit(1);
@@ -207,18 +177,6 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
     }
     else if(t==4){ 
       return (eleNum[ra+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
-    }
-    else if(t==5){ 
-      return (eleNum[ri+(1-s)*Nsite])
-            *(eleNum[ra+s*Nsite]*eleNum[rb+s*Nsite]);
-    }
-    else if(t==6){ 
-      return (eleNum[ri+(1-s)*Nsite])
-            *(eleNum[ra+(1-s)*Nsite]*eleNum[rb+(1-s)*Nsite]);
-    }
-    else if(t==7){ 
-      return (eleNum[ri+(1-s)*Nsite])
-            *(eleNum[ra+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
     }
     else{
       printf("oups, error %d\n", t);
@@ -367,26 +325,37 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
     
     //printf("\n");
     #pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) 
-    for(ri=0;ri<Nsite;ri++) {
+    //for(ri=0;ri<Nsite;ri++) {
      //printf("%d ",ri);
-     for(rj=0;rj<Nsite;rj++) {
-      s=0;
-      int idx1 = ri+Nsite*rj;
-      int idx2 = rj+Nsite*ri;
-      int idx_exc;
+     //for(rj=0;rj<Nsite;rj++) {
+      s=0; // just doing spin up
+      int idx_exc1;
+      int idx_exc2;
           
-      for(idx_exc=0;idx_exc<NExcitation;idx_exc++){
+      for(idx_exc1=0;idx_exc1<NExcitation_tot;idx_exc1++){
+       for(idx_exc2=0;idx_exc2<NExcitation_tot;idx_exc2++){  
+        ///int dr1_x = ChargeExcitationIdx[idx_exc][1];  // position 1
+        ///int dr1_y = ChargeExcitationIdx[idx_exc][2];  // position 1
+        //int dr2_x = ChargeExcitationIdx[idx_exc][3];  // position 2
+        //int dr2_y = ChargeExcitationIdx[idx_exc][4];  // position 2
         
-        int t     = ChargeExcitationIdx[idx_exc][0];  // type
-        int dr1_x = ChargeExcitationIdx[idx_exc][1];  // position 1
-        int dr1_y = ChargeExcitationIdx[idx_exc][2];  // position 1
-        int dr2_x = ChargeExcitationIdx[idx_exc][3];  // position 2
-        int dr2_y = ChargeExcitationIdx[idx_exc][4];  // position 2
+        int t   = ChargeExcitationIdx[idx_exc1][0];  // type
+        int ri  = ChargeExcitationIdx[idx_exc1][1];
+        int ra1 = ChargeExcitationIdx[idx_exc1][2];
+        int ra2 = ChargeExcitationIdx[idx_exc1][3];
         
-        int ra1 = find_neighbor_site(ri,dr1_x,dr1_y);
-        int ra2 = find_neighbor_site(ri,dr2_x,dr2_y);
-        int rb1 = find_neighbor_site(rj,dr1_x,dr1_y);
-        int rb2 = find_neighbor_site(rj,dr2_x,dr2_y);
+        int t2  = ChargeExcitationIdx[idx_exc2][0];  // type
+        int rj  = ChargeExcitationIdx[idx_exc2][1];
+        int rb1 = ChargeExcitationIdx[idx_exc2][2];
+        int rb2 = ChargeExcitationIdx[idx_exc2][3];
+        
+        int idx1 = ri+Nsite*rj;
+        int idx2 = rj+Nsite*ri;
+        
+        //int ra1 = find_neighbor_site(ri,dr1_x,dr1_y);
+        //int ra2 = find_neighbor_site(ri,dr2_x,dr2_y);
+        //int rb1 = find_neighbor_site(rj,dr1_x,dr1_y);
+        //int rb2 = find_neighbor_site(rj,dr2_x,dr2_y);
         
         int idx_vector1 = idx_exc + NExcitation*(sample + sampleChunk*idx1);
         int idx_vector2 = idx_exc + NExcitation*(sample + sampleChunk*idx2);
@@ -413,8 +382,8 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
         O_AC_vec2[idx_vector2] = AC_tmp;//conj(AC_tmp);  // (equation B10)
         
         // <phi|x>
-        O0_vec1[idx_vector1]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  rj, ri, s, 0,0,0, myEleNum)));
-        O0_vec2[idx_vector2]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t,  rj, ri, s, 0,0,0, myEleNum))); // (equation B10)
+        O0_vec1[idx_vector1]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t2, 0,0,0, 0,0,0, myEleNum)));
+        O0_vec2[idx_vector2]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t2, 0,0,0, 0,0,0, myEleNum))); // (equation B10)
         //
         // <phi|H_U|x> 
         double tmp_int_AHC=0.0;
@@ -467,8 +436,8 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
           H_AC_vec2[idx_vector2] += tmp;//conj(tmp); // (equation B11)
         }
       }
-     }
-    }//*/
+     //}
+    //}//*/
   } //
 
   ReleaseWorkSpaceThreadInt();
