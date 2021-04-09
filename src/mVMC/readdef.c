@@ -1910,9 +1910,9 @@ GetInfoExcitation(FILE *fp, int **ArrayIdx, int Nsite, int NArray, char *defname
   int x0=0, x1=0, x2=0, x3=0;
   if (NArray == 0) return 0;
   while (fgets(ctmp2, sizeof(ctmp2) / sizeof(char), fp) != NULL) {
-    sscanf(ctmp2, "%d %d %d %d %d\n", &x0, &x1, &x2, &x3);
+    sscanf(ctmp2, "%d %d %d %d\n", &x0, &x1, &x2, &x3);
     //sscanf(ctmp2, "%d %d %d %d %d\n", &x0, &x1, &x2, &x3, &x4);
-    printf("%d %d %d %d %d\n", x0, x1, x2, x3);
+    //printf("%d %d %d %d\n", x0, x1, x2, x3);
     ArrayIdx[idx][0] = x0;
     ArrayIdx[idx][1] = x1;
     ArrayIdx[idx][2] = x2;
