@@ -55,14 +55,15 @@ def WriteExcitation():
       if(term[0][:]=='dr2_x'):  dr2_x = ReadRange(term[1])
       if(term[0][:]=='dr2_y'):  dr2_y = ReadRange(term[1])
 
-  s0= ''
-  s1= ''
-  s2= ''
-  s3= ''
-  s4= ''
+  s = ''
   
   NExcitation = 0
   for r1 in range(nSites):
+    s0= ''
+    s1= ''
+    s2= ''
+    s3= ''
+    s4= ''
     s0+= '%5d %4d %3d %3d \n' % (0,r1,0,0)   # last two do not matter for type 0
     s1+= '%5d %4d %3d %3d \n' % (1,r1,r1,r1) # last one does not matter for type 1
     NN=2
@@ -83,6 +84,7 @@ def WriteExcitation():
             NN+=1
             s3+= '%5d %4d %3d %3d \n' % (3,r1,ra,rb) # everything matters for type 4
             pairList_s3.append((r1,ra,rb))
+    s += s0 + s1 + s4 + s3
     
     #print NN
     # BEWARE: number of excitation per lattice site must be the same for every sites.
@@ -100,7 +102,7 @@ def WriteExcitation():
     "----t---ri--ra--rb-------------\n"
     )
   
-  f.write(s0+s1+s4+s3) 
+  f.write(s) 
   f.close()
 
 def ReadRange(inputStr):
