@@ -424,8 +424,8 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
           H_AC_vec2[idx_vector2] += tmp;//conj(tmp); // (equation B11)
         }
       }
-     //}
-    //}//*/
+     }
+    }//*/
   } //
 
   ReleaseWorkSpaceThreadInt();
