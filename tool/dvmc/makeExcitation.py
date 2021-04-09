@@ -65,7 +65,7 @@ def WriteExcitation():
     s3= ''
     s4= ''
     s0+= '%5d %4d %3d %3d \n' % (0,r1,0,0)   # last two do not matter for type 0
-    s1+= '%5d %4d %3d %3d \n' % (1,r1,r1,r1) # last one does not matter for type 1
+    s1+= '%5d %4d %3d %3d \n' % (1,r1,r1,0) # last one does not matter for type 1
     NN=2
     pairList_s3 = []
     pairList_s4 = []

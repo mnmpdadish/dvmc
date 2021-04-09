@@ -184,10 +184,10 @@ void SetMemoryDef() {
   }
 
 
-  ChargeExcitationIdx = (int**)malloc(sizeof(int*)*NExcitation);
-  for(i=0;i<NExcitation;i++) {
+  ChargeExcitationIdx = (int**)malloc(sizeof(int*)*NExcitation_tot);
+  for(i=0;i<NExcitation_tot;i++) {
     ChargeExcitationIdx[i] = pInt;
-    pInt += 5;
+    pInt += 4;
   }
   
 /*  //Maxime
