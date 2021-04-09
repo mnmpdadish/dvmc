@@ -325,45 +325,33 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
     
     //printf("\n");
     #pragma omp for private(idx,ri,rj,s,idx_trans,rm,rn,u) schedule(dynamic) 
-    //for(ri=0;ri<Nsite;ri++) {
+    for(ri=0;ri<Nsite;ri++) {
      //printf("%d ",ri);
-     //for(rj=0;rj<Nsite;rj++) {
-      s=0; // just doing spin up
-      int idx_exc1;
-      int idx_exc2;
-          
-      for(idx_exc1=0;idx_exc1<NExcitation_tot;idx_exc1++){
-       for(idx_exc2=0;idx_exc2<NExcitation_tot;idx_exc2++){  
-        ///int dr1_x = ChargeExcitationIdx[idx_exc][1];  // position 1
-        ///int dr1_y = ChargeExcitationIdx[idx_exc][2];  // position 1
-        //int dr2_x = ChargeExcitationIdx[idx_exc][3];  // position 2
-        //int dr2_y = ChargeExcitationIdx[idx_exc][4];  // position 2
+     for(rj=0;rj<Nsite;rj++) {
+       s=0; // just doing spin up
+       int idx_exc;
+      
+       for(idx_exc=0;idx_exc<NExcitation;idx_exc++){        
+        int file_line_idx_i = idx_exc+NExcitation*ri; // BEWARE: order matters in the file
+        int t   = ChargeExcitationIdx[file_line_idx_i][0];  // type
+        int rii = ChargeExcitationIdx[file_line_idx_i][1];
+        int ra1 = ChargeExcitationIdx[file_line_idx_i][2];
+        int ra2 = ChargeExcitationIdx[file_line_idx_i][3];
         
-        int t   = ChargeExcitationIdx[idx_exc1][0];  // type
-        int ri  = ChargeExcitationIdx[idx_exc1][1];
-        int ra1 = ChargeExcitationIdx[idx_exc1][2];
-        int ra2 = ChargeExcitationIdx[idx_exc1][3];
-        
-        int t2  = ChargeExcitationIdx[idx_exc2][0];  // type
-        int rj  = ChargeExcitationIdx[idx_exc2][1];
-        int rb1 = ChargeExcitationIdx[idx_exc2][2];
-        int rb2 = ChargeExcitationIdx[idx_exc2][3];
+        int file_line_idx_j = idx_exc+NExcitation*rj; // BEWARE: order matters in the file
+        int t2  = ChargeExcitationIdx[file_line_idx_j][0];  // type
+        int rjj = ChargeExcitationIdx[file_line_idx_j][1];
+        int rb1 = ChargeExcitationIdx[file_line_idx_j][2];
+        int rb2 = ChargeExcitationIdx[file_line_idx_j][3];
         
         int idx1 = ri+Nsite*rj;
         int idx2 = rj+Nsite*ri;
-        
-        //int ra1 = find_neighbor_site(ri,dr1_x,dr1_y);
-        //int ra2 = find_neighbor_site(ri,dr2_x,dr2_y);
-        //int rb1 = find_neighbor_site(rj,dr1_x,dr1_y);
-        //int rb2 = find_neighbor_site(rj,dr2_x,dr2_y);
-        
         int idx_vector1 = idx_exc + NExcitation*(sample + sampleChunk*idx1);
         int idx_vector2 = idx_exc + NExcitation*(sample + sampleChunk*idx2);
         
         //printf("%d %d %d %d %d\n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2],ChargeExcitationIdx[idx_exc][3],ChargeExcitationIdx[idx_exc][4]);
         //printf("%d %d \n", Excitation_L, Excitation_W); fflush(stdout);
-        //printf("%d %d %d %d \n", ra1,ra1,rb1,rb2);
-        
+        //printf("%d %d %d %d \n", ra1,ra1,rb1,rb2);        
         //printf("%d %d %d \n", ChargeExcitationIdx[idx_exc][0],ChargeExcitationIdx[idx_exc][1],ChargeExcitationIdx[idx_exc][2]);
         
         // <phi|ca|x> / <phi|x>
