@@ -329,28 +329,24 @@ void VMCMainCal(MPI_Comm comm) {
           double alpha = 0.5/((double)Nsite);
           //double alpha2 = 0.0;
           //int ii;
-          int dr;
-          #pragma omp parallel for default(shared) private(dr)
+          int ri, rj;
+          #pragma omp parallel for default(shared) private(ri,rj)
           #pragma loop noalias
-          for (dr = 0; dr < Nsite; dr++) {
-            int ri;
-            for (ri = 0; ri < Nsite; ri++) {
-             //for (rj = 0; rj < Nsite; rj++) {
-              //int dr = find_neighbor_difference(ri,rj);
-              int rj = find_neighbor_site2(ri,dr);
+          for (ri = 0; ri < Nsite; ri++) {
+            for (rj = 0; rj < Nsite; rj++) {
               int idx = ri+Nsite*rj;
               
-              C_ADD_AxB(&Phys_nACm_averaged[dr*N2], &O_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
-              C_ADD_AxB(&Phys_nCAm_averaged[dr*N2], &O_CA_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nACm_averaged[(ri + Nsite*rj)*N2], &O_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCAm_averaged[(ri + Nsite*rj)*N2], &O_CA_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
               
-              C_ADD_AxB(&Phys_nACm_averaged[dr*N2], &O0_vec2[idx*N1], &O_AC_vec2[idx*N1], NExcitation, alpha, sampleSize);
-              C_ADD_AxB(&Phys_nCAm_averaged[dr*N2], &O0_vec2[idx*N1], &O_CA_vec2[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nACm_averaged[(ri + Nsite*rj)*N2], &O0_vec2[idx*N1], &O_AC_vec2[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCAm_averaged[(ri + Nsite*rj)*N2], &O0_vec2[idx*N1], &O_CA_vec2[idx*N1], NExcitation, alpha, sampleSize);
               
-              C_ADD_AxB(&Phys_nAHCm_averaged[dr*N2], &H_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
-              C_ADD_AxB(&Phys_nCHAm_averaged[dr*N2], &H_CA_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nAHCm_averaged[(ri + Nsite*rj)*N2], &H_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCHAm_averaged[(ri + Nsite*rj)*N2], &H_CA_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
               
-              C_ADD_AxB(&Phys_nAHCm_averaged[dr*N2], &O0_vec2[idx*N1], &H_AC_vec2[idx*N1], NExcitation, alpha, sampleSize);
-              C_ADD_AxB(&Phys_nCHAm_averaged[dr*N2], &O0_vec2[idx*N1], &H_CA_vec2[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nAHCm_averaged[(ri + Nsite*rj)*N2], &O0_vec2[idx*N1], &H_AC_vec2[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCHAm_averaged[(ri + Nsite*rj)*N2], &O0_vec2[idx*N1], &H_CA_vec2[idx*N1], NExcitation, alpha, sampleSize);
             }
           }
         }

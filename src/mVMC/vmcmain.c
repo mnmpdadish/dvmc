@@ -779,8 +779,8 @@ void outputData() {
   else if (NVMCCalMode==3) {
     int nn,mm;//,ri,rj;
     
-    //print binary output, will delete text output soon.
-    long int totalSize = NExcitation*NExcitation*Nsite;
+    //print binary output:
+    long int totalSize = NExcitation*NExcitation*Nsite*Nsite;
     fwrite(&NExcitation,  sizeof(int), 1, File_nCHAm_bin);    
     fwrite(&Excitation_L, sizeof(int), 1, File_nCHAm_bin);    
     fwrite(&Excitation_W, sizeof(int), 1, File_nCHAm_bin);

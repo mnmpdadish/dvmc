@@ -13,7 +13,7 @@ void interrupt_handler(int sig) {exit(0);}
 
 //simpler, faster than function above (require binary output (*.bin)
 int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L, int *exc_W, 
-                   float *phys_nCAm_averaged, float *phys_nACm_averaged, float *phys_nCHAm_averaged, float *phys_nAHCm_averaged, int verbose) {
+                   float *S_CA, float *S_AC, float *H_CA, float *H_AC, int verbose) {
            
   // to be able to use ctrl-c
   signal(SIGINT, interrupt_handler); 
@@ -50,9 +50,14 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
   
   fclose(fp);
   
-  long int jj,size = NExcitation*NExcitation*Excitation_L*Excitation_W;
-  int Nsite = Excitation_L * Excitation_W;
+  int Nsite = Excitation_L*Excitation_W;
+  long int jj,size = NExcitation*NExcitation*Nsite*Nsite;
   float * data_read  = (float *)calloc((4*size),sizeof(float));
+  
+  float *phys_nCAm_averaged   = (float *)malloc((Nsite*Nsite*NExcitation*NExcitation)*sizeof(float));
+  float *phys_nACm_averaged   = (float *)malloc((Nsite*Nsite*NExcitation*NExcitation)*sizeof(float));
+  float *phys_nAHCm_averaged  = (float *)malloc((Nsite*Nsite*NExcitation*NExcitation)*sizeof(float));
+  float *phys_nCHAm_averaged  = (float *)malloc((Nsite*Nsite*NExcitation*NExcitation)*sizeof(float));
   
   //fread(data_read, sizeof(double), 4*size, fp);
   
@@ -89,20 +94,43 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
       fprintf(stdout, "error: reading Excitation_W in file '%s'.\n",string_list[ii]); 
       exit(-1);
     }
-    
+
     for(jj=0;jj<size;jj++){
       phys_nCAm_averaged [jj] += factor*data_read[jj+size*0]; 
       phys_nACm_averaged [jj] += factor*data_read[jj+size*1];
       phys_nCHAm_averaged[jj] += factor*data_read[jj+size*2]; 
       phys_nAHCm_averaged[jj] += factor*data_read[jj+size*3]; 
     }
-    fclose(fp);
+    fclose(fp);    
   }
+  
+  // untangling
+  int nn,mm;
+  for(ii=0;ii<Nsite;ii++) {
+   for(jj=0;jj<Nsite;jj++) {
+    for(nn=0;nn<NExcitation;nn++) {
+     for(mm=0;mm<NExcitation;mm++) {
+       S_CA[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nCAm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]; 
+       S_AC[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nACm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]; 
+       H_CA[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nCHAm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]; 
+       H_AC[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nAHCm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]; 
+     }
+    }
+   }
+  }
+  
+  
+
+  
+  free(phys_nCAm_averaged);
+  free(phys_nACm_averaged);
+  free(phys_nAHCm_averaged);
+  free(phys_nCHAm_averaged); 
   free(data_read);
 
   if(verbose) {
     printf("\nData read:\n");
-    for(ii=0;ii<10;ii++) printf("% 4.5f % 4.5f % 4.5f % 4.5f \n",phys_nCAm_averaged[ii], phys_nACm_averaged[ii], phys_nCHAm_averaged[ii], phys_nAHCm_averaged[ii]);
+    for(ii=0;ii<10;ii++) printf("% 4.5f % 4.5f % 4.5f % 4.5f \n",S_CA[ii], S_AC[ii], H_CA[ii], H_AC[ii]);
     printf("...\n");
   }
   

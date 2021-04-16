@@ -2,10 +2,10 @@
 # '#' are treated as comment
 
 # parameters to generate excitation.def file:
-dr1_x       -1:2      # will generate array [-1,0,1,2]
-dr1_y       -1:2      # will generate array [-1,0,1,2]
-dr2_x       -1:2      # will generate array [-1,0,1,2]
-dr2_y       -1:2      # will generate array [-1,0,1,2]
+dr1_x        0:2      # will generate array [-1,0,1,2]
+dr1_y        0:2      # will generate array [-1,0,1,2]
+dr2_x        0:2      # will generate array [-1,0,1,2]
+dr2_y        0:2      # will generate array [-1,0,1,2]
 
 # parameters to generate A(k,w) parameters 
 eta           0.2             # imaginary frequency

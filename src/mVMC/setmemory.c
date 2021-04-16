@@ -358,7 +358,7 @@ void SetMemory() {
   double mem02 = sizeof(int) *((double) NCisAjsCktAltDC) /(1024.*1024.*1024.);
   double mem03 = sizeof(double complex) *((double) NSROptItrSmp*(2+NPara)) /(1024.*1024.*1024.);
 
-  double mem1 = 5*sizeof(double)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
+  double mem1 = 5*sizeof(double)*((double)Nsite*Nsite)/(1024.)*((double)NExcitation)/(1024.)*((double)NExcitation)/(1024.);
   double mem3 = 10*sizeof(double)*((double)sampleChunk)*((double)Nsite)/(1024.)*((double)Nsite)/(1024.)*((double)NExcitation)/(1024.);
 
 
@@ -439,12 +439,12 @@ void SetMemory() {
 
     printf("This mpi thread requires is a little above %f Go for this task.\n", mem1+mem3+mem01+mem02+mem03);
     
-    Phys_nCAm_averaged  = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
-    Phys_nACm_averaged  = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
-    Phys_nCHAm_averaged = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
-    Phys_nAHCm_averaged = (double *)malloc((Nsite*NExcitation*NExcitation)*sizeof(double));
+    Phys_nCAm_averaged  = (double *)malloc((Nsite*Nsite*NExcitation*NExcitation)*sizeof(double));
+    Phys_nACm_averaged  = (double *)malloc((Nsite*Nsite*NExcitation*NExcitation)*sizeof(double));
+    Phys_nCHAm_averaged = (double *)malloc((Nsite*Nsite*NExcitation*NExcitation)*sizeof(double));
+    Phys_nAHCm_averaged = (double *)malloc((Nsite*Nsite*NExcitation*NExcitation)*sizeof(double));
     
-    data_float_convert = (float *)malloc((Nsite*NExcitation*NExcitation)*sizeof(float));
+    data_float_convert = (float *)malloc((Nsite*Nsite*NExcitation*NExcitation)*sizeof(float));
     
     /*
     Phys_nCAm  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
