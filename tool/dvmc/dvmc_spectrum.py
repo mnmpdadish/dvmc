@@ -149,7 +149,9 @@ def dvmc_spectrum(verbose=1):
   #lib1.greenFrom_H_and_S.argtypes = [c_int,c_int, c_darray, c_int, c_carray, c_carray, c_double, c_double, c_double, c_carray]
   lib1.greenFrom_e_U_Uinv_S.argtypes = [c_int,c_int, c_darray, c_int, c_carray, c_carray, c_carray, c_double, c_double, c_double, c_carray]
 
-  
+  # S_CA = np.load(outputDir+'S_CA.npy')
+
+  # THIS IS NOW WRONG \\
   
   S_CA = FFT_selection(outputDir+'nCAm.npy', exc_choice,kPath,verbose)
   S_AC = FFT_selection(outputDir+'nACm.npy', exc_choice,kPath,verbose)
