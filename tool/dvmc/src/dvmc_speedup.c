@@ -101,7 +101,7 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
       phys_nACm_averaged [jj] += factor*data_read[jj+size*1];
       phys_nCHAm_averaged[jj] += factor*data_read[jj+size*2]; 
       phys_nAHCm_averaged[jj] += factor*data_read[jj+size*3]; 
-    }
+      }
     fclose(fp);    
   }
 
