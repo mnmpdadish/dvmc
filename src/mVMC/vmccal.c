@@ -326,7 +326,8 @@ void VMCMainCal(MPI_Comm comm) {
           //printf("sampleSize=%d\n",sampleSize);
           int N1 = sampleChunk*NExcitation;
           int N2 = NExcitation*NExcitation;
-          double alpha = 0.5/((double)Nsite);
+          //double alpha = 0.5/((double)Nsite);
+	  double alpha = 0.5;
           //double alpha2 = 0.0;
           //int ii;
           int ri, rj;

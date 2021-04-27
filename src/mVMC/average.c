@@ -256,11 +256,13 @@ void WeightAverageStaticQuantities_real(MPI_Comm comm) { //Maxime
 
 
 void WeightAverageDynamicalGreenFunc_real(MPI_Comm comm) { //Maxime
-  int n;
+  long n;
   double *vec_real;
   //double complex *vec;
 
-  n = Nsite*NExcitation*NExcitation;
+  //n = Nsite*NExcitation*NExcitation;
+  /* no translational invariance */
+  n = Nsite*Nsite*NExcitation*NExcitation;
   vec_real = Phys_nCHAm_averaged;
   weightAverageReduce(n,vec_real,comm);
 

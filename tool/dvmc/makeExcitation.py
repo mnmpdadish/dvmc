@@ -117,15 +117,15 @@ def ReadRange(inputStr):
     elif len(element) ==2:
       rangeOut += range(int(element[0]),int(element[1])+1)
     else:
-      print 'Your definition cannot be interpreted properly.'
-      print 'Please input numbers or pairs of numbers'
-      print 'sepated by comma (no spaces).'
-      print 'Pairs must contains only one ":"' 
-      print 'example:'
-      print '0:3,5,6,8:11'
-      print 
-      print 'will be interpreted as the list'
-      print '[0,1,2,3,5,6,8,9,10,11]'
+      print('Your definition cannot be interpreted properly.')
+      print('Please input numbers or pairs of numbers')
+      print('sepated by comma (no spaces).')
+      print('Pairs must contains only one ":"')
+      print('example:')
+      print('0:3,5,6,8:11')
+      print("") 
+      print('will be interpreted as the list')
+      print('[0,1,2,3,5,6,8,9,10,11]')
       exit()
   return rangeOut
 
