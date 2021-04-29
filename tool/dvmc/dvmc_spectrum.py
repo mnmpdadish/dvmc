@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 # zlib license:
 
 # Copyright (c) 2019 Maxime Charlebois
@@ -165,8 +165,8 @@ def dvmc_spectrum(verbose=1):
     gij_ca = np.zeros((Nsite,Nsite,Nw),np.cdouble)
     #gk_ac = np.zeros((Nsite,Nsite,Nw),np.cdouble)
     #gk_ca = np.zeros((Nsite,Nsite,Nw),np.cdouble)
-    gk_ac = np.zeros((Nsite*Nsite,Nw),np.cdouble)
-    gk_ca = np.zeros((Nsite*Nsite,Nw),np.cdouble)
+    #gk_ac = np.zeros((Nsite*Nsite,Nw),np.cdouble)
+    #gk_ca = np.zeros((Nsite*Nsite,Nw),np.cdouble)
     #g_ac2 = np.zeros((Nsite**2,Nw),np.cdouble)
     #g_ca2 = np.zeros((Nsite**2,Nw),np.cdouble)  
     lib1.greenFrom_e_U_Uinv_S_general.argtypes = [c_int, c_int, c_int, c_int, c_int, c_darray, c_int, c_carray, c_carray, c_carray, c_double, c_double, c_double, c_carray]
@@ -271,14 +271,15 @@ def dvmc_spectrum(verbose=1):
 
     fig, ax = plt.subplots()
 
-    ax.plot(w_,-1.0*gij_ac[0,0,:].imag)
-    ax.plot(w_,-1.0*gij_ac[1,1,:].imag)
+    ax.plot(w_,-1.0*gij_ac[0,0,:].imag, 'bo')
+    ax.plot(w_,-1.0*gij_ac[1,1,:].imag, 'rx')
     ax.plot(w_,-1.0*gij_ac[2,2,:].imag)
     ax.plot(w_,-1.0*gij_ac[3,3,:].imag)
     ax.plot([-15,15],[0,0])
     #ax.plot(gij_ac[1,1,:].real)
 
     plt.show()
+    exit()
 
     #print("********************")
     #for ww in range(1):

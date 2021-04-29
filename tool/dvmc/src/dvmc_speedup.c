@@ -106,10 +106,17 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
   }
 
   int nn,mm;
-  for(nn=0;nn<NExcitation;nn++) {
+  
+  for(ii=0;ii<Nsite;ii++) 
+   for(jj=0;jj<Nsite;jj++) 
     for(mm=0;mm<NExcitation;mm++) {
-      printf("%d %d %4.5e \n",nn,mm,phys_nCAm_averaged[1 + Nsite*(0 + Nsite*(mm + NExcitation*nn))]);
-      //S_CA[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nCAm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]; 
+     for(nn=0;nn<NExcitation;nn++) {
+      printf("%d %d %d %d  %d %d % 4.2e % 4.2e % 4.2e % 4.2e \n",ii,0,jj,0,nn,mm,
+                                    phys_nACm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))],
+                                    phys_nCAm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))],
+                                    phys_nAHCm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))],
+                                    phys_nCHAm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))]);
+      //S_CA[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nCAm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))]; 
     }
   }
   
@@ -118,10 +125,10 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
    for(jj=0;jj<Nsite;jj++) {
     for(nn=0;nn<NExcitation;nn++) {
      for(mm=0;mm<NExcitation;mm++) {
-       S_CA[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nCAm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]; 
-       S_AC[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nACm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]; 
-       H_CA[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nCHAm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]; 
-       H_AC[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nAHCm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]; 
+       S_CA[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nCAm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))]; 
+       S_AC[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nACm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))]; 
+       H_CA[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nCHAm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))]; 
+       H_AC[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nAHCm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))]; 
      }
     }
    }

@@ -232,7 +232,7 @@ class n_:
 #nSites = 2
 #nSites = 3
 nSites = 2
-Read = 0
+Read = 1
 Write = 0
 Symmetrize = 0
 
@@ -268,10 +268,10 @@ for ii in range(nSites):
 #exit()
 
 f_ = np.zeros((nSites,nSites), dtype=complex)
-f_[1][1] = 1.0
-f_[1][0] = 1.0
-f_[0][1] = 1.0
-f_[0][0] = 1.0
+#f_[1][1] = 1.0
+#f_[1][0] = 1.0
+#f_[0][1] = 1.0
+#f_[0][0] = 1.0
 
 
 
@@ -297,22 +297,20 @@ if(Read):
   data = ReadFile("./output/zqp_opt.dat")
   data_list = data[0].split()
   print(len(data_list))
-
-
+  
   for ii in range(nSites):
     for jj in range(nSites):
-      data_ii_re = (data[0].split())[len(data_list)-3-3*(ii+jj*nSites)]
-      data_ii_im = (data[0].split())[len(data_list)-2-3*(ii+jj*nSites)]
+      data_ii_re = data_list[len(data_list)-3-3*(ii+jj*nSites)]
+      data_ii_im = data_list[len(data_list)-2-3*(ii+jj*nSites)]
       f_[ii][jj] += float(data_ii_re) + 1.j * float(data_ii_im)
       #f_[ii][jj] += 0.5*float(data_ii)
       #f_[jj][ii] += 0.5*float(data_ii)
       print(ii,jj,f_[ii][jj])
-      
+  
   print('')
   for ii in range(nSites):
     for jj in range(nSites):
       print(f_[ii][jj])
-      
   #exit()
 
 
@@ -394,74 +392,67 @@ def get_excitations(ii,tt):
   #psi1 = 1.0*(phi_pair)
   #psi2 = 1.0*(n_(ii+tt*nSites)*(phi_pair)) 
   psi0 = 1.0*(phi_pair)
-  #psi1 = 1.0*(n_((ii+0)%nSites+(  tt)*nSites)*(phi_pair)) 
-  psi2 = 1.0*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair)) 
-  #psi3 = 1.0*(n_((ii+0)%nSites+(1-tt)*nSites)*(n_((ii+0)%nSites+(tt)*nSites)*(phi_pair))) 
+  psi1 = 1.0*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair)) 
   
-  psi4 = 1.0*(n_((ii+1)%nSites+(  tt)*nSites)*(phi_pair)) 
-  psi5 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(phi_pair)) 
-  psi6 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(n_((ii+1)%nSites+(tt)*nSites)*(phi_pair))) 
+  #psi4 = 1.0*(n_((ii+1)%nSites+(  tt)*nSites)*(phi_pair)) 
+  #psi5 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(phi_pair)) 
+  #psi6 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(n_((ii+1)%nSites+(tt)*nSites)*(phi_pair))) 
 
-  psi7 = 1.0*(n_((ii+2)%nSites+(  tt)*nSites)*(phi_pair)) 
-  psi8 = 1.0*(n_((ii+2)%nSites+(1-tt)*nSites)*(phi_pair)) 
-  psi9 = 1.0*(n_((ii+2)%nSites+(1-tt)*nSites)*(n_((ii+2)%nSites+(tt)*nSites)*(phi_pair))) 
+  #psi14 = 1.0*(n_((ii+1)%nSites+(  tt)*nSites)*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair))) 
+  #psi15 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair)))
+  
+  #psi16 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(phi_pair))
+  psi3 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(n_((ii+1)%nSites+(1-tt)*nSites)*(phi_pair)))
+  psi4 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(n_((ii+1)%nSites+(tt)*nSites)*(phi_pair)))
   
   
-  psi14 = 1.0*(n_((ii+1)%nSites+(  tt)*nSites)*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair))) 
-  psi15 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair)))
-  psi16 = 1.0*(n_((ii+1)%nSites+(1-tt)*nSites)*(n_((ii+1)%nSites+(tt)*nSites)*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair)))) 
-
-  psi17 = 1.0*(n_((ii+2)%nSites+(  tt)*nSites)*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair)))
-  psi18 = 1.0*(n_((ii+2)%nSites+(1-tt)*nSites)*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair)))
-  psi19 = 1.0*(n_((ii+2)%nSites+(1-tt)*nSites)*(n_((ii+2)%nSites+(tt)*nSites)*(n_((ii+0)%nSites+(1-tt)*nSites)*(phi_pair)))) 
+  return [psi0,psi1,psi3, psi4]
   
-  #return [psi4,psi0]
-  #return [psi0,psi2,psi14]
-  return [psi0,psi2,psi4,psi5,psi6,psi7,psi8,psi9,psi14,psi15,psi16,psi17,psi18,psi19]
-  #return [psi0,psi2,psi4,psi5,psi6,psi7,psi8,psi9]
-
-
-
+nExc = len(get_excitations(0,0))
 
 fileo = open('output/green_comp_ave.dat', 'w')
 fileo.write('#<cHa>\n')
-print('\n< cHa >')
+#print('\n< cHa >')
 
+
+
+Ntot = nSites*nExc
+S_AC = np.zeros([Ntot,Ntot])
+S_CA = np.zeros([Ntot,Ntot])
+H_AC = np.zeros([Ntot,Ntot])
+H_CA = np.zeros([Ntot,Ntot])
 
 for aa in range(0,nSites):
-   bb=0
-   ss=0
-#for ss in range(0,2):
-#for bb in range(0,nSites):
+ #bb=0
+ ss=0
+ for bb in range(0,nSites):
    psi_n = get_excitations(aa,ss)
    psi_m = get_excitations(bb,ss)
    for nn in range(0,len(psi_n)):
     for mm in range(0,len(psi_m)):
     
-      s = ' %d %d %d %d '%(aa,ss,bb,ss)
-      s+= '  %d %d '%(nn,mm)
+      s = '%d %d %d %d '%(aa,ss,bb,ss)
+      s+= ' %d %d '%(nn,mm)
+      
+      psi_2 = (a_(aa+ss*nSites)*(c_(bb+ss*nSites)*(psi_m[mm])))
+      val_2 = psi_2.scalarProd(psi_n[nn])/phi_pair.squareNorm()      
+      s+= '% 4.2e '%(val_2.real)
+
+      S_AC[aa+nn*nSites,bb+mm*nSites] = val_2.real      
 
       psi_2 = (c_(aa+ss*nSites)*(a_(bb+ss*nSites)*(psi_m[mm])))
       val_2 = psi_2.scalarProd(psi_n[nn])/phi_pair.squareNorm()      
-      s+= ' % 4.4e  '%(val_2.real)
+      s+= '% 4.2e '%(val_2.real)
 
-      psi_2 = (a_(aa+ss*nSites)*(c_(bb+ss*nSites)*(psi_m[mm])))
-      val_2 = psi_2.scalarProd(psi_n[nn])/phi_pair.squareNorm()      
-      s+= ' % 4.4e  '%(val_2.real)
-
-      psi_2 = 0.0*phi_pair
-      for ii in range(0,nSites):
-       for uu in range(0,2):
-        for jj in range(0,nSites):
-         #psi_2 += H_T[ii,jj]*(c_(aa+ss*nSites)*(a_(bb+ss*nSites)*(c_(ii+uu*nSites)*(a_(jj+uu*nSites)*(psi_m[mm])))))
-         psi_2 += H_T[ii,jj]*(c_(aa+ss*nSites)*(c_(ii+uu*nSites)*(a_(jj+uu*nSites)*(a_(bb+ss*nSites)*(psi_m[mm])))))
-         
-      for ii in range(0,nSites):
-        psi_2 += H_U[ii]*(c_(aa+ss*nSites)*(n_(ii)*(n_(ii+nSites)*(a_(bb+ss*nSites)*(psi_m[mm]))))) 
-      val_2 = psi_2.scalarProd(psi_n[nn])/phi_pair.squareNorm()
-      
-      s+= ' % 4.4e  '%(val_2.real)
-      
+      if (1):
+       print('\n\n\n',aa, bb, '  ', nn, mm)
+       
+       print(2.*np.sqrt(1./phi_pair.squareNorm())*psi_n[nn])
+       #print(2.*np.sqrt(1./phi_pair.squareNorm())*psi_m[mm])
+       print('\n< S_CA | x >')
+       print(2.*np.sqrt(1./phi_pair.squareNorm())*psi_2)
+       print(val_2)      
+      S_CA[aa+nn*nSites,bb+mm*nSites] = val_2.real      
       
       psi_2 = 0.0*phi_pair
       for ii in range(0,nSites):
@@ -475,7 +466,35 @@ for aa in range(0,nSites):
         psi_2 += H_U[ii]*(a_(aa+ss*nSites)*(n_(ii)*(n_(ii+nSites)*(c_(bb+ss*nSites)*(psi_m[mm]))))) 
       val_2 = psi_2.scalarProd(psi_n[nn])/phi_pair.squareNorm()
       
-      s+= ' % 4.4e  '%(val_2.real)
+      s+= '% 4.2e '%(val_2.real)
+
+      H_AC[aa+nn*nSites,bb+mm*nSites] = val_2.real      
+
+
+
+
+      psi_2 = 0.0*phi_pair
+      for ii in range(0,nSites):
+       for uu in range(0,2):
+        for jj in range(0,nSites):
+         #psi_2 += H_T[ii,jj]*(c_(aa+ss*nSites)*(a_(bb+ss*nSites)*(c_(ii+uu*nSites)*(a_(jj+uu*nSites)*(psi_m[mm])))))
+         psi_2 += H_T[ii,jj]*(c_(aa+ss*nSites)*(c_(ii+uu*nSites)*(a_(jj+uu*nSites)*(a_(bb+ss*nSites)*(psi_m[mm])))))
+         
+      for ii in range(0,nSites):
+        psi_2 += H_U[ii]*(c_(aa+ss*nSites)*(n_(ii)*(n_(ii+nSites)*(a_(bb+ss*nSites)*(psi_m[mm]))))) 
+      val_2 = psi_2.scalarProd(psi_n[nn])/phi_pair.squareNorm()
+      
+      s+= '% 4.2e '%(val_2.real)
+      
+      if (1):
+       
+       print('\n< H_CA | x >')
+       #print(2.*np.sqrt(1./phi_pair.squareNorm())*psi_m[mm])
+       #print(2.*np.sqrt(1./phi_pair.squareNorm())*psi_n[nn])
+       print(2.*np.sqrt(1./phi_pair.squareNorm())*psi_2)
+       print(val_2)
+      H_CA[aa+nn*nSites,bb+mm*nSites] = val_2.real      
+
       
       print(s)
       fileo.write(s+'\n')
@@ -485,5 +504,14 @@ for aa in range(0,nSites):
 
 fileo.close()
 
+np.set_printoptions(precision=2)
+print('\nS_AC')
+print(S_AC)
+print('\nS_CA')
+print(S_CA)
+print('\nH_AC')
+print(H_AC)
+print('\nH_CA')
+print(H_CA)
 print('')
 

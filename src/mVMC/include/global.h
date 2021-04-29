@@ -292,7 +292,7 @@ int NExcitation = 0, Excitation_W=1, Excitation_L=1; // Beware, NExcitation is t
 int NExcitation_tot = 0;
 //int ChargeExcitationIdx[1024][3];
 int **ChargeExcitationIdx;
-int sampleChunk = 10;
+int sampleChunk = 1;
       
 // following arrays has size [NCisAjs*NExcitation*NExcitation]
 double *Phys_nCHAm, *Phys_nAHCm, *Phys_nCAm, *Phys_nACm;

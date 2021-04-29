@@ -3,13 +3,13 @@ Model_Parameters   0
 --------------------
 VMC_Cal_Parameters
 --------------------
-CDataFileHead  zbo
+CDataFileHead  zvo
 CParaFileHead  zqp
 --------------------
-NVMCCalMode    0
+NVMCCalMode    3
 --------------------
 NDataIdxStart  1
-NDataQtySmp    20
+NDataQtySmp    1
 --------------------
 Nsite          2
 Ncond          2    
@@ -24,7 +24,7 @@ DSROptStaDel   0.0200000000
 DSROptStepDt   0.0200000000
 NVMCWarmUp     100
 NVMCInterval   1
-NVMCSample     2000
+NVMCSample     10000
 NExUpdatePath  1
 RndSeed        123456789
 NSplitSize     1

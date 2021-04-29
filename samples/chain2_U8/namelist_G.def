@@ -1,7 +1,9 @@
-         ModPara  modpara.def
+         ModPara  modpara_G.def
          LocSpin  locspn.def
            Trans  trans.def
+    CoulombIntra  coulombintra.def
         OneBodyG  greenone.def
         TwoBodyG  greentwo.def
          Orbital  orbitalidx.def
         TransSym  qptransidx.def
+      Excitation  excitation.def

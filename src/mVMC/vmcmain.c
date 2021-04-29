@@ -789,6 +789,19 @@ void outputData() {
     convert_double2float_fwrite(Phys_nACm_averaged,  totalSize, File_nCHAm_bin);
     convert_double2float_fwrite(Phys_nCHAm_averaged, totalSize, File_nCHAm_bin);
     convert_double2float_fwrite(Phys_nAHCm_averaged, totalSize, File_nCHAm_bin);
+    
+    /*int ii,jj;
+    for(ii=0;ii<Nsite;ii++) 
+    for(jj=0;jj<Nsite;jj++) 
+    for(nn=0;nn<NExcitation;nn++) {
+      for(mm=0;mm<NExcitation;mm++) {
+        printf("%d %d % 4.5e % 4.5e % 4.5e % 4.5e \n",nn,mm,
+                                    Phys_nACm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))],
+                                    Phys_nCAm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))],
+                                    Phys_nAHCm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))],
+                                    Phys_nCHAm_averaged[ii + Nsite*(jj + Nsite*(mm + NExcitation*nn))]);
+      }
+    }*/
   }
   return;
 }

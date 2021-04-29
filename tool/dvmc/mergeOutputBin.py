@@ -104,22 +104,32 @@ def main():
     #  for n in range(Nsite):
     #   for rj in range(Nsite):
     #    numpyOut[:,:] = numpy_reshaped[ri,:,:]    # OK, maybe not the best shape
-    #return numpy_reshaped
-    return numpy_symmetric
+    return numpy_reshaped
+    #return numpy_symmetric
 
   nCAm_up = convert_c2numpy(phys_CA_averaged)
   nACm_up = convert_c2numpy(phys_AC_averaged)
   nCHAm_up = convert_c2numpy(phys_CHA_averaged)
   nAHCm_up = convert_c2numpy(phys_AHC_averaged)
 
+  np.set_printoptions(precision=2)
+  print('\nS_AC')
+  print(nACm_up)
+  print('\nS_CA')
   print(nCAm_up)
+  print('\nH_AC')
+  print(nAHCm_up)
+  print('\nH_CA')
+  print(nCHAm_up)
+  print('')
 
-  print('after reshape')
+
+  #print('after reshape')
     
-  print(dirOutput+'S_CA')
-  print(dirOutput+'S_AC')
-  print(dirOutput+'S_CHA')
-  print(dirOutput+'S_AHC')
+  #print(dirOutput+'S_CA')
+  #print(dirOutput+'S_AC')
+  #print(dirOutput+'S_CHA')
+  #print(dirOutput+'S_AHC')
   np.save(dirOutput+'S_CA',nCAm_up)
   np.save(dirOutput+'S_AC',nACm_up)
   np.save(dirOutput+'S_CHA',nCHAm_up)

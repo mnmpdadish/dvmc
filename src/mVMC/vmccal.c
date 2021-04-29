@@ -327,7 +327,7 @@ void VMCMainCal(MPI_Comm comm) {
           int N1 = sampleChunk*NExcitation;
           int N2 = NExcitation*NExcitation;
           //double alpha = 0.5/((double)Nsite);
-	  double alpha = 0.5;
+          double alpha = 0.5;
           //double alpha2 = 0.0;
           //int ii;
           int ri, rj;
@@ -335,19 +335,20 @@ void VMCMainCal(MPI_Comm comm) {
           #pragma loop noalias
           for (ri = 0; ri < Nsite; ri++) {
             for (rj = 0; rj < Nsite; rj++) {
-              int idx = ri+Nsite*rj;
+              int idx1 = ri+Nsite*rj;
+              int idx2 = rj+Nsite*ri;
               
-              C_ADD_AxB(&Phys_nACm_averaged[(ri + Nsite*rj)*N2], &O_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
-              C_ADD_AxB(&Phys_nCAm_averaged[(ri + Nsite*rj)*N2], &O_CA_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nACm_averaged[idx1*N2], &O_AC_vec1[idx1*N1], &O0_vec1[idx1*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCAm_averaged[idx1*N2], &O_CA_vec1[idx1*N1], &O0_vec1[idx1*N1], NExcitation, alpha, sampleSize);
               
-              C_ADD_AxB(&Phys_nACm_averaged[(ri + Nsite*rj)*N2], &O0_vec2[idx*N1], &O_AC_vec2[idx*N1], NExcitation, alpha, sampleSize);
-              C_ADD_AxB(&Phys_nCAm_averaged[(ri + Nsite*rj)*N2], &O0_vec2[idx*N1], &O_CA_vec2[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nACm_averaged[idx1*N2], &O0_vec2[idx1*N1], &O_AC_vec2[idx1*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCAm_averaged[idx1*N2], &O0_vec2[idx1*N1], &O_CA_vec2[idx1*N1], NExcitation, alpha, sampleSize);
               
-              C_ADD_AxB(&Phys_nAHCm_averaged[(ri + Nsite*rj)*N2], &H_AC_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
-              C_ADD_AxB(&Phys_nCHAm_averaged[(ri + Nsite*rj)*N2], &H_CA_vec1[idx*N1], &O0_vec1[idx*N1], NExcitation, alpha, sampleSize);
-              
-              C_ADD_AxB(&Phys_nAHCm_averaged[(ri + Nsite*rj)*N2], &O0_vec2[idx*N1], &H_AC_vec2[idx*N1], NExcitation, alpha, sampleSize);
-              C_ADD_AxB(&Phys_nCHAm_averaged[(ri + Nsite*rj)*N2], &O0_vec2[idx*N1], &H_CA_vec2[idx*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nAHCm_averaged[idx1*N2], &H_AC_vec1[idx1*N1], &O0_vec1[idx1*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCHAm_averaged[idx1*N2], &H_CA_vec1[idx1*N1], &O0_vec1[idx1*N1], NExcitation, alpha, sampleSize);
+
+              C_ADD_AxB(&Phys_nAHCm_averaged[idx1*N2], &O0_vec2[idx1*N1], &H_AC_vec2[idx1*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCHAm_averaged[idx1*N2], &O0_vec2[idx1*N1], &H_CA_vec2[idx1*N1], NExcitation, alpha, sampleSize);
             }
           }
         }
@@ -355,6 +356,18 @@ void VMCMainCal(MPI_Comm comm) {
     }
   } // end of for(sample) 
   //exit(0);
+  
+  //*
+  int ii, ss;
+  for (ss = 0; ss < sampleChunk; ss++){
+   for (ii = ss; ii < sampleChunk*NExcitation*Nsite; ii+=sampleChunk) printf(" % 4.1f",O0_vec1[ii]);
+   printf("\n");
+   for (ii = ss; ii < sampleChunk*NExcitation*Nsite; ii+=sampleChunk) printf(" % 4.1f",O_AC_vec1[ii]);
+   printf("\n");
+   for (ii = ss; ii < sampleChunk*NExcitation*Nsite; ii+=sampleChunk) printf(" % 4.1f",H_AC_vec1[ii]);
+   printf("\n\n");
+  }
+  //*/
   
 
 // calculate OO and HO at NVMCCalMode==0

@@ -169,13 +169,13 @@ int Commute_Nat_(commuting_with commuting, int ra, int rb, int t, int ri, int rj
     else if(t==1){ //1 electron reverse-spin
       return (eleNum[ra+(1-s)*Nsite]);
     }
-    else if(t==2){ 
+    else if(t==2){
       return (eleNum[ra+s*Nsite]*eleNum[rb+s*Nsite]);
     }
-    else if(t==3){ 
+    else if(t==3){
       return (eleNum[ra+(1-s)*Nsite]*eleNum[rb+(1-s)*Nsite]);
     }
-    else if(t==4){ 
+    else if(t==4){
       return (eleNum[ra+(1-s)*Nsite]*eleNum[rb+s*Nsite]);
     }
     else{
@@ -344,6 +344,8 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
         int rb1 = ChargeExcitationIdx[file_line_idx_j][2];
         int rb2 = ChargeExcitationIdx[file_line_idx_j][3];
         
+        if((ri != rii) || (rj != rjj)) printf("something wrong in excitations? %d == %d, %d == %d \n", ri, rii, rj, rjj);
+        
         int idx1 = ri+Nsite*rj;
         int idx2 = rj+Nsite*ri;
         int idx_vector1 = idx_exc + NExcitation*(sample + sampleChunk*idx1);
@@ -370,8 +372,15 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
         O_AC_vec2[idx_vector2] = AC_tmp;//conj(AC_tmp);  // (equation B10)
         
         // <phi|x>
-        O0_vec1[idx_vector1]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t2, 0,0,0, 0,0,0, myEleNum)));
-        O0_vec2[idx_vector2]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t2, 0,0,0, 0,0,0, myEleNum))); // (equation B10)
+        
+        //int ii;
+        //for (ii = 0; ii < 2*Nsite; ii++) printf("%d", myEleNum[ii]);
+        //printf("\n");
+        //printf("%d %d \n", rb1,rb2);
+        O0_vec1[idx_vector1]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t2, 0,0,s, 0,0,0, myEleNum)));
+        O0_vec2[idx_vector2]  = w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t2, 0,0,s, 0,0,0, myEleNum))); // (equation B10)
+        //printf("% 4.5f       \n", w * ((double) (Commute_Nat_(with_nothing, rb1, rb2, t2, 0,0,0, 0,0,0, myEleNum))));
+        
         //
         // <phi|H_U|x> 
         double tmp_int_AHC=0.0;
@@ -411,6 +420,14 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
           H_CA_vec1[idx_vector1] += tmp;
           H_CA_vec2[idx_vector2] += tmp;//conj(tmp); // (equation B11)
           
+          /*
+          printf("% 4.5f % 4.5f %d %d % 4.5f % 4.5f   % 4.5f  % 4.5f % 4.5f    \n", ParaTransfer[idx_trans], 
+                      Local_CisAjsCmuAnu[idx_trans + NTransfer*idx1],
+                      del(rm,rj), del(s,u), Local_CA[idx_green0], 
+                      Commute_Nat_(with_CisCmuAnuAjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum),
+                      tmp, H_CA_vec1[idx_vector1], H_CA_vec2[idx_vector2]); 
+          //*/
+          
           int idx_green1 = rj+Nsite*ri;
           int idx_green2 = rm+Nsite*rn+Nsite*Nsite*u;
           int idx_green3 = rm+Nsite*ri;
@@ -422,11 +439,53 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
                      * Commute_Nat_(with_AisCmuAnuCjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum) ;
           H_AC_vec1[idx_vector1] += tmp;
           H_AC_vec2[idx_vector2] += tmp;//conj(tmp); // (equation B11)
+          
+          /*
+          printf("% 4.5f % 4.5f %d % 4.5f  %d %d %d % 4.5f % 4.5f   % 4.5f  % 4.5f % 4.5f    \n", 
+                      ParaTransfer[idx_trans], 
+                      Local_CisAjsCmuAnu[idx_trans + NTransfer*idx_green1], 
+                      del(ri,rj), Local_CA[idx_green2], del(rn,rj), del(s,u),
+                      del(rm,ri), Local_CA[idx_green3],
+                      Commute_Nat_(with_AisCmuAnuCjs, ra1, ra2, t, ri, rj, s, rm, rn, u, myEleNum),
+                      tmp, H_AC_vec1[idx_vector1], H_AC_vec2[idx_vector2]); 
+          //*/
+          
+          //printf("% 4.5f  % 4.5f % 4.5f \n", tmp, H_AC_vec1[idx_vector1], H_AC_vec2[idx_vector2]);
+          
         }
+        
+        
+
+      
+        
       }
      }
     }//*/
+
   } //
+
+  /*
+  int ii, ss;
+  for (ii = 0; ii < 2*Nsite; ii++) printf("%d", eleNum[ii]);
+  printf("\n");
+  for (ii = 0; ii < Nsize; ii++) printf("%d", eleIdx[ii]);
+  printf("\n");
+  
+  for (ii = 0; ii < NExcitation*Nsite*Nsite; ii++) printf(" % 4.1f",O0_vec1[ii]);
+  printf("\n");
+  for (ii = 0; ii < NExcitation*Nsite*Nsite; ii++) printf(" % 4.1f",O_AC_vec1[ii]);
+  printf("\n");
+  for (ii = 0; ii < NExcitation*Nsite*Nsite; ii++) printf(" % 4.1f",H_AC_vec1[ii]);
+  printf("\n\n");
+  //*/
+  
+  //for (ii = 0; ii < NExcitation*Nsite*Nsite; ii++) printf(" % 4.1f",O0_vec2[ii]);
+  //printf("\n");
+  //for (ii = 0; ii < NExcitation*Nsite*Nsite; ii++) printf(" % 4.1f",O_AC_vec2[ii]);
+  //printf("\n");
+  //for (ii = 0; ii < NExcitation*Nsite*Nsite; ii++) printf(" % 4.1f",H_AC_vec2[ii]);
+  //printf("\n\n");
+
 
   ReleaseWorkSpaceThreadInt();
   ReleaseWorkSpaceThreadDouble();  
