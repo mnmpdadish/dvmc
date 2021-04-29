@@ -147,9 +147,9 @@ def dvmc_spectrum(verbose=1):
   dw = (w_max_data-w_min_data)/(Nw-1)
   w_ = np.array(range(Nw))*dw + w_min_data
   
-  lib1 = cdll.LoadLibrary(pythonPathCode+'/libdvmc_speedup.so')
-  c_darray = np.ctypeslib.ndpointer(np.double)
-  c_carray = np.ctypeslib.ndpointer(np.cdouble)
+  #lib1 = cdll.LoadLibrary(pythonPathCode+'/libdvmc_speedup.so')
+  #c_darray = np.ctypeslib.ndpointer(np.double)
+  #c_carray = np.ctypeslib.ndpointer(np.cdouble)
 
   S_CA = np.load(outputDir+'S_CA.npy')
   S_AC = np.load(outputDir+'S_AC.npy')
@@ -158,7 +158,6 @@ def dvmc_spectrum(verbose=1):
 
   g_ac = np.zeros((Nw),np.cdouble)
   g_ca = np.zeros((Nw),np.cdouble)
-  lib1.greenFrom_e_U_Uinv_S_general.argtypes = [c_int, c_int, c_int, c_int, c_int, c_darray, c_int, c_carray, c_carray, c_carray, c_double, c_double, c_double, c_carray]
   
   spectrum_hole = np.zeros([Nsite,Nsite,Nw])
   spectrum_elec = np.zeros([Nsite,Nsite,Nw])
@@ -171,7 +170,7 @@ def dvmc_spectrum(verbose=1):
 
     # one big diagonalization [HS^-1] = Nsite*Nexc x Nsite*Nexc
     print("diagonalizing")
-    e_ac,u_ac = la.eig(np.dot(H_AC,la.inv(S_AC)))
+    e_ac,u_ac = la.eig(np.dot(H_AC,la.inv(S_AC))) 
     e_ca,u_ca = la.eig(np.dot(H_CA,la.inv(S_CA)))
     
     print("computing U^-1")
@@ -182,65 +181,31 @@ def dvmc_spectrum(verbose=1):
     us_ac = np.dot(u_ac_m1,S_AC)
     us_ca = np.dot(u_ca_m1,S_CA)
 
+    NN = len(e_ac)
 
+    print("computing for each frequencies")    
+    for ii in range(len(w_)):
+      z_ac = w_[ii] + 1.j*eta + Omega + U/2.;
+      z_ca = w_[ii] + 1.j*eta - Omega + U/2.;
 
-    if(1):
-      print("N_ex: ", n_exc_choice)
-      # non-translationally invariant version
-      print("computing G^e_ij(w)")
-      for i in range(Nsite):
-        for j in range(Nsite):
-          print(i,j)
-          lib1.greenFrom_e_U_Uinv_S_general( 1, i, j, Nsite, Nw, w_, n_exc_choice, e_ac, u_ac, us_ac, Omega, U/2., eta, g_ac)
-          spectrum_elec[i,j,:] = -g_ac[:].imag/(np.pi)
-          #print(i,j, spectrum_elec[i,j,:],'\n\n\n')
-
-      for i in range(Nsite):
-        for j in range(Nsite):
-          print(i,j, spectrum_elec[i,j,:],'\n\n\n')
-
+      G_ac = u_ac.dot(np.diag(np.reciprocal(z_ac-e_ac))).dot(us_ac)  # O(x3)
+      G_ca = u_ca.dot(np.diag(np.reciprocal(z_ca+e_ca))).dot(us_ca)
       
-      print("computing G^h_ij(w)")
-      for i in range(Nsite):
-        for j in range(Nsite):
-          lib1.greenFrom_e_U_Uinv_S_general( 1, i, j, Nsite, Nw, w_, n_exc_choice, e_ca, u_ca, us_ca, Omega, U/2., eta, g_ca)
-          spectrum_hole[i,j,:] = -g_ca[:].imag/(np.pi)
-          #print(i,j, spectrum_hole[i,j,:],'\n\n\n')
+      gac = G_ac[0:Nsite,0:Nsite]
+      gca = G_ca[0:Nsite,0:Nsite]
       
-      print("done computing G^h_ij(w)")
-      totalAij = spectrum_hole + spectrum_elec
-    else:
-      
-      NN = len(e_ac)
-      
-      for ii in range(len(w_)):
-        z_ac = w_[ii] + 1.j*eta + Omega + U/2.;
-        z_ca = w_[ii] + 1.j*eta - Omega - U/2.;
+      spectrum_elec[:,:,ii] = -gac[:,:].imag/(np.pi)
+      spectrum_hole[:,:,ii] = -gca[:,:].imag/(np.pi)
 
-        G_ac = u_ac.dot(np.diag(np.reciprocal(z_ac-e_ac))).dot(us_ac)
-        G_ca = u_ca.dot(np.diag(np.reciprocal(z_ca+e_ca))).dot(us_ca)
-        
-        gac = G_ac[0:NN:n_exc_choice,0:NN:n_exc_choice]
-        gca = G_ca[0:NN:n_exc_choice,0:NN:n_exc_choice]
-        
-        spectrum_elec[:,:,ii] = -gac[:,:].imag/(np.pi)
-        spectrum_hole[:,:,ii] = -gca[:,:].imag/(np.pi)
-        
-      #for i in range(Nsite):
-      #  for j in range(Nsite):
-      #    print(i,j, spectrum_elec[i,j,:],'\n\n\n')
-
-      totalAij = spectrum_hole + spectrum_elec
-      #totalAij = spectrum_elec
-    
+    totalAij = spectrum_hole + spectrum_elec
     print("done computing A_ij(w)")
   
   fig, ax = plt.subplots()
 
   ax.plot(w_,totalAij[0,0,:])
-  ax.plot(w_,totalAij[1,1,:]+0.1)
-  ax.plot(w_,totalAij[2,2,:]+0.2)
-  ax.plot(w_,totalAij[3,3,:]+0.3)
+  ax.plot(w_,totalAij[1,1,:]+0.0)
+  ax.plot(w_,totalAij[2,2,:]+0.0)
+  ax.plot(w_,totalAij[3,3,:]+0.0)
   ax.plot([-15,15],[0,0])
   #ax.plot(gij_ac[1,1,:].real)
 
