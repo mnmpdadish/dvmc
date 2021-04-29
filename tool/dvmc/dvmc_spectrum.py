@@ -151,77 +151,21 @@ def dvmc_spectrum(verbose=1):
   c_darray = np.ctypeslib.ndpointer(np.double)
   c_carray = np.ctypeslib.ndpointer(np.cdouble)
 
-  if(trans_invariant):
-    g_ac = np.zeros((Nw),np.cdouble)
-    g_ca = np.zeros((Nw),np.cdouble)
-    g_ac2 = np.zeros((Nw),np.cdouble)
-    g_ca2 = np.zeros((Nw),np.cdouble)
-    lib1.greenFrom_e_U_Uinv_S.argtypes = [c_int, c_int, c_darray, c_int, c_carray, c_carray, c_carray, c_double, c_double, c_double, c_carray]
-  else:
-    # for general case G(k,w) --> G_ij(w)
-    g_ac = np.zeros(Nw,np.cdouble)
-    g_ca = np.zeros(Nw,np.cdouble)
-    gij_ac = np.zeros((Nsite,Nsite,Nw),np.cdouble)
-    gij_ca = np.zeros((Nsite,Nsite,Nw),np.cdouble)
-    #gk_ac = np.zeros((Nsite,Nsite,Nw),np.cdouble)
-    #gk_ca = np.zeros((Nsite,Nsite,Nw),np.cdouble)
-    #gk_ac = np.zeros((Nsite*Nsite,Nw),np.cdouble)
-    #gk_ca = np.zeros((Nsite*Nsite,Nw),np.cdouble)
-    #g_ac2 = np.zeros((Nsite**2,Nw),np.cdouble)
-    #g_ca2 = np.zeros((Nsite**2,Nw),np.cdouble)  
-    lib1.greenFrom_e_U_Uinv_S_general.argtypes = [c_int, c_int, c_int, c_int, c_int, c_darray, c_int, c_carray, c_carray, c_carray, c_double, c_double, c_double, c_carray]
-    lib1.fourier_Green.argtypes = [c_int, c_int, c_carray, c_carray]
-
-  #lib1.greenFrom_H_and_S.argtypes = [c_int,c_int, c_darray, c_int, c_carray, c_carray, c_double, c_double, c_double, c_carray]
-  #lib1.greenFrom_e_U_Uinv_S.argtypes = [c_int,c_int, c_darray, c_int, c_carray, c_carray, c_carray, c_double, c_double, c_double, c_carray]
-
-  # S_CA = np.load(outputDir+'S_CA.npy')
-
-  # THIS IS NOW WRONG \\
-  
-  #S_CA = FFT_selection(outputDir+'nCAm.npy', exc_choice,kPath,verbose)
-  #S_AC = FFT_selection(outputDir+'nACm.npy', exc_choice,kPath,verbose)
-  #H_CA = FFT_selection(outputDir+'nCHAm.npy',exc_choice,kPath,verbose)
-  #H_AC = FFT_selection(outputDir+'nAHCm.npy',exc_choice,kPath,verbose)
-
   S_CA = np.load(outputDir+'S_CA.npy')
   S_AC = np.load(outputDir+'S_AC.npy')
   H_CA = np.load(outputDir+'S_CHA.npy')
   H_AC = np.load(outputDir+'S_AHC.npy')
 
-  #for i in range(S_CA.shape[0]):
-  #  for j in range(S_CA.shape[1]):
-  #    print(i,j,S_CA[i,j].real,S_CA[i,j].imag)
-
-  #fig, ax = plt.subplots()
-
-  #ax.matshow(S_CA.real)
-
-  #plt.show()
-
-  #sys.exit()
-
-  np.set_printoptions(precision=9)  
-
-  if(trans_invariant):
-    spectrum_hole = np.zeros([len(kPath),Nw], dtype='float')
-    spectrum_elec = np.zeros([len(kPath),Nw], dtype='float')
-  else:
-    spectrum_hole = np.zeros([Nsite**2,Nw], dtype='float')
-    spectrum_elec = np.zeros([Nsite**2,Nw], dtype='float')
+  g_ac = np.zeros((Nw),np.cdouble)
+  g_ca = np.zeros((Nw),np.cdouble)
+  lib1.greenFrom_e_U_Uinv_S_general.argtypes = [c_int, c_int, c_int, c_int, c_int, c_darray, c_int, c_carray, c_carray, c_carray, c_double, c_double, c_double, c_carray]
+  
+  spectrum_hole = np.zeros([Nsite,Nsite,Nw])
+  spectrum_elec = np.zeros([Nsite,Nsite,Nw])
 
   total_sum = 0.0
   partial_sum = 0.0
   k_label = u'%3s' % 'k#'
-
-
-  #f_S00 = open('S_CA_i=j=0.dat','w')
-  #for i in range(n_exc_choice):
-  #  for j in range(n_exc_choice):
-  #    #print(i,j,S_AC[0+i*Nsite,0+j*Nsite])
-  #    f_S00.write(repr(i)+'\t'+repr(j)+'\t'+repr(S_CA[0+i*Nsite,0+j*Nsite].real)+'\t'+repr(S_CA[0+i*Nsite,0+j*Nsite].imag)+'\n')
-
-  #f_S00.close()
 
   if(not trans_invariant):
 
@@ -229,7 +173,7 @@ def dvmc_spectrum(verbose=1):
     print("diagonalizing")
     e_ac,u_ac = la.eig(np.dot(H_AC,la.inv(S_AC)))
     e_ca,u_ca = la.eig(np.dot(H_CA,la.inv(S_CA)))
-
+    
     print("computing U^-1")
     u_ac_m1 = la.inv(u_ac)
     u_ca_m1 = la.inv(u_ca)
@@ -238,212 +182,46 @@ def dvmc_spectrum(verbose=1):
     us_ac = np.dot(u_ac_m1,S_AC)
     us_ca = np.dot(u_ca_m1,S_CA)
 
-    #for i in range(len(e_ac)):
-    #  print(e_ac[i])
-    #for i in range(u_ac.shape[0]):
-    #  for j in range(u_ac.shape[1]):
-    #    print(u_ac[i,j].real,u_ac[i,j].imag,us_ac[i,j].real,us_ac[i,j].imag)
-
-
-    #print(e_ac.shape, u_ac.shape,us_ac.shape, g_ac.shape)
-    #print(e_ca.shape, u_ca.shape,us_ca.shape, g_ca.shape)
-
-    #sumRule = 0.0
-
-    # lib1.greenFrom_e_U_Uinv_S compute Charlebois and Imada 2019, arxiv v1 (equation A4) in two parts.
-    #lib1.greenFrom_e_U_Uinv_S( 1, Nw, w_, n_exc_choice, e_ac, u_ac, us_ac, Omega, U/2., eta, g_ac)
-    #lib1.greenFrom_e_U_Uinv_S(-1, Nw, w_, n_exc_choice, e_ca, u_ca, us_ca, Omega, U/2., eta, g_ca)
-
     print("N_ex: ", n_exc_choice)
-
+    
     # non-translationally invariant version
     print("computing G^e_ij(w)")
     for i in range(Nsite):
       for j in range(Nsite):
+        print(i,j)
         lib1.greenFrom_e_U_Uinv_S_general( 1, i, j, Nsite, Nw, w_, n_exc_choice, e_ac, u_ac, us_ac, Omega, U/2., eta, g_ac)
-        gij_ac[i,j,:] = g_ac
-        #if(i==0 and j==0):
-        #  for ww in range(Nw):
-        #    print(gij_ac[i,j,ww])
+        spectrum_elec[i,j,:] = -g_ac[:].imag/(np.pi)
+        #print(i,j, spectrum_elec[i,j,:],'\n\n\n')
 
+    for i in range(Nsite):
+      for j in range(Nsite):
+        print(i,j, spectrum_elec[i,j,:],'\n\n\n')
 
-    print(gij_ac[0,0,:])
-
-    fig, ax = plt.subplots()
-
-    ax.plot(w_,-1.0*gij_ac[0,0,:].imag, 'bo')
-    ax.plot(w_,-1.0*gij_ac[1,1,:].imag, 'rx')
-    ax.plot(w_,-1.0*gij_ac[2,2,:].imag)
-    ax.plot(w_,-1.0*gij_ac[3,3,:].imag)
-    ax.plot([-15,15],[0,0])
-    #ax.plot(gij_ac[1,1,:].real)
-
-    plt.show()
-    exit()
-
-    #print("********************")
-    #for ww in range(1):
-    #  for ii in range(Nsite*Nsite):
-        #print(repr(w_[ww]).ljust(25),repr(Xi(ii)).ljust(5),repr(Yi(ii)).ljust(25),repr(g_ac[ii,ww].real).ljust(25),repr(g_ac[ii,ww].imag).ljust(25))
-    #    print(Xi(ii),Yi(ii),g_ac[ii,ww].real,g_ca[ii,ww].imag)
-    #print("U_CA:")
-    #print(u_ca[0,:10])
-    #print(us_ca[0,:10])
     
     print("computing G^h_ij(w)")
     for i in range(Nsite):
       for j in range(Nsite):
         lib1.greenFrom_e_U_Uinv_S_general( 1, i, j, Nsite, Nw, w_, n_exc_choice, e_ca, u_ca, us_ca, Omega, U/2., eta, g_ca)
-        gij_ca[i,j,:] = g_ca
-
+        spectrum_hole[i,j,:] = -g_ca[:].imag/(np.pi)
+        #print(i,j, spectrum_hole[i,j,:],'\n\n\n')
+    
     print("done computing G^h_ij(w)")
-    #lib1.greenFrom_e_U_Uinv_S_general(-1, Nsite, Nw, w_, n_exc_choice, e_ca, u_ca, us_ca, Omega, U/2., eta, g_ca)
-
-    #for ww in range(Nw):
-    #for ww in range(1):
-    #  print("fourier transforming G^e_ij("+repr(ww)+") --> G^e_{k,kp}("+repr(ww)+")")
-    #  lib1.fourier_Green( W, L, np.reshape(g_ac[:,ww],(Nsite,Nsite),order='C'), gk_ac[:,ww])
-    #  print("fourier transforming G^h_ij("+repr(ww)+") --> G^h_{k,kp}("+repr(ww)+")")
-    #  lib1.fourier_Green( W, L, np.reshape(g_ca[:,ww],(Nsite,Nsite),order='C'), gk_ca[:,ww])
-
-    #g_tot = g_ac + g_ca # Charlebois and Imada 2019, arxiv v1 (equation A3)
-    #spectrum_hole[:,:] = -g_ca[:,:].imag/(np.pi)
-    #spectrum_elec[:,:] = -g_ac[:,:].imag/(np.pi)
     totalAij = spectrum_hole + spectrum_elec
     print("done computing A_ij(w)")
-
-    #for ww in range(Nw):
-    #for ww in [0]:
-      #gk = np.reshape(gk_ac[:,ww],(Nsite,Nsite),order='C')
-      #for ii in range(Nsite**2):
-        #for jj in range(Nsite):
-        #print('{0:4f}+i{0:4f}'.format(gk_ac[ii,ww].real,gk_ac[ii,ww].imag))#,end=" ")
-      #print("")
-    #    print(repr(w_[ww]).ljust(25),repr(2*np.pi*Xi(ii)/W).ljust(5),repr(2*np.pi*Yi(ii)/L).ljust(25),repr(gk_ac[ii,ii,ww].real).ljust(25),repr(gk_ac[ii,ii,ww].imag).ljust(25))
-
-    #for ii in range(Nsite):
-    #  print(Xi(ii),Yi(ii),2*np.pi*Xi(ii)/W,2*np.pi*Yi(ii)/L)
-
-    #outputting A_ij(w):
-    """
-    file_green_e = open(outputDir+'Aij_w_e.dat','w')
-    file_green_h = open(outputDir+'Aij_w_h.dat','w')
-    file_green   = open(outputDir+'Aij_w.dat','w')
-    print("printing A_ij(w)")
-    for ww in range(Nw):
-      for ii in range(Nsite**2):
-          file_green_e.write('% 7.6f '%spectrum_elec[ii,ww])
-          file_green_h.write('% 7.6f '%spectrum_hole[ii,ww])
-          file_green_h.write('% 7.6f '%totalAij[ii,ww])
-      file_green_e.write('\n')
-      file_green_h.write('\n')
-      file_green.write('\n')
-      
-    file_green_e.close()
-    file_green_h.close()
-    file_green.close()
-    """
-
-  if(trans_invariant):
-    if(verbose):
-      print(u'\n k#/Nk  --   kx/pi  ky/pi:  sumRule: int dw A(%s,w)  == 1.00000 ' % k_label)
-      print(u' ------------------------------------------------------------')
-
-      for kk in range(len(kPath)):#range(0,2*Nsite):
-        k_label = u'%3s' % ('k%d' % kk)
-        if(verbose): 
-          print(u' %2d/%2d ' % (kk+1,len(kPath)),)
-        sys.stdout.flush()
-
-    
-        e_ac,u_ac = la.eig(np.dot(H_AC[kk],la.inv(S_AC[kk])))
-        e_ca,u_ca = la.eig(np.dot(H_CA[kk],la.inv(S_CA[kk])))
-    
-        if(verbose): print('--',)
-        sys.stdout.flush()
-    
-        u_ac_m1 = la.inv(u_ac)
-        u_ca_m1 = la.inv(u_ca)
-    
-        us_ac = np.dot(u_ac_m1,S_AC[kk])
-        us_ca = np.dot(u_ca_m1,S_CA[kk])
-    
-        sumRule = 0.0
-
-        # lib1.greenFrom_e_U_Uinv_S compute Charlebois and Imada 2019, arxiv v1 (equation A4) in two parts.
-        lib1.greenFrom_e_U_Uinv_S( 1, Nw, w_, n_exc_choice, e_ac, u_ac, us_ac, Omega, U/2., eta, g_ac)
-        lib1.greenFrom_e_U_Uinv_S(-1, Nw, w_, n_exc_choice, e_ca, u_ca, us_ca, Omega, U/2., eta, g_ca)
-    
-        g_tot = g_ac + g_ca # Charlebois and Imada 2019, arxiv v1 (equation A3)
-        spectrum_hole[kk,:] = -g_ca[:].imag/(np.pi)
-        spectrum_elec[kk,:] = -g_ac[:].imag/(np.pi)
-        sumRule = -dw*(g_tot.imag).sum()/(np.pi)
-
-        total_sum += sumRule/float(len(kPath))
-
-        flag = False
-        if(sum_rule_min_ok > sumRule):
-          flag=True
-        if(sum_rule_max_ok < sumRule):
-          flag=True
-        suffix = ' '  #+ str(sum_rule_min) + ' ' + str(sum_rule_max)
-        if(flag): suffix = '   <-- check sum rule' #+ str(sum_rule_min) + ' ' + str(sum_rule_max)
-    
-        if(verbose): print((u' %2d/%2d  %2d/%2d :           int dw A(%s,w)  = % 5.5f ' \
-                            % (Xi(kPath[kk]),W/2,Yi(kPath[kk]),L/2,k_label, sumRule)) +suffix)
-
-        if(sum_rule_min > sumRule):
-          sum_rule_min = sumRule
-        if(sum_rule_max < sumRule):
-          sum_rule_max = sumRule
-    
-      #outputting dos:
-      suffix = ''
-      totalAkw = spectrum_hole + spectrum_elec
-      if calculateAll:
-        suffix = '_all'
   
-      if(verbose):
-          #print u'\n\n                          int dw dk A(k,w)  = % 5.5f ' % (total_sum)
-          ##print u'\n\n                                    \u222Bint dw dk A(k,w)  = % 5.5f ' % (total_sum)
-        print(u'\n\ndos printing')
-        print(u'\n  correction factor:                int dw dk A(k,w) = % 5.5f ' % (total_sum))
-    
-      dos = np.zeros([3,Nw], dtype='float')
-      dos[0,:] = totalAkw.sum(axis=0)
-      dos[1,:] = spectrum_elec.sum(axis=0)
-      dos[2,:] = spectrum_hole.sum(axis=0)
-      file_dos   = open(outputDir+'dos.dat','w')
-      #file_dos_p = open(outputDir+'dos_p'+suffix+'.dat','w')
-      for ii in range(Nw):
-        file_dos.write('% 7.6f   '  %w_[ii])
-        for kk in range(3):
-          file_dos.write('% 7.6f '  %(dos[kk,ii]))#/(total_sum)))
-        file_dos.write('\n')
+  fig, ax = plt.subplots()
 
-      #outputting A(k,w):
-      file_green_e = open(outputDir+'Akw_e'+suffix+'.dat','w')
-      file_green_h = open(outputDir+'Akw_h'+suffix+'.dat','w')
-      file_green   = open(outputDir+'Akw'+suffix+'.dat','w')
-      for ii in range(Nw):
-        for kk in range(len(kPath)):
-          file_green_e.write('% 7.6f '%spectrum_elec[kk,ii])
-          file_green_h.write('% 7.6f '%spectrum_hole[kk,ii])
-          file_green.write('% 7.6f '  %totalAkw[kk,ii])
-        file_green_e.write('\n')
-        file_green_h.write('\n')
-        file_green.write('\n')
+  ax.plot(w_,totalAij[0,0,:])
+  ax.plot(w_,totalAij[1,1,:]+0.1)
+  ax.plot(w_,totalAij[2,2,:]+0.2)
+  ax.plot(w_,totalAij[3,3,:]+0.3)
+  ax.plot([-15,15],[0,0])
+  #ax.plot(gij_ac[1,1,:].real)
 
-
-      if((sum_rule_min < sum_rule_min_ok) or (sum_rule_max > sum_rule_max_ok)):
+  plt.show()
   
-        print('\nThe sum rule is not within the range: 0.96 < int dw A(k,w) < 1.00.')
-        print('check range of integration (w_min_data and w_max_data)')
-        print('or increase the number of sampling')
-        print('or exclude this ".bin" file of the analysis.\n')
-      else:
-  
-        print('OK\n')
+  sys.exit()  
+  #exit(0)
   
   
 #######################################################################
@@ -452,29 +230,6 @@ def dvmc_spectrum(verbose=1):
 
 def dotdot(a,b,c):
     return np.dot(np.dot(a,b),c)
-
-def FFT_selection(dataFileName,exc_choice,kPath, verbose = 1):
-  if(verbose): print('treatment of '+ dataFileName + '.',)
-  sys.stdout.flush()
-  n_exc_choice = len(exc_choice)
-  data_up = np.load(dataFileName)
-  
-  data_k  = np.fft.fft2(data_up) # fft2 only on the last 2 indices
-  dataListOfMatrices = []
-
-  for kk in range(len(kPath)):
-    if((kk==len(kPath)-1) and(verbose)): 
-        print('.',)
-        sys.stdout.flush()
-    kk1 = kPath[kk]
-    kx1 = Xi(kk1)
-    ky1 = Yi(kk1)
-
-    tmp1 = data_k[exc_choice,:,kx1,ky1] #slicing is faster than for loops
-    tmp2 = tmp1[:,exc_choice]
-    dataListOfMatrices.append(tmp2) 
-  if(verbose): print('')
-  return dataListOfMatrices
 
 def ReadRange(inputStr):
   error=0

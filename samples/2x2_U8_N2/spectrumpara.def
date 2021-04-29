@@ -9,11 +9,11 @@ dr2_y       0:1      # will generate array [-1,0,1,2]
 
 # parameters to generate A(k,w) parameters 
 eta           0.2             # imaginary frequency
-w_min        -8.0             # minimum frequency plotted
-w_max        12.0             # maximum frequency plotted
-w_min_data  -15.0             # minimum frequency calculated
-w_max_data   15.0             # maximum frequency calculated
-Nw           1500             # calculate 1500 frequencies
+w_min       -10.0             # minimum frequency plotted
+w_max        10.0             # maximum frequency plotted
+w_min_data  -20.0             # minimum frequency calculated
+w_max_data   20.0             # maximum frequency calculated
+Nw           2000             # calculate 1500 frequencies
 exc_choice   all              # take all excitations
 kPath        0,5,10,6,2,1,0   # k points chosen in the path to plot
 

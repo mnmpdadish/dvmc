@@ -451,13 +451,7 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
           //*/
           
           //printf("% 4.5f  % 4.5f % 4.5f \n", tmp, H_AC_vec1[idx_vector1], H_AC_vec2[idx_vector2]);
-          
-        }
-        
-        
-
-      
-        
+        }        
       }
      }
     }//*/
@@ -485,7 +479,6 @@ void CalculateDynamicalGreenFunc_real(const double w, const double ip,
   //printf("\n");
   //for (ii = 0; ii < NExcitation*Nsite*Nsite; ii++) printf(" % 4.1f",H_AC_vec2[ii]);
   //printf("\n\n");
-
 
   ReleaseWorkSpaceThreadInt();
   ReleaseWorkSpaceThreadDouble();  

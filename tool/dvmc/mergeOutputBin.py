@@ -96,7 +96,7 @@ def main():
     numpy_averaged = np.zeros(n_exc*n_exc*Nsite*Nsite)
     numpy_averaged[:] = phys_averaged[:]
     numpy_reshaped = numpy_averaged.reshape((Nsite*n_exc,Nsite*n_exc))
-    numpy_symmetric = 0.5*(numpy_reshaped+np.transpose(numpy_reshaped))
+    #numpy_symmetric = 0.5*(numpy_reshaped+np.transpose(numpy_reshaped))
     #print test[0,0,:]
     #numpyOut = np.zeros([Nsite*n_exc,Nsite*n_exc], dtype='f')
     #for ri in range(Nsite):

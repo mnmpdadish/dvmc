@@ -107,6 +107,7 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
 
   int nn,mm;
   
+  /*
   for(ii=0;ii<Nsite;ii++) 
    for(jj=0;jj<Nsite;jj++) 
     for(mm=0;mm<NExcitation;mm++) {
@@ -119,6 +120,7 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
       //S_CA[ii + Nsite*(mm + NExcitation*(jj + Nsite*nn))] += phys_nCAm_averaged[nn + NExcitation*(mm + NExcitation*(ii + Nsite*jj))]; 
     }
   }
+  //*/
   
   // untangling
   for(ii=0;ii<Nsite;ii++) {
@@ -133,9 +135,6 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
     }
    }
   }
-  
-  
-
   
   free(phys_nCAm_averaged);
   free(phys_nACm_averaged);
@@ -169,47 +168,24 @@ int greenFrom_e_U_Uinv_S(int sign, int Nw, double *w, int dim, double complex *e
   return 0;
 }
 
-int greenFrom_e_U_Uinv_S_general(int sign, int ll, int pp, int Ns, int Nw, double *w, int dim, double complex *e, double complex *U, double complex *Uinv_S, double Omega, double mu, double eta, double complex *g) //)H, double *S,)
+int greenFrom_e_U_Uinv_S_general(int sign, int ll, int pp, int Ns, int Nw, double *w, int Nex, double complex *e, double complex *U, double complex *Uinv_S, double Omega, double mu, double eta, double complex *g) //)H, double *S,)
 {
-  int ii,nn,ll2,pp2,Nex;
+  int ii,nn,ll2,pp2;
   int ind1, ind2;
-
-  Nex = dim;
 
   for(ii=0;ii<Ns*Ns*Nw;ii++) g[ii]=0.0;
 
   for(ii=0;ii<Nw;ii++) {
     double complex z = w[ii] + I*eta + sign*Omega + mu;
 
-    // G_lp(w) matrix structure
-    // [ G_00(w_0)    G_10(w_0)    ... G_01(w_0)    G_11(w_0)    ... G_NsNs(w_0)    ]
-    // [ G_00(w_1)    G_10(w_1)    ... G_01(w_1)    G_11(w_1)    ... G_NsNs(w_1)    ]
-    // [   .                                                              .         ]
-    // [   .                                                              .         ]
-    // [   .                                                              .         ]
-    // [ G_00(w_Nw-1) G_10(w_Nw-1) ... G_01(w_Nw-1) G_11(w_Nw-1) ... G_NsNs(w_Nw-1) ]
-    // [ G_00(w_Nw)   G_10(w_Nw)   ... G_01(w_Nw)   G_11(w_Nw)   ... G_NsNs(w_Nw)   ]
-    //for(ll=0;ll<Ns;ll++){
-    //for(pp=0;pp<Ns;pp++){
-    //for(ll2=0;ll2<Ns;ll2++){
     for(pp2=0;pp2<Ns;pp2++){
       for(nn=0;nn<Nex;nn++){
-	  //g[ll+Ns*pp+Ns*Ns*ii] += U[nn+Ns*Nex*ll]*Uinv_S[Ns*Nex*pp+Ns*Nex*nn]/(z-sign*e[nn]);
-	  //g[ll+Ns*pp+Ns*Ns*ii] += U[nn+Ns*Nex*ll]*Uinv_S[pp+Ns*Nex*nn]/(z-sign*e[nn]);
-	      //ind1 = ll + Ns*(0+Nex*(pp2+Ns*mm));
-	ind1 = pp2 + Ns*(nn+Nex*(ll+Ns*0));
-	ind2 = pp + Ns*(0+Nex*(pp2+Ns*nn));
-	      //g[ll+Ns*pp+Ns*Ns*ii] += U[nn+Ns*Nex*ll]*Uinv_S[pp+Ns*Nex*nn]/(z-sign*e[nn]);
-	g[ii] += U[ind1]*Uinv_S[ind2]/(z-sign*e[nn]);
-	  //if(ii==0 && ll==0 && pp==0) printf("%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",nn,creal(g[ll+Ns*pp+Ns*Ns*ii]),cimag(g[ll+Ns*pp+Ns*Ns*ii]),creal(U[nn+Ns*Nex*ll]), cimag(U[nn+Ns*Nex*ll]), creal(Uinv_S[pp+Ns*Nex*nn]), cimag(Uinv_S[pp+Ns*Nex*nn]),creal(z),cimag(z),creal(e[nn]),cimag(e[nn]));
-	  //printf("%d\t%d\t%d\t%f\t%f\t%f\t%f\n",ll,pp,nn,creal(U[nn+Ns*Nex*ll]), cimag(U[nn+Ns*Nex*ll]), creal(Uinv_S[pp+Ns*Nex*nn]), cimag(Uinv_S[pp+Ns*Nex*nn]) );
-	  //printf("%d\t%d\t%d\t%f\t%f\n",ll,pp,nn,creal(U[nn+Ns*Nex*ll]), cimag(U[nn+Ns*Nex*ll]));
-	}
-	//if(ll<5 && pp<5 && ii<5) printf("%d\t%d\t%d\t%f\t%f\n",ll,pp,ii,creal(g[ll+Ns*pp+Ns*Ns*ii]),cimag(g[ll+Ns*pp+Ns*Ns*ii]));
-      }
-    }
-    //}
-
+        ind1 = pp2 + Ns*(nn+Nex*(ll+Ns*0));
+        ind2 = pp + Ns*(0+Nex*(pp2+Ns*nn));
+        g[ii] += U[ind1]*Uinv_S[ind2]/(z-sign*e[nn]);
+	    }
+	  }
+  }
   return 0;
 }
 
