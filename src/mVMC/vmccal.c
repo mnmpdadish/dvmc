@@ -327,7 +327,7 @@ void VMCMainCal(MPI_Comm comm) {
           int N1 = sampleChunk*NExcitation;
           int N2 = NExcitation*NExcitation;
           //double alpha = 0.5/((double)Nsite);
-          double alpha = 1.0;
+          double alpha = 0.5;
           //double alpha2 = 0.0;
           //int ii;
           int ri, rj;
@@ -341,14 +341,14 @@ void VMCMainCal(MPI_Comm comm) {
               C_ADD_AxB(&Phys_nACm_averaged[idx1*N2], &O_AC_vec1[idx1*N1], &O0_vec1[idx1*N1], NExcitation, alpha, sampleSize);
               C_ADD_AxB(&Phys_nCAm_averaged[idx1*N2], &O_CA_vec1[idx1*N1], &O0_vec1[idx1*N1], NExcitation, alpha, sampleSize);
               
-              //C_ADD_AxB(&Phys_nACm_averaged[idx1*N2], &O0_vec2[idx1*N1], &O_AC_vec2[idx1*N1], NExcitation, alpha, sampleSize);
-              //C_ADD_AxB(&Phys_nCAm_averaged[idx1*N2], &O0_vec2[idx1*N1], &O_CA_vec2[idx1*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nACm_averaged[idx1*N2], &O0_vec2[idx2*N1], &O_AC_vec2[idx2*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCAm_averaged[idx1*N2], &O0_vec2[idx2*N1], &O_CA_vec2[idx2*N1], NExcitation, alpha, sampleSize);
               
               C_ADD_AxB(&Phys_nAHCm_averaged[idx1*N2], &H_AC_vec1[idx1*N1], &O0_vec1[idx1*N1], NExcitation, alpha, sampleSize);
               C_ADD_AxB(&Phys_nCHAm_averaged[idx1*N2], &H_CA_vec1[idx1*N1], &O0_vec1[idx1*N1], NExcitation, alpha, sampleSize);
 
-              //C_ADD_AxB(&Phys_nAHCm_averaged[idx1*N2], &O0_vec2[idx1*N1], &H_AC_vec2[idx1*N1], NExcitation, alpha, sampleSize);
-              //C_ADD_AxB(&Phys_nCHAm_averaged[idx1*N2], &O0_vec2[idx1*N1], &H_CA_vec2[idx1*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nAHCm_averaged[idx1*N2], &O0_vec2[idx2*N1], &H_AC_vec2[idx2*N1], NExcitation, alpha, sampleSize);
+              C_ADD_AxB(&Phys_nCHAm_averaged[idx1*N2], &O0_vec2[idx2*N1], &H_CA_vec2[idx2*N1], NExcitation, alpha, sampleSize);
             }
           }
         }

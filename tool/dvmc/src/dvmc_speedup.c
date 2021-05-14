@@ -14,7 +14,7 @@ void interrupt_handler(int sig) {exit(0);}
 
 //simpler, faster than function above (require binary output (*.bin)
 int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L, int *exc_W, 
-                   float *S_CA, float *S_AC, float *H_CA, float *H_AC, int verbose) {
+                   double *S_CA, double *S_AC, double *H_CA, double *H_AC, int verbose) {
            
   // to be able to use ctrl-c
   signal(SIGINT, interrupt_handler); 
@@ -53,12 +53,12 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
   
   int Nsite = Excitation_L*Excitation_W;
   long int jj,size = NExcitation*NExcitation*Nsite*Nsite;
-  float * data_read  = (float *)calloc((4*size),sizeof(float));
+  double * data_read  = (double *)calloc((4*size),sizeof(double));
   
-  float *phys_nCAm_averaged   = (float *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(float));
-  float *phys_nACm_averaged   = (float *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(float));
-  float *phys_nAHCm_averaged  = (float *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(float));
-  float *phys_nCHAm_averaged  = (float *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(float));
+  double *phys_nCAm_averaged   = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+  double *phys_nACm_averaged   = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+  double *phys_nAHCm_averaged  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
+  double *phys_nCHAm_averaged  = (double *)calloc((Nsite*Nsite*NExcitation*NExcitation),sizeof(double));
   
   //fread(data_read, sizeof(double), 4*size, fp);
   
@@ -91,7 +91,7 @@ int mergeOutputBin(int n_file, const char ** string_list, int *n_exc, int *exc_L
       exit(-1);
     }
 
-    if(fread(data_read, sizeof(float), 4*size, fp) ==0){
+    if(fread(data_read, sizeof(double), 4*size, fp) ==0){
       fprintf(stdout, "error: reading Excitation_W in file '%s'.\n",string_list[ii]); 
       exit(-1);
     }

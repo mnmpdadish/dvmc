@@ -227,8 +227,8 @@ int find_neighbor_site2(int r,int dr){
 //Maxime Charlebois
 void convert_double2float_fwrite(double *array, long int totalSize, FILE *fp) {
   long int ii;
-  for(ii=0;ii<totalSize;ii++) data_float_convert[ii] = (float) array[ii];
-  fwrite(data_float_convert, sizeof(float), totalSize, fp);
+  //for(ii=0;ii<totalSize;ii++) data_float_convert[ii] = (float) array[ii];
+  fwrite(array, sizeof(double), totalSize, fp);
   return;
 }
 

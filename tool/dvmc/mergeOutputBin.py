@@ -23,7 +23,7 @@
 import sys, os
 import numpy as np
 import re
-from ctypes import cdll, c_int, c_float, pointer, c_char_p
+from ctypes import cdll, c_int, c_double, pointer, c_char_p
 
 full_path = os.path.realpath(__file__)
 pythonPathCode, file1 = os.path.split(full_path)
@@ -66,12 +66,12 @@ def main():
   if( not os.path.isfile(pythonPathCode+'/libdvmc_speedup.so')):
     print('Error: the shared object library "libdvmc_speedup.so" was not found.\nTo obtain it, go in the original directory of this python code (probably: '+ pythonPathCode+'/) and do make.')
     exit(0)
-  c_ArrayFloatN = c_float * (n_exc*n_exc*Nsite*Nsite)
+  c_ArraydoubleN = c_double * (n_exc*n_exc*Nsite*Nsite)
 
-  phys_CA_averaged = c_ArrayFloatN()
-  phys_AC_averaged = c_ArrayFloatN()
-  phys_CHA_averaged = c_ArrayFloatN()
-  phys_AHC_averaged = c_ArrayFloatN()
+  phys_CA_averaged = c_ArraydoubleN()
+  phys_AC_averaged = c_ArraydoubleN()
+  phys_CHA_averaged = c_ArraydoubleN()
+  phys_AHC_averaged = c_ArraydoubleN()
   c_NExcitation = c_int(n_exc)
   c_W = c_int(W)
   c_L = c_int(L)
@@ -96,7 +96,7 @@ def main():
     numpy_averaged = np.zeros(n_exc*n_exc*Nsite*Nsite)
     numpy_averaged[:] = phys_averaged[:]
     numpy_reshaped = numpy_averaged.reshape((Nsite*n_exc,Nsite*n_exc))
-    #numpy_symmetric = 0.5*(numpy_reshaped+np.transpose(numpy_reshaped))
+    numpy_symmetric = 0.5*(numpy_reshaped+np.transpose(numpy_reshaped))
     #print test[0,0,:]
     #numpyOut = np.zeros([Nsite*n_exc,Nsite*n_exc], dtype='f')
     #for ri in range(Nsite):
@@ -104,8 +104,8 @@ def main():
     #  for n in range(Nsite):
     #   for rj in range(Nsite):
     #    numpyOut[:,:] = numpy_reshaped[ri,:,:]    # OK, maybe not the best shape
-    return numpy_reshaped
-    #return numpy_symmetric
+    #return numpy_reshaped
+    return numpy_symmetric
 
   nCAm_up = convert_c2numpy(phys_CA_averaged)
   nACm_up = convert_c2numpy(phys_AC_averaged)
@@ -132,8 +132,8 @@ def main():
   #print(dirOutput+'S_AHC')
   np.save(dirOutput+'S_CA',nCAm_up)
   np.save(dirOutput+'S_AC',nACm_up)
-  np.save(dirOutput+'S_CHA',nCHAm_up)
-  np.save(dirOutput+'S_AHC',nAHCm_up)
+  np.save(dirOutput+'H_CA',nCHAm_up)
+  np.save(dirOutput+'H_AC',nAHCm_up)
 
 if __name__ == "__main__":
    main()

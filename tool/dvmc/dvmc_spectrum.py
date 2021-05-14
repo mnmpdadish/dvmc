@@ -20,7 +20,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 import numpy as np
-from numpy import linalg as la
+from scipy import linalg as la
 import sys, os, re
 from ctypes import cdll, c_int, c_double
 
@@ -153,52 +153,80 @@ def dvmc_spectrum(verbose=1):
 
   S_CA = np.load(outputDir+'S_CA.npy')
   S_AC = np.load(outputDir+'S_AC.npy')
-  H_CA = np.load(outputDir+'S_CHA.npy')
-  H_AC = np.load(outputDir+'S_AHC.npy')
+  H_CA = np.load(outputDir+'H_CA.npy')
+  H_AC = np.load(outputDir+'H_AC.npy')
 
   g_ac = np.zeros((Nw),np.cdouble)
   g_ca = np.zeros((Nw),np.cdouble)
   
   spectrum_hole = np.zeros([Nsite,Nsite,Nw])
   spectrum_elec = np.zeros([Nsite,Nsite,Nw])
-
+  
   total_sum = 0.0
   partial_sum = 0.0
   k_label = u'%3s' % 'k#'
+  
+  
+  def makePositive(Hmatrix,Smatrix):
 
-  if(not trans_invariant):
-
-    # one big diagonalization [HS^-1] = Nsite*Nexc x Nsite*Nexc
-    print("diagonalizing")
-    e_ac,u_ac = la.eig(np.dot(H_AC,la.inv(S_AC))) 
-    e_ca,u_ca = la.eig(np.dot(H_CA,la.inv(S_CA)))
-    
-    print("computing U^-1")
-    u_ac_m1 = la.inv(u_ac)
-    u_ca_m1 = la.inv(u_ca)
-    
-    print("computing U^-1*S")
-    us_ac = np.dot(u_ac_m1,S_AC)
-    us_ca = np.dot(u_ca_m1,S_CA)
-
-    NN = len(e_ac)
-
-    print("computing for each frequencies")    
-    for ii in range(len(w_)):
-      z_ac = w_[ii] + 1.j*eta + Omega + U/2.;
-      z_ca = w_[ii] + 1.j*eta - Omega + U/2.;
-
-      G_ac = u_ac.dot(np.diag(np.reciprocal(z_ac-e_ac))).dot(us_ac)  # O(x3)
-      G_ca = u_ca.dot(np.diag(np.reciprocal(z_ca+e_ca))).dot(us_ca)
+    tol = 1e-16
       
-      gac = G_ac[0:Nsite,0:Nsite]
-      gca = G_ca[0:Nsite,0:Nsite]
-      
-      spectrum_elec[:,:,ii] = -gac[:,:].imag/(np.pi)
-      spectrum_hole[:,:,ii] = -gca[:,:].imag/(np.pi)
+    e,u = la.eigh(Smatrix)
+    upos = u[e>tol,:]
+    epos = np.multiply(e,(e>0))+0.1
+    
+    
+    print(upos.dot(upos.T))
+    exit()
+    
+    #print(u)
+    #print(upos)
+    #print(e)
 
-    totalAij = spectrum_hole + spectrum_elec
-    print("done computing A_ij(w)")
+    #Spos = u.dot(np.diag(epos)).dot(u.T)
+    indices = np.where((e>tol) == True)
+    index_pos = indices[0][0]
+    
+    Sdiag = (u.T).dot(Smatrix).dot(u)
+    Spos = upos.T.dot(Sdiag[index_pos:,index_pos:]).dot(upos)
+    
+    Htmp = (u.T).dot(Hmatrix).dot(u)
+    Hpos = upos.T.dot(Htmp[index_pos:,index_pos:]).dot(upos)
+    print(Spos)
+    
+    e,u = la.eigh(Spos)
+    print("\n\n",e)
+    exit()
+    
+    return Hpos, Spos
+
+  H_AC_pos,S_AC_pos =  makePositive(H_AC,S_AC)
+  #exit()
+  H_CA_pos,S_CA_pos =  makePositive(H_CA,S_CA)
+
+  # one big diagonalization [HS^-1] = Nsite*Nexc x Nsite*Nexc
+  print("diagonalizing")
+  e_ac,u_ac = la.eigh(H_AC_pos,S_AC_pos) 
+  e_ca,u_ca = la.eigh(H_CA_pos,S_CA_pos)
+  
+  NN = len(e_ac)
+
+  print("computing for each frequencies")    
+  for ii in range(len(w_)):
+    z_ac = w_[ii] + 1.j*eta + Omega + U/2.;
+    z_ca = w_[ii] + 1.j*eta - Omega + U/2.;
+
+    G_ac = u_ac.dot(np.diag(np.reciprocal(z_ac-e_ac))).dot(u_ac.T)  # O(x3)
+    G_ca = u_ca.dot(np.diag(np.reciprocal(z_ca+e_ca))).dot(u_ca.T)
+    
+    gac = G_ac[0:Nsite,0:Nsite]
+    gca = G_ca[0:Nsite,0:Nsite]
+    
+    spectrum_elec[:,:,ii] = -gac[:,:].imag/(np.pi)
+    spectrum_hole[:,:,ii] = -gca[:,:].imag/(np.pi)
+  
+  totalAij = spectrum_hole + spectrum_elec
+  print("done computing A_ij(w)")
   
   fig, ax = plt.subplots()
 
